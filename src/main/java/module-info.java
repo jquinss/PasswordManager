@@ -1,6 +1,7 @@
 module com.jquinss.passwordmanager {
     requires javafx.controls;
     requires javafx.fxml;
+    requires java.sql;
 
 
     opens com.jquinss.passwordmanager.app to javafx.fxml;
