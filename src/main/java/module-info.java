@@ -2,6 +2,8 @@ module com.jquinss.passwordmanager {
     requires javafx.controls;
     requires javafx.fxml;
     requires java.sql;
+    requires net.synedra.validatorfx;
+    requires org.xerial.sqlitejdbc;
 
 
     opens com.jquinss.passwordmanager.app to javafx.fxml;
