@@ -1,7 +1,7 @@
 package com.jquinss.passwordmanager.managers;
 
 import java.nio.file.Path;
-import com.jquinss.passwordmanager.util.OSChecker;
+import com.jquinss.passwordmanager.util.misc.OSChecker;
 
 public class SettingsManager {
     private static final String APP_FOLDER_NAME = "PasswordManager";
