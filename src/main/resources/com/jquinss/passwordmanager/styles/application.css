@@ -1,0 +1,37 @@
+/* Styles for the root node */
+.root {
+    -fx-background-color: #414743;
+}
+
+/* Styles for labels */
+.label {
+	-fx-font-size: 10pt;
+	-fx-text-fill: white;
+}
+
+/* Styles for the text field */
+.text-field {
+	-fx-text-fill: white;
+  -fx-border-color: grey;
+  -fx-border-width: 0 0 2 0;
+  -fx-background-color: transparent;
+}
+
+.text-field:focused {
+    -fx-border-color: #E17B02;
+}
+
+/* Styles for the buttons */
+
+.button {
+    -fx-font-size: 10pt;
+	-fx-background-color: grey;
+	-fx-text-fill: white;
+	-fx-border-width: 1;
+	-fx-pref-width: 80px;
+}
+
+.button:hover {
+    -fx-background-color: #E17B02;
+	-fx-text-fill: black;
+}
