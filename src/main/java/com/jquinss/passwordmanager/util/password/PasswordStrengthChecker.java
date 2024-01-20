@@ -24,13 +24,13 @@ public class PasswordStrengthChecker {
         return strength;
     }
 
-    private boolean passwordMeetsStrengthCriteria(Password pwd, PasswordStrengthCriteria criteria) {
-            return (pwd.getNumLowerCaseChars() >= criteria.getMinLowerCaseChars()
-                    && pwd.getNumUpperCaseChars() >= criteria.getMinUpperCaseChars()
-                    && pwd.getNumDigits() >= criteria.getMinDigits()
-                    && pwd.getNumSymbols() >= criteria.getMinSymbols()
-                    && pwd.getLength() >= criteria.getMinLength()
-                    && pwd.getMaxConsecutiveEqualChars() <= criteria.getMaxConsecutiveEqualChars());
+    private boolean passwordMeetsStrengthCriteria(Password password, PasswordStrengthCriteria criteria) {
+            return (password.getNumLowerCaseChars() >= criteria.getMinLowerCaseChars()
+                    && password.getNumUpperCaseChars() >= criteria.getMinUpperCaseChars()
+                    && password.getNumDigits() >= criteria.getMinDigits()
+                    && password.getNumSymbols() >= criteria.getMinSymbols()
+                    && password.getLength() >= criteria.getMinLength()
+                    && password.getMaxConsecutiveEqualChars() <= criteria.getMaxConsecutiveEqualChars());
     }
 
     private void initializeCriteria() {
@@ -44,11 +44,11 @@ public class PasswordStrengthChecker {
         addCriteria(PasswordStrength.NONE, new PasswordStrengthCriteria.Builder().minLength(1).build());
     }
 
-    public void addCriteria(PasswordStrength pwdStrength, PasswordStrengthCriteria pwdStrengthCriteria) {
-        criteria.put(pwdStrength, pwdStrengthCriteria);
+    public void addCriteria(PasswordStrength passwordStrength, PasswordStrengthCriteria passwordStrengthCriteria) {
+        criteria.put(passwordStrength, passwordStrengthCriteria);
     }
 
-    public PasswordStrengthCriteria getCriteria(PasswordStrength pwdStrength) {
-        return criteria.get(pwdStrength);
+    public PasswordStrengthCriteria getCriteria(PasswordStrength passwordStrength) {
+        return criteria.get(passwordStrength);
     }
 }
