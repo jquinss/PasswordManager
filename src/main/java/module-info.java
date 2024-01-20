@@ -4,6 +4,7 @@ module com.jquinss.passwordmanager {
     requires java.sql;
     requires net.synedra.validatorfx;
     requires org.xerial.sqlitejdbc;
+    requires org.bouncycastle.provider;
 
 
     opens com.jquinss.passwordmanager.app to javafx.fxml;
