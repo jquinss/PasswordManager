@@ -9,6 +9,8 @@ public class SettingsManager {
     private static final String DB_NAME = "database.db";
     private static final SettingsManager settingsManager = new SettingsManager();
 
+    private int passwordHashLength = 32;
+
     private SettingsManager() {}
 
     public static SettingsManager getInstance() {
@@ -21,5 +23,9 @@ public class SettingsManager {
 
     public String getDatabaseDir() {
         return Path.of(OSChecker.getOSDataDirectory(), APP_FOLDER_NAME, DATA_FOLDER_NAME).toString();
+    }
+
+    public int getPasswordHashLength() {
+        return passwordHashLength;
     }
 }
