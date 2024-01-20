@@ -44,7 +44,7 @@ public class DbUserDao implements UserDao {
     private User createUser(ResultSet resultSet) throws SQLException {
         User user = new User(resultSet.getInt("user_profile_id"),
                 resultSet.getString("user_name"),
-                resultSet.getString("password"));
+                resultSet.getBytes("password"));
         user.setPasswordSalt(resultSet.getBytes("password_salt"));
         user.setPublicKey(resultSet.getBytes("public_key"));
         user.setPrivateKey(resultSet.getBytes("private_key"));
@@ -66,7 +66,7 @@ public class DbUserDao implements UserDao {
                 "private_key_iv) VALUES (?,?,?,?,?,?)";
         PreparedStatement ps = conn.prepareStatement(statement, Statement.RETURN_GENERATED_KEYS);
         ps.setString(1, user.getName());
-        ps.setString(2, user.getPasswordHash());
+        ps.setBytes(2, user.getPasswordHash());
         ps.setBytes(3, user.getPasswordSalt());
         ps.setBytes(4, user.getPublicKey());
         ps.setBytes(5, user.getPrivateKey());

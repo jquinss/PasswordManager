@@ -6,7 +6,7 @@ import java.util.List;
 public class User {
     private int id;
     private String name;
-    private String passwordHash;
+    private byte[] passwordHash;
     private byte[] passwordSalt;
     private byte[] publicKey;
     private byte[] privateKey;
@@ -14,12 +14,12 @@ public class User {
 
     private List<PasswordEntity> passwordEntities = new ArrayList<>();
 
-    public User(int id, String name, String passwordHash) {
+    public User(int id, String name, byte[] passwordHash) {
         this(name, passwordHash);
         this.id = id;
     }
 
-    public User(String name, String password) {
+    public User(String name, byte[] password) {
         this.name = name;
         this.passwordHash = password;
     }
@@ -28,11 +28,11 @@ public class User {
         return id;
     }
 
-    public String getPasswordHash() {
+    public byte[] getPasswordHash() {
         return passwordHash;
     }
 
-    public void setPasswordHash(String passwordHash) {
+    public void setPasswordHash(byte[] passwordHash) {
         this.passwordHash = passwordHash;
     }
 
