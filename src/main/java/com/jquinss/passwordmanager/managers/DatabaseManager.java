@@ -17,7 +17,7 @@ import java.util.Optional;
 public class DatabaseManager {
     private static final String CREATE_TABLES_STATEMENT = """
             CREATE TABLE IF NOT EXISTS user (user_id INTEGER PRIMARY KEY, user_name TEXT UNIQUE NOT NULL,
-            password TEXT NOT NULL, password_salt BLOB, public_key BLOB, private_key BLOB, private_key_iv BLOB);
+            password BLOB NOT NULL, password_salt BLOB NOT NULL, public_key BLOB NOT NULL, private_key BLOB NOT NULL, private_key_iv BLOB NOT NULL);
             CREATE TABLE IF NOT EXISTS folder (folder_id INTEGER PRIMARY KEY, parent_folder_id INTEGER folder_name TEXT NOT NULL);
             CREATE TABLE IF NOT EXISTS password_entity (password_entity_id INTEGER PRIMARY KEY, name TEXT NOT NULL, 
             username TEXT NOT NULL, password TEXT NOT NULL, URL TEXT, comment TEXT, expires INTEGER NOT NULL DEFAULT 0,
