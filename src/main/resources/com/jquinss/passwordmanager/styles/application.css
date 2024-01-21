@@ -9,6 +9,11 @@
 	-fx-text-fill: white;
 }
 
+#error-message {
+    -fx-font-size: 8pt;
+    -fx-text-fill: f0cc69;
+}
+
 /* Styles for the text field */
 .text-field {
 	-fx-text-fill: white;
