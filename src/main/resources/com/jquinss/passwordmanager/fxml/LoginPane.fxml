@@ -39,13 +39,14 @@
             </GridPane>
             <VBox nodeOrientation="RIGHT_TO_LEFT" prefHeight="71.0" prefWidth="400.0" spacing="10.0">
                <children>
-                  <Button fx:id="loginButton" mnemonicParsing="false" onAction="#authenticateUser" text="Log In" />
-                  <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
-                     <children>
-                        <Button mnemonicParsing="false" onAction="#signUpUser" text="Sign Up" />
-                        <Label text="Don't you have an account?" />
-                     </children>
-                  </HBox>
+                   <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="30.0">
+                        <Button fx:id="loginButton" mnemonicParsing="false" onAction="#authenticateUser" text=" Log In" />
+                        <Label id="error-message" fx:id="loginMessage" text="Placeholder" visible="false" />
+                   </HBox>
+                   <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
+                       <Button mnemonicParsing="false" onAction="#signUpUser" text="Sign Up"/>
+                       <Label text="Don't you have an account?"/>
+                   </HBox>
                </children>
             </VBox>
          </children>
