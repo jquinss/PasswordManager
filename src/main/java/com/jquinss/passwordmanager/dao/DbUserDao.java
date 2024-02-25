@@ -28,21 +28,32 @@ public class DbUserDao implements UserDao {
     public void add(User user) throws SQLException {
         try (Connection conn = dataSource.getConnection();
              PreparedStatement ps = buildAddUserPreparedStatement(conn, user);) {
+
+            conn.setAutoCommit(false);
+            ps.executeUpdate();
+
+            Statement statement = conn.createStatement();
+
+
+            /*
             int rows = ps.executeUpdate();
             if (rows == 0) {
                 throw new SQLException("Creating user failed");
             }
+            */
 
-            try (ResultSet keys = ps.getGeneratedKeys()) {
-                if (keys.next()) {
-                    user.setId(keys.getInt(1));
+            try (ResultSet resultSet = statement.executeQuery("SELECT last_insert_rowid()")) {
+                //ResultSetMetaData metaData = resultSet.getMetaData();
+                if (resultSet.next()) {
+                    user.setId(resultSet.getInt(1));
                 }
+                conn.commit();
             }
         }
     }
 
     private User createUser(ResultSet resultSet) throws SQLException {
-        User user = new User(resultSet.getInt("user_profile_id"),
+        User user = new User(resultSet.getInt("user_id"),
                 resultSet.getString("user_name"),
                 resultSet.getBytes("password"));
         user.setPasswordSalt(resultSet.getBytes("password_salt"));
@@ -62,9 +73,9 @@ public class DbUserDao implements UserDao {
     }
 
     private PreparedStatement buildAddUserPreparedStatement(Connection conn, User user) throws SQLException {
-        String statement = "INSERT INTO user_profile (user_name, password, password_salt, public_key, private_key, " +
+        String statement = "INSERT INTO user (user_name, password, password_salt, public_key, private_key, " +
                 "private_key_iv) VALUES (?,?,?,?,?,?)";
-        PreparedStatement ps = conn.prepareStatement(statement, Statement.RETURN_GENERATED_KEYS);
+        PreparedStatement ps = conn.prepareStatement(statement);
         ps.setString(1, user.getName());
         ps.setBytes(2, user.getPasswordHash());
         ps.setBytes(3, user.getPasswordSalt());
