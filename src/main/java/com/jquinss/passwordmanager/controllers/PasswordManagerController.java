@@ -27,15 +27,32 @@ public class PasswordManagerController {
         stage.setTitle("Log on");
         AnchorPane root = (AnchorPane) fxmlLoader.load();
         final LoginPaneController controller = fxmlLoader.getController();
-        //controller.setStage(primaryStage);
+        controller.setPasswordManagerController(this);
         Scene scene = new Scene(root, 560, 400);
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
         stage.setScene(scene);
         stage.show();
     }
 
-    void loadRegistrationPane() {
+    void loadSignUpPane() throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/jquinss/passwordmanager/fxml/SignUpPane.fxml"));
+        stage.setTitle("Sign Up");
+        AnchorPane root = (AnchorPane) fxmlLoader.load();
+        final SignUpPaneController controller = fxmlLoader.getController();
+        controller.setPasswordManagerController(this);
+        Scene scene = new Scene(root, 560, 400);
+        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
+        stage.setScene(scene);
+        stage.show();
+    }
 
+    void loadPasswordManagerPane() {
+        // TODO
+        System.out.println("Loading Password Manager Pane");
+    }
+
+    Stage getStage() {
+        return stage;
     }
 
     private void initializeDatabase() {
