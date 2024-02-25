@@ -18,7 +18,7 @@ public class Authenticator {
         if (optional.isPresent()) {
             User user = optional.get();
             byte[] salt = user.getPasswordSalt();
-            int hashLength = SettingsManager.getInstance().getPasswordHashLength();
+            int hashLength = SettingsManager.getInstance().getPasswordHashLengthInBytes();
 
             byte[] computedPwdHash = CryptoUtils.getHashFromString(password, hashLength, salt);
             byte[] pwdHash = user.getPasswordHash();
