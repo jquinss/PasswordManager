@@ -9,9 +9,18 @@
 	-fx-text-fill: white;
 }
 
-#error-message {
+.title {
+    -fx-font-size: 11pt;
+}
+
+.error-message {
     -fx-font-size: 8pt;
-    -fx-text-fill: f0cc69;
+    -fx-text-fill: f59b42;
+}
+
+.success-message {
+    -fx-font-size: 8pt;
+    -fx-text-fill: yellow;
 }
 
 /* Styles for the text field */
@@ -33,10 +42,25 @@
 	-fx-background-color: grey;
 	-fx-text-fill: white;
 	-fx-border-width: 1;
-	-fx-pref-width: 80px;
+	/* -fx-pref-width: 100px; */
 }
 
 .button:hover {
     -fx-background-color: #E17B02;
 	-fx-text-fill: black;
+}
+
+.equal-size-button {
+    -fx-pref-width:90px;
+}
+
+.link-style-button {
+    -fx-text-fill: white;
+    -fx-background-color: transparent;
+    -fx-underline: true;
+}
+
+.link-style-button:hover {
+    -fx-background-color: transparent;
+    -fx-text-fill: #E17B02;
 }
