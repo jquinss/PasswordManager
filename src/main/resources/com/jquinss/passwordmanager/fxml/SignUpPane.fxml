@@ -12,6 +12,8 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0"
             prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.jquinss.passwordmanager.controllers.SignUpPaneController">
@@ -45,6 +47,11 @@
                       GridPane.rowIndex="3"/>
             <Label text="Generate public and private key-pair" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
             <TextField fx:id="publicKeyTextField" disable="true" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+            <ImageView fx:id="publicKeyQuestionMarkImageView" fitHeight="12.0" fitWidth="16.0" GridPane.columnIndex="2" GridPane.rowIndex="4">
+                <image>
+                    <Image url="@../images/question_mark.png" />
+                </image>
+            </ImageView>
             <Button fx:id="publicKeySelectButton" disable="true" mnemonicParsing="false"
                     onAction="#selectPublicKey" text="Public Key" GridPane.rowIndex="4"
                     styleClass="equal-size-button"/>
@@ -54,6 +61,11 @@
             <HBox prefHeight="100.0" prefWidth="200.0"/>
             <TextField fx:id="privateKeyTextField" disable="true" editable="false" GridPane.columnIndex="1"
                        GridPane.rowIndex="5"/>
+            <ImageView fx:id="privateKeyQuestionMarkImageView" fitHeight="12.0" fitWidth="16.0" GridPane.columnIndex="2" GridPane.rowIndex="5">
+                <image>
+                    <Image url="@../images/question_mark.png" />
+                </image>
+            </ImageView>
         </GridPane>
         <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="50.0">
             <Button mnemonicParsing="false" onAction="#loadLoginMenu" text="Back to Login Menu"
