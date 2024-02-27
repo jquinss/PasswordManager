@@ -14,6 +14,7 @@ import com.jquinss.passwordmanager.util.password.PasswordStrengthCriteria;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import net.synedra.validatorfx.Check;
 import net.synedra.validatorfx.Validator;
@@ -33,6 +34,8 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class SignUpPaneController implements Initializable {
+    public ImageView publicKeyQuestionMarkImageView;
+    public ImageView privateKeyQuestionMarkImageView;
     @FXML
     private TextField usernameTextField;
     @FXML
@@ -276,10 +279,20 @@ public class SignUpPaneController implements Initializable {
         privateKeyTextField.clear();
     }
 
+    private void setToolTips() {
+        setToolTipOnImageView(publicKeyQuestionMarkImageView, "Select a PEM encoded public key");
+        setToolTipOnImageView(privateKeyQuestionMarkImageView, "Select a PEM encoded private key");
+    }
+
+    private void setToolTipOnImageView(ImageView imageView, String text) {
+        Tooltip.install(imageView, new Tooltip(text));
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         initializeBindings();
         initializeValidator();
         createAccountButton.disableProperty().bind(validator.containsErrorsProperty());
+        setToolTips();
     }
 }
