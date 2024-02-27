@@ -19,11 +19,11 @@ This a JavaFX desktop application for managing password. The application is inte
 
 
 ## Features
-
-
-### To Do
 * Users can register accounts.
 * Users can log in with username and password.
+
+### To Do
+
 * Users can create password entities that have different properties (e.g. name, username, password, url, etc.)
 * Users can organize password entities in separate folders.
 * Users can remove password entities.
