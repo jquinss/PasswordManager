@@ -18,9 +18,9 @@ public class DatabaseManager {
     private static final String CREATE_TABLES_STATEMENT = """
             CREATE TABLE IF NOT EXISTS user (user_id INTEGER PRIMARY KEY, user_name TEXT UNIQUE NOT NULL,
             password BLOB NOT NULL, password_salt BLOB NOT NULL, public_key BLOB NOT NULL, private_key BLOB NOT NULL, private_key_iv BLOB NOT NULL);
-            CREATE TABLE IF NOT EXISTS folder (folder_id INTEGER PRIMARY KEY, parent_folder_id INTEGER folder_name TEXT NOT NULL);
+            CREATE TABLE IF NOT EXISTS folder (folder_id INTEGER PRIMARY KEY, parent_folder_id INTEGER folder_name TEXT NOT NULL, description TEXT);
             CREATE TABLE IF NOT EXISTS password_entity (password_entity_id INTEGER PRIMARY KEY, name TEXT NOT NULL, 
-            username TEXT NOT NULL, password TEXT NOT NULL, URL TEXT, comment TEXT, expires INTEGER NOT NULL DEFAULT 0,
+            username TEXT NOT NULL, password TEXT NOT NULL, URL TEXT, description TEXT, expires INTEGER NOT NULL DEFAULT 0,
             expiration_date TEXT, user_id INTEGER NOT NULL, folder_id INTEGER NOT NULL,
             password_policy_id INTEGER NOT NULL, FOREIGN KEY(user_id) REFERENCES user(user_id),
             FOREIGN KEY(folder_id) REFERENCES folder(folder_id)), FOREIGN KEY(password_policy_id) REFERENCES password_policy(password_policy_id);
