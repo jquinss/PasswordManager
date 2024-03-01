@@ -1,37 +1,17 @@
 package com.jquinss.passwordmanager.data;
 
-public class Folder {
-    private int id;
-    private int parentId;
-    private String name;
+public class Folder extends DataEntity {
+    private int parentFolderId;
 
-    public Folder(int id, int parentId, String name) {
-        this.id = id;
-        this.parentId = parentId;
-        this.name = name;
+    public Folder(int id, String name) {
+        super(id, name);
     }
 
-    public int getId() {
-        return id;
+    public int getParentFolderId() {
+        return parentFolderId;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public int getParentId() {
-        return parentId;
-    }
-
-    public void setParentId(int parentId) {
-        this.parentId = parentId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    public void setParentFolderId(int parentFolderId) {
+        this.parentFolderId = parentFolderId;
     }
 }
