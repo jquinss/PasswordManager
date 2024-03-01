@@ -2,40 +2,29 @@ package com.jquinss.passwordmanager.data;
 
 import java.time.LocalDateTime;
 
-public class PasswordEntity {
+public class PasswordEntity extends DataEntity {
     // TODO
-    private int id;
-    private int userProfileId;
+    private int userId;
     private int folderId;
     private int passwordPolicyId;
-    private String name;
     private String username;
     private String password;
-    private String comment = "";
     private boolean passwordExpires = false;
     private LocalDateTime expirationDate = LocalDateTime.now().plusMonths(6);
 
-    public PasswordEntity(int id, String name, String username, String password) {
-        this.id = id;
-        this.name = name;
+    public PasswordEntity(int id, int folderId, String name, String username, String password) {
+        super(id, name);
+        this.folderId = folderId;
         this.username = username;
         this.password = password;
     }
 
-    public int getId() {
-        return id;
+    public int getUserId() {
+        return userId;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public int getUserProfileId() {
-        return userProfileId;
-    }
-
-    public void setUserProfileId(int userProfileId) {
-        this.userProfileId = userProfileId;
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
     public int getFolderId() {
@@ -54,14 +43,6 @@ public class PasswordEntity {
         this.passwordPolicyId = passwordPolicyId;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getUsername() {
         return username;
     }
@@ -76,14 +57,6 @@ public class PasswordEntity {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public String getComment() {
-        return comment;
-    }
-
-    public void setComment(String comment) {
-        this.comment = comment;
     }
 
     public boolean isPasswordExpires() {
