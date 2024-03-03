@@ -43,6 +43,9 @@ public class LoginPaneController {
         catch (SQLException e) {
             showErrorMessage("Error: Cannot connect to the database");
         }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
     
     @FXML
