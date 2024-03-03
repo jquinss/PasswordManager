@@ -9,6 +9,7 @@ public class PasswordEntity extends DataEntity {
     private int passwordPolicyId;
     private String username;
     private String password;
+    private String url;
     private boolean passwordExpires = false;
     private LocalDateTime expirationDate = LocalDateTime.now().plusMonths(6);
 
@@ -57,6 +58,14 @@ public class PasswordEntity extends DataEntity {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     public boolean isPasswordExpires() {
