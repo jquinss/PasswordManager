@@ -1,8 +1,15 @@
 /* Styles for the root node */
+
 .root {
     -fx-background-color: #414743;
 }
 
+.pane-background {
+    -fx-background-color: #414743;
+}
+
+
+*/
 /* Styles for labels */
 .label {
 	-fx-font-size: 10pt;
