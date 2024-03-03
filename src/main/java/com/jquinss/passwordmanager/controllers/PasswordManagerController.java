@@ -5,6 +5,7 @@ import com.jquinss.passwordmanager.managers.SettingsManager;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -46,9 +47,16 @@ public class PasswordManagerController {
         stage.show();
     }
 
-    void loadPasswordManagerPane() {
-        // TODO
-        System.out.println("Loading Password Manager Pane");
+    void loadPasswordManagerPane() throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/jquinss/passwordmanager/fxml/PasswordManagerPane.fxml"));
+        stage.setTitle("Password Manager");
+        VBox root = (VBox) fxmlLoader.load();
+        final PasswordManagerPaneController controller = fxmlLoader.getController();
+        controller.setPasswordManagerController(this);
+        Scene scene = new Scene(root, 1058, 590);
+        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
+        stage.setScene(scene);
+        stage.show();
     }
 
     Stage getStage() {
