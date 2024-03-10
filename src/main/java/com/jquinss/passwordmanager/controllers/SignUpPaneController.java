@@ -2,7 +2,7 @@ package com.jquinss.passwordmanager.controllers;
 
 import com.jquinss.passwordmanager.data.User;
 import com.jquinss.passwordmanager.exceptions.InvalidKeyPairException;
-import com.jquinss.passwordmanager.exceptions.LoadPemKeyPairException;
+import com.jquinss.passwordmanager.exceptions.LoadKeyPairException;
 import com.jquinss.passwordmanager.exceptions.UserAlreadyExistsException;
 import com.jquinss.passwordmanager.managers.DatabaseManager;
 import com.jquinss.passwordmanager.managers.SettingsManager;
@@ -104,7 +104,7 @@ public class SignUpPaneController implements Initializable {
             showSuccessMessage("The account has been created");
             clearFields();
         }
-        catch (UserAlreadyExistsException | LoadPemKeyPairException | InvalidKeyPairException e) {
+        catch (UserAlreadyExistsException | LoadKeyPairException | InvalidKeyPairException e) {
             showErrorMessage(e.getMessage());
         }
         catch (NoSuchAlgorithmException | InvalidKeySpecException | InvalidAlgorithmParameterException | SQLException |
@@ -113,7 +113,7 @@ public class SignUpPaneController implements Initializable {
         }
     }
 
-    private KeyPair getKeyPair() throws LoadPemKeyPairException, NoSuchAlgorithmException {
+    private KeyPair getKeyPair() throws LoadKeyPairException, NoSuchAlgorithmException {
         if (generateKeyPairCheckBox.isSelected()) {
             return CryptoUtils.generateKeyPair(SettingsManager.getInstance().getKeyPairAlgorithm(),
                     SettingsManager.getInstance().getKeyPairLengthInBits());
