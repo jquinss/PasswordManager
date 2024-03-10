@@ -39,7 +39,7 @@
         </GridPane>
         <VBox nodeOrientation="RIGHT_TO_LEFT" prefHeight="71.0" prefWidth="400.0" spacing="10.0">
             <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="30.0">
-                <Button fx:id="loginButton" mnemonicParsing="false" onAction="#authenticateUser" text="Log In"
+                <Button mnemonicParsing="false" onAction="#authenticateUser" text="Log In"
                         styleClass="equal-size-button"/>
                 <Label fx:id="message" text="Placeholder" visible="false"/>
             </HBox>
