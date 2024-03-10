@@ -1,10 +1,8 @@
 package com.jquinss.passwordmanager.util.misc;
 
-import com.jquinss.passwordmanager.exceptions.LoadPemKeyPairException;
-import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
+import com.jquinss.passwordmanager.exceptions.LoadKeyPairException;
 import org.bouncycastle.crypto.generators.Argon2BytesGenerator;
 import org.bouncycastle.crypto.params.Argon2Parameters;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.util.io.pem.PemObject;
 import org.bouncycastle.util.io.pem.PemReader;
 
@@ -12,18 +10,32 @@ import javax.crypto.*;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.security.*;
 import java.security.spec.*;
 import java.util.Base64;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class CryptoUtils {
-    private CryptoUtils() {}
+    public static class AsymmetricCrypto {
+        private final Cipher encryptionCipher;
+        private final Cipher decryptionCipher;
+        public AsymmetricCrypto(String algorithm, KeyPair keypair) throws NoSuchPaddingException, NoSuchAlgorithmException,
+                InvalidKeyException {
+            encryptionCipher = initializeCipher(algorithm,Cipher.ENCRYPT_MODE, keypair.getPublic());
+            decryptionCipher = initializeCipher(algorithm, Cipher.DECRYPT_MODE, keypair.getPrivate());
+        }
+
+        public String encrypt(String text) throws IllegalBlockSizeException, BadPaddingException {
+            return CryptoUtils.encrypt(text, encryptionCipher);
+        }
+
+        public String decrypt(String text) throws IllegalBlockSizeException, BadPaddingException {
+            return CryptoUtils.decrypt(text, decryptionCipher);
+        }
+    }
     public static byte[] generateSaltBytes(int numBytes) {
         SecureRandom secureRandom = new SecureRandom();
         byte[] salt = new byte[numBytes];
@@ -112,34 +124,34 @@ public class CryptoUtils {
             throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException,
             InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
         Cipher cipher = initializeCipher(algorithm, Cipher.DECRYPT_MODE, key, iv);
-        return decrypt(cipher, cipherText);
+        return decrypt(cipherText, cipher);
     }
 
     public static byte[] decrypt(byte[] cipherText, String algorithm, Key key, IvParameterSpec iv)
             throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException,
             InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
         Cipher cipher = initializeCipher(algorithm, Cipher.DECRYPT_MODE, key, iv);
-        return decrypt(cipher, cipherText);
+        return decrypt(cipherText, cipher);
     }
 
     public static String decrypt(String cipherText, String algorithm, Key key) throws NoSuchPaddingException,
             NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
         Cipher cipher = initializeCipher(algorithm, Cipher.DECRYPT_MODE, key);
-        return decrypt(cipher, cipherText);
+        return decrypt(cipherText, cipher);
     }
 
     public static byte[] decrypt(byte[] cipherText, String algorithm, Key key) throws NoSuchPaddingException,
             NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
         Cipher cipher = initializeCipher(algorithm, Cipher.DECRYPT_MODE, key);
-        return decrypt(cipher, cipherText);
+        return decrypt(cipherText, cipher);
     }
 
-    private static String decrypt(Cipher cipher, String cipherText) throws IllegalBlockSizeException, BadPaddingException {
+    private static String decrypt(String cipherText, Cipher cipher) throws IllegalBlockSizeException, BadPaddingException {
         byte[] plainText = cipher.doFinal(Base64.getDecoder().decode(cipherText));
         return new String(plainText);
     }
 
-    private static byte[] decrypt(Cipher cipher, byte[] cipherText) throws IllegalBlockSizeException, BadPaddingException {
+    private static byte[] decrypt(byte[] cipherText, Cipher cipher) throws IllegalBlockSizeException, BadPaddingException {
         return cipher.doFinal(cipherText);
     }
 
@@ -162,27 +174,32 @@ public class CryptoUtils {
         return keyPairGenerator.generateKeyPair();
     }
 
-    public static KeyPair loadKeyPairFromPEMFile(String publicKeyPath, String privateKeyPath) throws LoadPemKeyPairException {
+    public static KeyPair  loadKeyPairFromPEMFile(String publicKeyPath, String privateKeyPath) throws LoadKeyPairException {
         try (FileReader publicKeyFileReader = new FileReader(publicKeyPath);
              FileReader privateKeyFileReader = new FileReader(privateKeyPath);
              PemReader publicPEMReader = new PemReader(publicKeyFileReader);
              PemReader privatePemReader = new PemReader(privateKeyFileReader)) {
-
-            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
 
             PemObject publicPemObject = publicPEMReader.readPemObject();
             PemObject privatePemObject = privatePemReader.readPemObject();
             byte[] publicContent = publicPemObject.getContent();
             byte[] privateContent = privatePemObject.getContent();
 
-            X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(publicContent);
-            PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(privateContent);
 
-            return new KeyPair(keyFactory.generatePublic(publicKeySpec), keyFactory.generatePrivate(privateKeySpec));
+            return loadKeyPair(publicContent, privateContent, "RSA");
         }
         catch (NoSuchAlgorithmException | IOException | InvalidKeySpecException e) {
-            throw new LoadPemKeyPairException("Error loading key-pair from file");
+            throw new LoadKeyPairException("Error loading key-pair from file");
         }
+    }
+
+    public static KeyPair loadKeyPair(byte[] publicKey, byte[] privateKey, String algorithm) throws NoSuchAlgorithmException,
+            InvalidKeySpecException {
+        KeyFactory keyFactory = KeyFactory.getInstance(algorithm);
+        X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(publicKey);
+        PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(privateKey);
+
+        return new KeyPair(keyFactory.generatePublic(publicKeySpec), keyFactory.generatePrivate(privateKeySpec));
     }
 
     public static boolean isValidKeyPair(KeyPair keyPair) throws NoSuchAlgorithmException, InvalidKeyException,
