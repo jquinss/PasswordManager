@@ -1,7 +1,10 @@
 package com.jquinss.passwordmanager.exceptions;
 
-public class LoadPemKeyPairException extends Exception {
-    public LoadPemKeyPairException(String error) {
+public class LoadKeyPairException extends Exception {
+    public LoadKeyPairException() {
+        super();
+    }
+    public LoadKeyPairException(String error) {
         super(error);
     }
 }
