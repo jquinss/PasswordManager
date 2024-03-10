@@ -2,15 +2,20 @@ package com.jquinss.passwordmanager.controllers;
 
 import com.jquinss.passwordmanager.managers.DatabaseManager;
 import com.jquinss.passwordmanager.managers.SettingsManager;
+import com.jquinss.passwordmanager.util.misc.CryptoUtils;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import javax.crypto.NoSuchPaddingException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.security.InvalidKeyException;
+import java.security.KeyPair;
+import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.util.Objects;
 
@@ -47,12 +52,25 @@ public class PasswordManagerController {
         stage.show();
     }
 
-    void loadPasswordManagerPane() throws IOException {
+    void loadPasswordManagerPane(String username, KeyPair keyPair) throws IOException, NoSuchPaddingException,
+            NoSuchAlgorithmException, InvalidKeyException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/jquinss/passwordmanager/fxml/PasswordManagerPane.fxml"));
         stage.setTitle("Password Manager");
-        VBox root = (VBox) fxmlLoader.load();
-        final PasswordManagerPaneController controller = fxmlLoader.getController();
+        CryptoUtils.AsymmetricCrypto asymmetricCrypto = new CryptoUtils.AsymmetricCrypto(SettingsManager.getInstance().getKeyPairAlgorithm(), keyPair);
+        PasswordManagerPaneController controller = new PasswordManagerPaneController(username, asymmetricCrypto);
         controller.setPasswordManagerController(this);
+        fxmlLoader.setControllerFactory(controllerClass -> {
+            if (controllerClass == PasswordManagerPaneController.class) {
+                return controller;
+            }
+
+            if (controllerClass == PasswordEntityEditorPaneController.class) {
+                return new PasswordEntityEditorPaneController();
+            }
+
+            return null;
+        });
+        VBox root = (VBox) fxmlLoader.load();
         Scene scene = new Scene(root, 1058, 590);
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
         stage.setScene(scene);
