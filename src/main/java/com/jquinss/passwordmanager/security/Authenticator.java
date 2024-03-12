@@ -10,22 +10,13 @@ import java.util.Arrays;
 import java.util.Optional;
 
 public class Authenticator {
-    public boolean authenticate(String username, String password) throws SQLException {
-        boolean validCredentials = false;
+    public boolean authenticate(User user, String password) throws SQLException {
+        byte[] salt = user.getPasswordSalt();
+        int hashLength = SettingsManager.getInstance().getPasswordHashLengthInBytes();
 
-        Optional<User> optional = DatabaseManager.getInstance().getUserByName(username);
+        byte[] computedPwdHash = CryptoUtils.getHashFromString(password, hashLength, salt);
+        byte[] pwdHash = user.getPasswordHash();
 
-        if (optional.isPresent()) {
-            User user = optional.get();
-            byte[] salt = user.getPasswordSalt();
-            int hashLength = SettingsManager.getInstance().getPasswordHashLengthInBytes();
-
-            byte[] computedPwdHash = CryptoUtils.getHashFromString(password, hashLength, salt);
-            byte[] pwdHash = user.getPasswordHash();
-
-            validCredentials = Arrays.equals(computedPwdHash, pwdHash);
-        }
-
-        return validCredentials;
+        return Arrays.equals(computedPwdHash, pwdHash);
     }
 }
