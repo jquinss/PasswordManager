@@ -39,15 +39,16 @@ public class LoginPaneController {
         String password = passwordField.getText();
 
         try {
-            boolean validCredentials = authenticator.authenticate(username, password);
+            Optional<User> optional = DatabaseManager.getInstance().getUserByName(username);
+            if (optional.isPresent()) {
+                User user = optional.get();
+                boolean validCredentials = authenticator.authenticate(user, password);
 
-            if (validCredentials) {
-                hideMessage();
-                showSuccessMessage("Authentication successful");
-                Optional<KeyPair> result = loadKeyPair(username, password);
-                if (result.isPresent()) {
-                    KeyPair keyPair = result.get();
-                    passwordManagerController.loadPasswordManagerPane(username, keyPair);
+                if (validCredentials) {
+                    hideMessage();
+                    showSuccessMessage("Authentication successful");
+                    KeyPair keyPair = loadKeyPair(user, password);
+                    passwordManagerController.loadPasswordManagerPane(user, keyPair);
                 }
                 else {
                     throw new LoadKeyPairException();
@@ -104,12 +105,8 @@ public class LoginPaneController {
         passwordField.clear();
     }
 
-    private Optional<KeyPair> loadKeyPair(String username, String password) throws SQLException, NoSuchAlgorithmException, InvalidKeySpecException,
+    private KeyPair loadKeyPair(User user, String password) throws SQLException, NoSuchAlgorithmException, InvalidKeySpecException,
             InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
-        Optional<User> result = DatabaseManager.getInstance().getUserByName(username);
-        KeyPair keyPair = null;
-        if (result.isPresent()) {
-            User user = result.get();
             byte[] publicKey = user.getPublicKey();
             byte[] encryptedPrivateKey = user.getPrivateKey();
 
@@ -119,8 +116,6 @@ public class LoginPaneController {
             byte[] privateKey = CryptoUtils.decrypt(encryptedPrivateKey, SettingsManager.getInstance().getSymmetricEncryptionAlgorithm(),
                     key, ivParameterSpec);
 
-            keyPair = CryptoUtils.loadKeyPair(publicKey, privateKey, SettingsManager.getInstance().getKeyPairAlgorithm());
-        }
-        return Optional.ofNullable(keyPair);
+        return CryptoUtils.loadKeyPair(publicKey, privateKey, SettingsManager.getInstance().getKeyPairAlgorithm());
     }
 }
