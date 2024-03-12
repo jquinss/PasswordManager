@@ -1,6 +1,7 @@
 package com.jquinss.passwordmanager.controllers;
 
 import com.jquinss.passwordmanager.data.DataEntity;
+import com.jquinss.passwordmanager.data.User;
 import com.jquinss.passwordmanager.security.UserSession;
 import com.jquinss.passwordmanager.util.misc.CryptoUtils;
 import javafx.fxml.FXML;
@@ -17,8 +18,8 @@ public class PasswordManagerPaneController {
     private final CryptoUtils.AsymmetricCrypto asymmetricCrypto;
     private PasswordManagerController passwordManagerController;
 
-    public PasswordManagerPaneController(String username, CryptoUtils.AsymmetricCrypto asymmetricCrypto) {
-        userSession.initiate(username);
+    public PasswordManagerPaneController(User user, CryptoUtils.AsymmetricCrypto asymmetricCrypto) {
+        userSession.initiate(user);
         this.asymmetricCrypto = asymmetricCrypto;
     }
 
