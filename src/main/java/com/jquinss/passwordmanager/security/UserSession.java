@@ -1,5 +1,7 @@
 package com.jquinss.passwordmanager.security;
 
+import com.jquinss.passwordmanager.data.User;
+
 import java.util.HashMap;
 
 public class UserSession {
@@ -13,8 +15,9 @@ public class UserSession {
         return sessionVariables.get(name);
     }
 
-    public void initiate(String username) {
-        sessionVariables.put("currentUser", username);
+    public void initiate(User user) {
+        sessionVariables.put("currentUser", user.getName());
+        sessionVariables.put("currentUserId", String.valueOf(user.getId()));
     }
 
     public void terminate() {
@@ -23,5 +26,9 @@ public class UserSession {
 
     public String getCurrentUser() {
         return sessionVariables.get("currentUser");
+    }
+
+    public int getCurrentUserId() {
+        return Integer.parseInt(sessionVariables.get("currentUserId"));
     }
 }
