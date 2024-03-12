@@ -1,5 +1,6 @@
 package com.jquinss.passwordmanager.controllers;
 
+import com.jquinss.passwordmanager.data.User;
 import com.jquinss.passwordmanager.managers.DatabaseManager;
 import com.jquinss.passwordmanager.managers.SettingsManager;
 import com.jquinss.passwordmanager.util.misc.CryptoUtils;
@@ -52,12 +53,12 @@ public class PasswordManagerController {
         stage.show();
     }
 
-    void loadPasswordManagerPane(String username, KeyPair keyPair) throws IOException, NoSuchPaddingException,
+    void loadPasswordManagerPane(User user, KeyPair keyPair) throws IOException, NoSuchPaddingException,
             NoSuchAlgorithmException, InvalidKeyException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/jquinss/passwordmanager/fxml/PasswordManagerPane.fxml"));
         stage.setTitle("Password Manager");
         CryptoUtils.AsymmetricCrypto asymmetricCrypto = new CryptoUtils.AsymmetricCrypto(SettingsManager.getInstance().getKeyPairAlgorithm(), keyPair);
-        PasswordManagerPaneController controller = new PasswordManagerPaneController(username, asymmetricCrypto);
+        PasswordManagerPaneController controller = new PasswordManagerPaneController(user, asymmetricCrypto);
         controller.setPasswordManagerController(this);
         fxmlLoader.setControllerFactory(controllerClass -> {
             if (controllerClass == PasswordManagerPaneController.class) {
