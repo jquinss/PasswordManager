@@ -4,9 +4,12 @@ import com.jquinss.passwordmanager.data.PasswordEntity;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 public interface PasswordEntityDao {
-    List<PasswordEntity> getByUserId(int id) throws SQLException;
+    Optional<PasswordEntity> getById(int id) throws SQLException;
+
+    List<PasswordEntity> getAllByUserId(int id) throws SQLException;
 
     void add(PasswordEntity pwdEntity) throws SQLException;
 
