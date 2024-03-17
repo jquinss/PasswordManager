@@ -8,15 +8,20 @@ public class PasswordEntity extends DataEntity {
     private int folderId;
     private int passwordPolicyId;
     private String username;
+    private String emailAddress;
     private String password;
     private String url;
     private boolean passwordExpires = false;
     private LocalDateTime expirationDate = LocalDateTime.now().plusMonths(6);
 
-    public PasswordEntity(int id, int folderId, String name, String username, String password) {
-        super(id, name);
+    public PasswordEntity(int id, int folderId, String name, String password) {
+        this(folderId, name, password);
+        this.password = password;
+    }
+
+    public PasswordEntity(int folderId, String name, String password) {
+        super(name);
         this.folderId = folderId;
-        this.username = username;
         this.password = password;
     }
 
@@ -50,6 +55,14 @@ public class PasswordEntity extends DataEntity {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getEmailAddress() {
+        return emailAddress;
+    }
+
+    public void setEmailAddress(String emailAddress) {
+        this.emailAddress = emailAddress;
     }
 
     public String getPassword() {
