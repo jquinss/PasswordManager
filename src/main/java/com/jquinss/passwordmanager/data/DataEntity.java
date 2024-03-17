@@ -6,7 +6,11 @@ public abstract class DataEntity {
     private String description = "";
 
     public DataEntity(int id, String name) {
+        this(name);
         this.id = id;
+    }
+
+    public DataEntity(String name) {
         this.name = name;
     }
 
