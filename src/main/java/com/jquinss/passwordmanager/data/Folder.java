@@ -7,6 +7,10 @@ public class Folder extends DataEntity {
         super(id, name);
     }
 
+    public Folder(String name) {
+        super(name);
+    }
+
     public int getParentFolderId() {
         return parentFolderId;
     }
