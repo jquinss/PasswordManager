@@ -77,7 +77,7 @@ public class DbPasswordEntityDao implements PasswordEntityDao {
     @Override
     public void delete(PasswordEntity pwdEntity) throws SQLException {
         try (Connection conn = dataSource.getConnection();
-            PreparedStatement ps = buildDeletePasswordEntityStatement(conn, pwdEntity.getId())) {
+            PreparedStatement ps = buildDeletePasswordEntityPreparedStatement(conn, pwdEntity.getId())) {
             ps.executeUpdate();
         }
     }
@@ -150,7 +150,7 @@ public class DbPasswordEntityDao implements PasswordEntityDao {
         return pwdEntity;
     }
 
-    private PreparedStatement buildDeletePasswordEntityStatement(Connection conn, int id) throws SQLException {
+    private PreparedStatement buildDeletePasswordEntityPreparedStatement(Connection conn, int id) throws SQLException {
         PreparedStatement ps = conn.prepareStatement("DELETE FROM password_entity WHERE password_entity_id = ?");
         ps.setInt(1, id);
 
