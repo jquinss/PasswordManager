@@ -1,6 +1,7 @@
 package com.jquinss.passwordmanager.managers;
 
 import com.jquinss.passwordmanager.dao.DbUserDao;
+import com.jquinss.passwordmanager.dao.UserDao;
 import com.jquinss.passwordmanager.data.User;
 import com.jquinss.passwordmanager.factories.DataSourceFactory;
 import org.sqlite.SQLiteDataSource;
@@ -35,7 +36,7 @@ public class DatabaseManager {
 
     private static final String databaseURL = "jdbc:sqlite:" + SettingsManager.getInstance().getDatabasePath();
     private final DataSource dataSource = initializeDataSource();
-    private final DbUserDao dbUserDao = new DbUserDao(dataSource);
+    private final UserDao userDao = new DbUserDao(dataSource);
     private static final DatabaseManager databaseManager = new DatabaseManager();
 
     private DatabaseManager() {}
@@ -45,11 +46,11 @@ public class DatabaseManager {
     }
 
     public Optional<User> getUserByName(String name) throws SQLException {
-        return dbUserDao.getByName(name);
+        return userDao.getByName(name);
     }
 
     public void addUser(User user) throws SQLException {
-        dbUserDao.add(user);
+        userDao.add(user);
     }
 
     public void initializeDatabase() throws SQLException {
