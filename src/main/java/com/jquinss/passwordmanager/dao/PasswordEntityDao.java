@@ -11,6 +11,8 @@ public interface PasswordEntityDao {
 
     List<PasswordEntity> getAllByUserId(int id) throws SQLException;
 
+    List<PasswordEntity> getAllByFolderId(int id) throws SQLException;
+
     void add(PasswordEntity pwdEntity) throws SQLException;
 
     void update(PasswordEntity pwdEntity) throws SQLException;
