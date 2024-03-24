@@ -1,6 +1,7 @@
 package com.jquinss.passwordmanager.dao;
 
 import com.jquinss.passwordmanager.data.Folder;
+import com.jquinss.passwordmanager.data.RootFolder;
 
 import javax.sql.DataSource;
 import java.sql.*;
@@ -105,7 +106,16 @@ public class DbFolderDao implements FolderDao {
     }
 
     private Folder createFolder(ResultSet resultSet) throws SQLException {
-        Folder folder = new Folder(resultSet.getInt(1), resultSet.getString(3));
+        Folder folder = null;
+        int folderId = resultSet.getInt(1);
+
+        if (folderId == 0) {
+            folder = new RootFolder(folderId, resultSet.getString(3));
+        }
+        else {
+            folder = new Folder(folderId, resultSet.getString(3));
+        }
+
         folder.setParentFolderId(resultSet.getInt(2));
         folder.setDescription(resultSet.getString(4));
 
