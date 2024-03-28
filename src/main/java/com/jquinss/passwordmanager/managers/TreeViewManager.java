@@ -7,10 +7,13 @@ import com.jquinss.passwordmanager.data.PasswordEntity;
 import com.jquinss.passwordmanager.data.RootFolder;
 import com.jquinss.passwordmanager.security.UserSession;
 import com.jquinss.passwordmanager.util.misc.CryptoUtils;
+import com.jquinss.passwordmanager.util.misc.DialogBuilder;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.util.Callback;
+import javafx.util.Pair;
+
 import java.sql.SQLException;
 import java.util.Objects;
 import java.util.Optional;
@@ -33,6 +36,9 @@ public class TreeViewManager {
 
     private void createFolder() {
         // TODO
+        Dialog<Pair<String, String>> dialog = DialogBuilder.buildTwoTextFieldInputDialog("Create folder",
+                "Create a new folder:", "Folder name", "Description", true);
+        Optional<Pair<String, String>> result = dialog.showAndWait();
     }
 
     private void deleteFolder() {
@@ -78,13 +84,29 @@ public class TreeViewManager {
     }
 
     private void initializeRootTreeItem() {
-        try{
-            Optional<Folder> optional = DatabaseManager.getInstance().getFolderById(0);
-            optional.ifPresent(folder -> treeView.setRoot(buildTreeItem(folder)));
+        try {
+            Optional<RootFolder> optional = DatabaseManager.getInstance().getRootFolderByUserId(userSession.getCurrentUserId());
+            if (optional.isPresent()) {
+                treeView.setRoot(buildTreeItem(optional.get()));
+            }
+            else {
+                createRootTreeItem();
+            }
         }
         catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void createRootTreeItem() throws SQLException {
+        RootFolder rootFolder = createRootFolder();
+        treeView.setRoot(buildTreeItem(rootFolder));
+    }
+
+    private RootFolder createRootFolder() throws SQLException {
+        RootFolder rootFolder = new RootFolder("root", userSession.getCurrentUserId());
+        DatabaseManager.getInstance().addRootFolder(rootFolder);
+        return rootFolder;
     }
 
     private TreeItem<DataEntity> buildTreeItem(DataEntity dataEntity) {
