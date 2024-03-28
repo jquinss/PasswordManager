@@ -144,14 +144,14 @@ public class DbPasswordEntityDao implements PasswordEntityDao {
     }
 
     private PreparedStatement buildGetAllPasswordEntitiesByUserIdPreparedStatement(Connection conn, int id) throws SQLException {
-        PreparedStatement ps = conn.prepareStatement("SELECT password_entity FROM password_entity WHERE user_id = ?");
+        PreparedStatement ps = conn.prepareStatement("SELECT * FROM password_entity WHERE user_id = ?");
         ps.setInt(1, id);
 
         return ps;
     }
 
     private PreparedStatement buildGetAllPasswordEntitiesByFolderIdPreparedStatement(Connection conn, int id) throws SQLException {
-        PreparedStatement ps = conn.prepareStatement("SELECT password_entity FROM password_entity WHERE folder_id = ?");
+        PreparedStatement ps = conn.prepareStatement("SELECT * FROM password_entity WHERE folder_id = ?");
         ps.setInt(1, id);
 
         return ps;
