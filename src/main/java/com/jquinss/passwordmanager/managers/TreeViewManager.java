@@ -15,6 +15,7 @@ import javafx.util.Callback;
 import javafx.util.Pair;
 
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -35,10 +36,32 @@ public class TreeViewManager {
     }
 
     private void createFolder() {
-        // TODO
         Dialog<Pair<String, String>> dialog = DialogBuilder.buildTwoTextFieldInputDialog("Create folder",
                 "Create a new folder:", "Folder name", "Description", true);
-        Optional<Pair<String, String>> result = dialog.showAndWait();
+        Optional<Pair<String, String>> optional = dialog.showAndWait();
+        optional.ifPresent(pair -> {
+            try {
+                createFolderTreeItem(treeView.getSelectionModel().getSelectedItem(), pair.getKey(), pair.getValue());
+            }
+            catch (SQLException e) {
+                DialogBuilder.buildAlertDialog("Error", "Error creating folder",
+                        "An error has occurred with the database during the operation", Alert.AlertType.ERROR);
+            }
+        });
+    }
+
+    private void createFolderTreeItem(TreeItem<DataEntity> parentTreeItem, String name, String description) throws SQLException {
+        Folder parentFolder = (Folder) parentTreeItem.getValue();
+        Folder folder = createFolder(parentFolder.getId(), name, description);
+        parentTreeItem.getChildren().add(buildTreeItem(folder));
+    }
+
+    private Folder createFolder(int parentFolderId, String name, String description) throws SQLException {
+        Folder folder = new Folder(name);
+        folder.setParentFolderId(parentFolderId);
+        folder.setDescription(description);
+        DatabaseManager.getInstance().addFolder(folder);
+        return folder;
     }
 
     private void deleteFolder() {
@@ -81,6 +104,7 @@ public class TreeViewManager {
         // TODO
         setTreeViewCellFactory();
         initializeRootTreeItem();
+        loadTreeItems();
     }
 
     private void initializeRootTreeItem() {
@@ -95,6 +119,28 @@ public class TreeViewManager {
         }
         catch (SQLException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private void loadTreeItems() {
+        try {
+            TreeItem<DataEntity> rootTreeItem = treeView.getRoot();
+            List<Folder> folders = DatabaseManager.getInstance().getAllFoldersByParentFolderId(rootTreeItem.getValue().getId());
+            for (Folder folder : folders) {
+                TreeItem<DataEntity> treeItem = buildTreeItem(folder);
+                rootTreeItem.getChildren().add(treeItem);
+                loadPasswordEntities(treeItem);
+            }
+        }
+        catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void loadPasswordEntities(TreeItem<DataEntity> folderTreeItem) throws SQLException {
+        List<PasswordEntity> pwdEntities = DatabaseManager.getInstance().getAllPasswordEntitiesByFolderId(folderTreeItem.getValue().getId());
+        for (PasswordEntity pwdEntity : pwdEntities) {
+            folderTreeItem.getChildren().add(buildTreeItem(pwdEntity));
         }
     }
 
@@ -190,7 +236,8 @@ public class TreeViewManager {
 
             @Override
             public TreeCell<DataEntity> call(TreeView<DataEntity> p){
-                TreeCell<DataEntity> cell = new TreeCell<DataEntity>() {
+
+                return new TreeCell<DataEntity>() {
                     @Override
                     protected void updateItem(DataEntity dataEntity, boolean empty) {
                         super.updateItem(dataEntity, empty);
@@ -206,8 +253,6 @@ public class TreeViewManager {
                         }
                     }
                 };
-
-                return cell;
             }
         });
     }
