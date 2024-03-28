@@ -5,6 +5,7 @@ import com.jquinss.passwordmanager.dao.DbUserDao;
 import com.jquinss.passwordmanager.dao.FolderDao;
 import com.jquinss.passwordmanager.dao.UserDao;
 import com.jquinss.passwordmanager.data.Folder;
+import com.jquinss.passwordmanager.data.RootFolder;
 import com.jquinss.passwordmanager.data.User;
 import com.jquinss.passwordmanager.factories.DataSourceFactory;
 import org.sqlite.SQLiteDataSource;
@@ -20,6 +21,9 @@ public class DatabaseManager {
             CREATE TABLE IF NOT EXISTS user (user_id INTEGER PRIMARY KEY, user_name TEXT UNIQUE NOT NULL,
             password BLOB NOT NULL, password_salt BLOB NOT NULL, public_key BLOB NOT NULL, private_key BLOB NOT NULL, 
             private_key_iv BLOB NOT NULL);""";
+    private static final String CREATE_ROOT_FOLDER_TABLE_STATEMENT = """
+            CREATE TABLE IF NOT EXISTS root_folder (root_folder_id INTEGER PRIMARY KEY, user_id INTEGER NOT NULL, 
+            FOREIGN KEY(user_id) REFERENCES user(user_id))""";
     private static final String CREATE_FOLDER_TABLE_STATEMENT = """
             CREATE TABLE IF NOT EXISTS folder (folder_id INTEGER PRIMARY KEY, parent_folder_id INTEGER, 
             folder_name TEXT NOT NULL, description TEXT);""";
@@ -33,8 +37,6 @@ public class DatabaseManager {
             CREATE TABLE IF NOT EXISTS password_policy (password_policy_id INTEGER PRIMARY KEY, password_policy_name TEXT NOT NULL,
             min_length INTEGER NOT NULL, min_lower_case_chars INT NOT NULL, min_upper_case_chars INT NOT NULL,
             min_digits INT NOT NULL, min_symbols INT NOT NULL, max_consec_equal_chars INT NOT NULL);""";
-
-    private static final String INSERT_ROOT_FOLDER_STATEMENT = "INSERT OR IGNORE INTO folder VALUES (0, null, 'root', 'Root folder');";
     private static final String INITIALIZE_PWD_POLICY_STATEMENT = "INSERT OR IGNORE INTO password_policy VALUES (0, 'default', 10, 3, 3, 3, 3, 2)";
 
     private static final String databaseURL = "jdbc:sqlite:" + SettingsManager.getInstance().getDatabasePath();
@@ -61,17 +63,24 @@ public class DatabaseManager {
         return folderDao.getById(id);
     }
 
+    public void addRootFolder(RootFolder folder) throws SQLException {
+        folderDao.addRoot(folder);
+    }
+
+    public Optional<RootFolder> getRootFolderByUserId(int userId) throws SQLException {
+        return folderDao.getRootByUserId(userId);
+    }
+
     public void initializeDatabase() throws SQLException {
         try (Connection conn = dataSource.getConnection()) {
             if (conn != null) {
                 conn.setAutoCommit(false);
                 Statement stmt = conn.createStatement();
                 stmt.execute(CREATE_USER_TABLE_STATEMENT);
-                stmt.execute(CREATE_FOLDER_TABLE_STATEMENT);
+                stmt.execute(CREATE_ROOT_FOLDER_TABLE_STATEMENT);
                 stmt.execute(CREATE_FOLDER_TABLE_STATEMENT);
                 stmt.execute(CREATE_PASSWORD_ENTITY_TABLE_STATEMENT);
                 stmt.execute(CREATE_PASSWORD_POLICY_STATEMENT);
-                stmt.execute(INSERT_ROOT_FOLDER_STATEMENT);
                 stmt.execute(INITIALIZE_PWD_POLICY_STATEMENT);
                 conn.commit();
                 conn.setAutoCommit(true);
