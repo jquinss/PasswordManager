@@ -44,6 +44,19 @@ public class DbFolderDao implements FolderDao {
     }
 
     @Override
+    public Optional<RootFolder> getRootByUserId(int id) throws SQLException {
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement ps = buildGetRootFolderByUserIdPreparedStatement(conn, id);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return Optional.of(createRootFolder(rs));
+            }
+        }
+
+        return Optional.empty();
+    }
+
+    @Override
     public void add(Folder folder) throws SQLException {
         try (Connection conn = dataSource.getConnection();
              PreparedStatement ps = buildAddFolderPreparedStatement(conn, folder);) {
@@ -59,6 +72,16 @@ public class DbFolderDao implements FolderDao {
                 }
                 conn.commit();
             }
+        }
+    }
+
+    @Override
+    public void addRoot(RootFolder folder) throws SQLException {
+        add(folder);
+
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement ps = buildAddRootFolderPreparedStatement(conn, folder);) {
+            ps.executeUpdate();
         }
     }
 
@@ -79,8 +102,7 @@ public class DbFolderDao implements FolderDao {
     }
 
     private PreparedStatement buildGetFolderByIdPreparedStatement(Connection conn, int id) throws SQLException {
-        String statement = """
-                SELECT * FROM folder WHERE folder_id = ?""";
+        String statement = "SELECT * FROM folder WHERE folder_id = ?";
         PreparedStatement ps = conn.prepareStatement(statement);
         ps.setInt(1, id);
 
@@ -97,6 +119,15 @@ public class DbFolderDao implements FolderDao {
         return ps;
     }
 
+    private PreparedStatement buildAddRootFolderPreparedStatement(Connection conn, RootFolder folder) throws SQLException {
+        String statement = "INSERT INTO root_folder (root_folder_id, user_id) VALUES (?, ?)";
+        PreparedStatement ps = conn.prepareStatement(statement);
+        ps.setInt(1, folder.getId());
+        ps.setInt(2, folder.getUserId());
+
+        return ps;
+    }
+
     private PreparedStatement buildGetAllFoldersByParentIdPreparedStatement(Connection conn, int parentFolderId) throws SQLException {
         String statement = "SELECT * FROM folder WHERE parent_folder_id = ?";
         PreparedStatement ps = conn.prepareStatement(statement);
@@ -105,17 +136,26 @@ public class DbFolderDao implements FolderDao {
         return ps;
     }
 
+    private PreparedStatement buildGetRootFolderByUserIdPreparedStatement(Connection conn, int userId) throws SQLException {
+        String statement = """
+                SELECT f.folder_id, f.parent_folder_id, f.folder_name, f.description, rf.user_id FROM root_folder rf 
+                INNER JOIN folder f ON rf.root_folder_id = f.folder_id WHERE rf.user_id = ?""";
+        PreparedStatement ps = conn.prepareStatement(statement);
+        ps.setInt(1, userId);
+
+        return ps;
+    }
+
     private Folder createFolder(ResultSet resultSet) throws SQLException {
-        Folder folder = null;
-        int folderId = resultSet.getInt(1);
+        Folder folder = new Folder(resultSet.getInt(1), resultSet.getString(3));
+        folder.setParentFolderId(resultSet.getInt(2));
+        folder.setDescription(resultSet.getString(4));
 
-        if (folderId == 0) {
-            folder = new RootFolder(folderId, resultSet.getString(3));
-        }
-        else {
-            folder = new Folder(folderId, resultSet.getString(3));
-        }
+        return folder;
+    }
 
+    private RootFolder createRootFolder(ResultSet resultSet) throws SQLException {
+        RootFolder folder = new RootFolder(resultSet.getInt(1), resultSet.getString(3), resultSet.getInt(5));
         folder.setParentFolderId(resultSet.getInt(2));
         folder.setDescription(resultSet.getString(4));
 
