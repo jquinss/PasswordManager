@@ -1,10 +1,8 @@
 package com.jquinss.passwordmanager.managers;
 
-import com.jquinss.passwordmanager.dao.DbFolderDao;
-import com.jquinss.passwordmanager.dao.DbUserDao;
-import com.jquinss.passwordmanager.dao.FolderDao;
-import com.jquinss.passwordmanager.dao.UserDao;
+import com.jquinss.passwordmanager.dao.*;
 import com.jquinss.passwordmanager.data.Folder;
+import com.jquinss.passwordmanager.data.PasswordEntity;
 import com.jquinss.passwordmanager.data.RootFolder;
 import com.jquinss.passwordmanager.data.User;
 import com.jquinss.passwordmanager.factories.DataSourceFactory;
@@ -14,6 +12,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 import java.util.Optional;
 
 public class DatabaseManager {
@@ -42,6 +41,7 @@ public class DatabaseManager {
     private static final String databaseURL = "jdbc:sqlite:" + SettingsManager.getInstance().getDatabasePath();
     private final DataSource dataSource = initializeDataSource();
     private final UserDao userDao = new DbUserDao(dataSource);
+    private final PasswordEntityDao passwordEntityDao = new DbPasswordEntityDao(dataSource);
     private final FolderDao folderDao = new DbFolderDao(dataSource);
     private static final DatabaseManager databaseManager = new DatabaseManager();
 
@@ -63,12 +63,24 @@ public class DatabaseManager {
         return folderDao.getById(id);
     }
 
+    public List<Folder> getAllFoldersByParentFolderId(int parentId) throws SQLException {
+        return folderDao.getAllByParentId(parentId);
+    }
+
     public void addRootFolder(RootFolder folder) throws SQLException {
         folderDao.addRoot(folder);
     }
 
+    public void addFolder(Folder folder) throws SQLException {
+        folderDao.add(folder);
+    }
+
     public Optional<RootFolder> getRootFolderByUserId(int userId) throws SQLException {
         return folderDao.getRootByUserId(userId);
+    }
+
+    public List<PasswordEntity> getAllPasswordEntitiesByFolderId(int folderId) throws SQLException {
+        return passwordEntityDao.getAllByFolderId(folderId);
     }
 
     public void initializeDatabase() throws SQLException {
