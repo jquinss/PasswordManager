@@ -1,6 +1,7 @@
 package com.jquinss.passwordmanager.dao;
 
 import com.jquinss.passwordmanager.data.Folder;
+import com.jquinss.passwordmanager.data.RootFolder;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -11,7 +12,11 @@ public interface FolderDao {
 
     List<Folder> getAllByParentId(int id) throws SQLException;
 
+    Optional<RootFolder> getRootByUserId(int id) throws SQLException;
+
     void add(Folder folder) throws SQLException;
+
+    void addRoot(RootFolder folder) throws SQLException;
 
     void update(Folder folder) throws SQLException;
 
