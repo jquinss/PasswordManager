@@ -35,7 +35,7 @@ public class DbFolderDao implements FolderDao {
         try (Connection conn = dataSource.getConnection();
              PreparedStatement ps = buildGetAllFoldersByParentIdPreparedStatement(conn, id);
              ResultSet rs = ps.executeQuery()) {
-            if (rs.next()) {
+            while (rs.next()) {
                 folders.add(createFolder(rs));
             }
         }
