@@ -79,8 +79,20 @@ public class DatabaseManager {
         return folderDao.getRootByUserId(userId);
     }
 
+    public void deleteFolder(Folder folder) throws SQLException {
+        folderDao.delete(folder);
+    }
+
+    public void deleteFolders(List<Folder> folders) throws SQLException {
+        folderDao.delete(folders);
+    }
+
     public List<PasswordEntity> getAllPasswordEntitiesByFolderId(int folderId) throws SQLException {
         return passwordEntityDao.getAllByFolderId(folderId);
+    }
+
+    public void deletePasswordEntities(List<PasswordEntity> pwdEntities) throws SQLException {
+        passwordEntityDao.delete(pwdEntities);
     }
 
     public void initializeDatabase() throws SQLException {
