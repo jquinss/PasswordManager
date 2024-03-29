@@ -21,4 +21,6 @@ public interface FolderDao {
     void update(Folder folder) throws SQLException;
 
     void delete(Folder folder) throws SQLException;
+
+    void delete(List<Folder> folders) throws SQLException;
 }
