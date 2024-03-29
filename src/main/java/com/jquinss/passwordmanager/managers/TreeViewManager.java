@@ -45,7 +45,7 @@ public class TreeViewManager {
             }
             catch (SQLException e) {
                 DialogBuilder.buildAlertDialog("Error", "Error creating folder",
-                        "An error has occurred with the database during the operation", Alert.AlertType.ERROR);
+                        "A database error has occurred during the operation", Alert.AlertType.ERROR);
             }
         });
     }
@@ -65,7 +65,42 @@ public class TreeViewManager {
     }
 
     private void deleteFolder() {
-        // TODO
+        TreeItem<DataEntity> treeItem = treeView.getSelectionModel().getSelectedItem();
+        if (treeItem.getChildren().isEmpty()) {
+            deleteFolder(treeItem);
+        }
+        else {
+            Alert alertDialog = DialogBuilder.buildAlertDialog("Confirmation", "The folder is not empty", "Are you sure you want to delete all the files?", Alert.AlertType.CONFIRMATION);
+            alertDialog.showAndWait().ifPresent(response -> {
+                if (response == ButtonType.OK) {
+                    deleteAllPasswordEntitiesInFolder(treeItem);
+                    deleteFolder(treeItem);
+                }
+            });;
+        }
+    }
+
+    private void deleteFolder(TreeItem<DataEntity> folderTreeItem) {
+        try {
+            Folder folder = (Folder) folderTreeItem.getValue();
+            DatabaseManager.getInstance().deleteFolder(folder);
+            folderTreeItem.getParent().getChildren().remove(folderTreeItem);
+        }
+        catch (SQLException e) {
+            DialogBuilder.buildAlertDialog("Error", "Error deleting folder",
+                    "A database error has occurred during the operation", Alert.AlertType.ERROR);
+        }
+    }
+
+    private void deleteAllPasswordEntitiesInFolder(TreeItem<DataEntity> folderTreeItem) {
+        List<PasswordEntity> passwordEntities = folderTreeItem.getChildren().stream().map(item -> (PasswordEntity) item.getValue()).toList();
+        try {
+            DatabaseManager.getInstance().deletePasswordEntities(passwordEntities);
+        }
+        catch (SQLException e) {
+            DialogBuilder.buildAlertDialog("Error", "Error deleting password entities",
+                    "A database error has occurred during the operation", Alert.AlertType.ERROR);
+        }
     }
 
     private void renameFolder() {
