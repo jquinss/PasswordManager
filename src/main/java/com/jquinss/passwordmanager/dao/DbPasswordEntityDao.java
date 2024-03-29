@@ -1,5 +1,6 @@
 package com.jquinss.passwordmanager.dao;
 
+import com.jquinss.passwordmanager.data.Folder;
 import com.jquinss.passwordmanager.data.PasswordEntity;
 
 import javax.sql.DataSource;
@@ -97,6 +98,16 @@ public class DbPasswordEntityDao implements PasswordEntityDao {
         }
     }
 
+    @Override
+    public void delete(List<PasswordEntity> pwdEntities) throws SQLException {
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement ps = buildDeletePasswordEntitiesPreparedStatement(conn, pwdEntities)) {
+            conn.setAutoCommit(false);
+            ps.executeBatch();
+            conn.setAutoCommit(true);
+        }
+    }
+
     private PreparedStatement buildAddPasswordEntityPreparedStatement(Connection conn, PasswordEntity pwdEntity) throws SQLException {
         String statement = """
         INSERT INTO password_entity (name, user_name, password, email_address,
@@ -176,6 +187,15 @@ public class DbPasswordEntityDao implements PasswordEntityDao {
         PreparedStatement ps = conn.prepareStatement("DELETE FROM password_entity WHERE password_entity_id = ?");
         ps.setInt(1, id);
 
+        return ps;
+    }
+
+    private PreparedStatement buildDeletePasswordEntitiesPreparedStatement(Connection conn, List<PasswordEntity> pwdEntities) throws SQLException {
+        PreparedStatement ps = conn.prepareStatement("DELETE FROM password_entity WHERE password_entity_id = ?");
+        for (PasswordEntity pwdEntity : pwdEntities) {
+            ps.setInt(1, pwdEntity.getId());
+            ps.addBatch();
+        }
         return ps;
     }
 }
