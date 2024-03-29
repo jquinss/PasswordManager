@@ -18,4 +18,6 @@ public interface PasswordEntityDao {
     void update(PasswordEntity pwdEntity) throws SQLException;
 
     void delete(PasswordEntity pwdEntity) throws SQLException;
+
+    void delete(List<PasswordEntity> pwdEntities) throws SQLException;
 }
