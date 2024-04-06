@@ -6,6 +6,7 @@ public class PasswordPolicy {
     private int id;
     private String name;
     private PasswordStrengthCriteria passwordStrengthCriteria;
+    private boolean defaultPolicy = false;
 
     public PasswordPolicy(int id, String name, PasswordStrengthCriteria passwordStrengthCriteria) {
         this.id = id;
@@ -35,5 +36,18 @@ public class PasswordPolicy {
 
     public void setPasswordStrengthCriteria(PasswordStrengthCriteria passwordStrengthCriteria) {
         this.passwordStrengthCriteria = passwordStrengthCriteria;
+    }
+
+    public boolean isDefaultPolicy() {
+        return defaultPolicy;
+    }
+
+    public void setDefaultPolicy(boolean defaultPolicy) {
+        this.defaultPolicy = defaultPolicy;
+    }
+
+    @Override
+    public String toString() {
+        return getName();
     }
 }
