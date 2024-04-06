@@ -98,7 +98,10 @@ public class DbPasswordPolicyDao implements PasswordPolicyDao {
                 .minSymbols(rs.getInt(7))
                 .maxConsecutiveChars(rs.getInt(8)).build();
 
-        return new PasswordPolicy(rs.getInt(1), rs.getString(2), pwdStrengthCriteria);
+        PasswordPolicy pwdPolicy = new PasswordPolicy(rs.getInt(1), rs.getString(2), pwdStrengthCriteria);
+        pwdPolicy.setDefaultPolicy(rs.getBoolean(9));
+
+        return pwdPolicy;
     }
 
     private PreparedStatement buildDeletePasswordPolicyPreparedStatement(Connection conn, int id) throws SQLException {
@@ -111,7 +114,7 @@ public class DbPasswordPolicyDao implements PasswordPolicyDao {
     private PreparedStatement buildAddPasswordPolicyPreparedStatement(Connection conn, PasswordPolicy pwdPolicy) throws SQLException {
         String statement = """
         INSERT INTO password_policy (password_policy_name, min_length, min_lower_case_chars, min_upper_case_chars,
-        min_digits, min_symbols, max_consec_equal_chars) VALUES (?,?,?,?,?,?,?)""";
+        min_digits, min_symbols, max_consec_equal_chars, default_policy) VALUES (?,?,?,?,?,?,?,?)""";
 
         return buildSetOperationPreparedStatement(conn, pwdPolicy, statement);
     }
@@ -119,11 +122,11 @@ public class DbPasswordPolicyDao implements PasswordPolicyDao {
     private PreparedStatement buildUpdatePasswordPolicyPreparedStatement(Connection conn, PasswordPolicy pwdPolicy) throws SQLException {
         String statement = """
                 UPDATE password_policy SET password_policy_name = ?, SET min_length = ?,  SET min_lower_case_chars = ?, 
-                 SET min_upper_case_chars = ?, SET min_digits = ?, SET min_symbols = ?, SET max_consec_equal_chars = ? 
-                 WHERE password_policy_id = ?""";
+                 SET min_upper_case_chars = ?, SET min_digits = ?, SET min_symbols = ?, SET max_consec_equal_chars = ?,  
+                 SET default_policy = ? WHERE password_policy_id = ?""";
 
         PreparedStatement ps = buildSetOperationPreparedStatement(conn, pwdPolicy, statement);
-        ps.setInt(8, pwdPolicy.getId());
+        ps.setInt(9, pwdPolicy.getId());
 
         return buildSetOperationPreparedStatement(conn, pwdPolicy, statement);
     }
@@ -138,6 +141,7 @@ public class DbPasswordPolicyDao implements PasswordPolicyDao {
         ps.setInt(5, pwdStrengthCriteria.getMinDigits());
         ps.setInt(6, pwdStrengthCriteria.getMinSymbols());
         ps.setInt(7, pwdStrengthCriteria.getMaxConsecutiveEqualChars());
+        ps.setBoolean(8, pwdPolicy.isDefaultPolicy());
 
         return ps;
     }
