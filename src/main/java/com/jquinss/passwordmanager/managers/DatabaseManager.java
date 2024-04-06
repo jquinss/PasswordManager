@@ -1,10 +1,7 @@
 package com.jquinss.passwordmanager.managers;
 
 import com.jquinss.passwordmanager.dao.*;
-import com.jquinss.passwordmanager.data.Folder;
-import com.jquinss.passwordmanager.data.PasswordEntity;
-import com.jquinss.passwordmanager.data.RootFolder;
-import com.jquinss.passwordmanager.data.User;
+import com.jquinss.passwordmanager.data.*;
 import com.jquinss.passwordmanager.factories.DataSourceFactory;
 import org.sqlite.SQLiteDataSource;
 
@@ -35,14 +32,15 @@ public class DatabaseManager {
     private static final String CREATE_PASSWORD_POLICY_STATEMENT = """
             CREATE TABLE IF NOT EXISTS password_policy (password_policy_id INTEGER PRIMARY KEY, password_policy_name TEXT NOT NULL,
             min_length INTEGER NOT NULL, min_lower_case_chars INT NOT NULL, min_upper_case_chars INT NOT NULL,
-            min_digits INT NOT NULL, min_symbols INT NOT NULL, max_consec_equal_chars INT NOT NULL);""";
-    private static final String INITIALIZE_PWD_POLICY_STATEMENT = "INSERT OR IGNORE INTO password_policy VALUES (0, 'default', 10, 3, 3, 3, 3, 2)";
+            min_digits INT NOT NULL, min_symbols INT NOT NULL, max_consec_equal_chars INT NOT NULL, default_policy INTEGER NOT NULL DEFAULT 0);""";
+    private static final String INITIALIZE_PWD_POLICY_STATEMENT = "INSERT OR IGNORE INTO password_policy VALUES (0, 'default', 10, 3, 3, 3, 3, 2, 1)";
 
     private static final String databaseURL = "jdbc:sqlite:" + SettingsManager.getInstance().getDatabasePath();
     private final DataSource dataSource = initializeDataSource();
     private final UserDao userDao = new DbUserDao(dataSource);
     private final PasswordEntityDao passwordEntityDao = new DbPasswordEntityDao(dataSource);
     private final FolderDao folderDao = new DbFolderDao(dataSource);
+    private final PasswordPolicyDao passwordPolicyDao = new DbPasswordPolicyDao(dataSource);
     private static final DatabaseManager databaseManager = new DatabaseManager();
 
     private DatabaseManager() {}
@@ -93,6 +91,10 @@ public class DatabaseManager {
 
     public void deletePasswordEntities(List<PasswordEntity> pwdEntities) throws SQLException {
         passwordEntityDao.delete(pwdEntities);
+    }
+
+    public List<PasswordPolicy> getAllPasswordPolicies() throws SQLException {
+        return passwordPolicyDao.getAll();
     }
 
     public void initializeDatabase() throws SQLException {
