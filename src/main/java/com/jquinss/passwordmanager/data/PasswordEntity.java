@@ -1,6 +1,6 @@
 package com.jquinss.passwordmanager.data;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 public class PasswordEntity extends DataEntity {
     // TODO
@@ -12,7 +12,7 @@ public class PasswordEntity extends DataEntity {
     private String password;
     private String url;
     private boolean passwordExpires = false;
-    private LocalDateTime expirationDate = LocalDateTime.now().plusMonths(6);
+    private LocalDate expirationDate = LocalDate.now().plusMonths(6);
 
     public PasswordEntity(int id, int folderId, String name, String password) {
         this(folderId, name, password);
@@ -89,11 +89,11 @@ public class PasswordEntity extends DataEntity {
         this.passwordExpires = passwordExpires;
     }
 
-    public LocalDateTime getExpirationDate() {
+    public LocalDate getExpirationDate() {
         return expirationDate;
     }
 
-    public void setExpirationDate(LocalDateTime expirationDate) {
+    public void setExpirationDate(LocalDate expirationDate) {
         this.expirationDate = expirationDate;
     }
 }
