@@ -1,18 +1,17 @@
 package com.jquinss.passwordmanager.dao;
 
-import com.jquinss.passwordmanager.data.Folder;
 import com.jquinss.passwordmanager.data.PasswordEntity;
 
 import javax.sql.DataSource;
 import java.sql.*;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 public class DbPasswordEntityDao implements PasswordEntityDao {
-    public static final String dateTimeFormat = "yyyy-MM-dd HH:mm:ss";
+    public static final String dateTimeFormat = "yyyy-MM-dd";
     public static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(dateTimeFormat);
     private final DataSource dataSource;
 
@@ -176,7 +175,7 @@ public class DbPasswordEntityDao implements PasswordEntityDao {
         pwdEntity.setUrl(rs.getString(6));
         pwdEntity.setDescription(rs.getString(7));
         pwdEntity.setPasswordExpires(rs.getBoolean(8));
-        pwdEntity.setExpirationDate(LocalDateTime.parse(rs.getString(9), dateTimeFormatter));
+        pwdEntity.setExpirationDate(LocalDate.parse(rs.getString(9), dateTimeFormatter));
         pwdEntity.setUserId(rs.getInt(10));
         pwdEntity.setPasswordPolicyId(rs.getInt(12));
 
