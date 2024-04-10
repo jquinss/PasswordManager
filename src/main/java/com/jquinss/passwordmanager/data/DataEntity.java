@@ -1,9 +1,11 @@
 package com.jquinss.passwordmanager.data;
 
+import java.util.Optional;
+
 public abstract class DataEntity {
     private int id;
     private String name;
-    private String description = "";
+    private String description;
 
     public DataEntity(int id, String name) {
         this(name);
@@ -30,11 +32,11 @@ public abstract class DataEntity {
         this.name = name;
     }
 
-    public String getDescription() {
-        return description;
+    public Optional<String> getDescription() {
+        return Optional.ofNullable(description);
     }
 
     public void setDescription(String description) {
-        this.description = description;
+        this.description = description.isEmpty() ? null : description;
     }
 }
