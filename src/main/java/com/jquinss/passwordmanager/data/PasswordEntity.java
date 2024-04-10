@@ -1,9 +1,9 @@
 package com.jquinss.passwordmanager.data;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 public class PasswordEntity extends DataEntity {
-    // TODO
     private int userId;
     private int folderId;
     private int passwordPolicyId;
@@ -49,20 +49,20 @@ public class PasswordEntity extends DataEntity {
         this.passwordPolicyId = passwordPolicyId;
     }
 
-    public String getUsername() {
-        return username;
+    public Optional<String> getUsername() {
+        return Optional.ofNullable(username);
     }
 
     public void setUsername(String username) {
-        this.username = username;
+        this.username = username.isEmpty() ? null : username;
     }
 
-    public String getEmailAddress() {
-        return emailAddress;
+    public Optional<String> getEmailAddress() {
+        return Optional.ofNullable(emailAddress);
     }
 
     public void setEmailAddress(String emailAddress) {
-        this.emailAddress = emailAddress;
+        this.emailAddress = emailAddress.isEmpty() ? null : emailAddress;
     }
 
     public String getPassword() {
@@ -73,12 +73,12 @@ public class PasswordEntity extends DataEntity {
         this.password = password;
     }
 
-    public String getUrl() {
-        return url;
+    public Optional<String> getUrl() {
+        return Optional.ofNullable(url);
     }
 
     public void setUrl(String url) {
-        this.url = url;
+        this.url = url.isEmpty() ? null : url;
     }
 
     public boolean isPasswordExpires() {
