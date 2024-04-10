@@ -14,6 +14,8 @@ import javafx.scene.image.ImageView;
 import javafx.util.Callback;
 import javafx.util.Pair;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Objects;
@@ -175,7 +177,36 @@ public class TreeViewManager {
     private void loadPasswordEntities(TreeItem<DataEntity> folderTreeItem) throws SQLException {
         List<PasswordEntity> pwdEntities = DatabaseManager.getInstance().getAllPasswordEntitiesByFolderId(folderTreeItem.getValue().getId());
         for (PasswordEntity pwdEntity : pwdEntities) {
+            decryptFields(pwdEntity);
             folderTreeItem.getChildren().add(buildTreeItem(pwdEntity));
+        }
+    }
+
+    private void encryptFields(PasswordEntity pwdEntity) {
+        pwdEntity.getUsername().ifPresent(username -> pwdEntity.setUsername(encryptText(username)));
+        pwdEntity.getEmailAddress().ifPresent(emailAddress -> pwdEntity.setEmailAddress(encryptText(emailAddress)));
+        pwdEntity.setPassword(encryptText(pwdEntity.getPassword()));
+    }
+
+    private void decryptFields(PasswordEntity pwdEntity) {
+        pwdEntity.getUsername().ifPresent(username -> pwdEntity.setUsername(decryptText(username)));
+        pwdEntity.getEmailAddress().ifPresent(emailAddress -> pwdEntity.setEmailAddress(decryptText(emailAddress)));
+        pwdEntity.setPassword(decryptText(pwdEntity.getPassword()));
+    }
+
+    private String encryptText(String text)  {
+        try {
+            return (text != null) ? asymmetricCrypto.encrypt(text) : null;
+        } catch (IllegalBlockSizeException | BadPaddingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private String decryptText(String text) {
+        try {
+            return (text != null) ? asymmetricCrypto.decrypt(text) : null;
+        } catch (IllegalBlockSizeException | BadPaddingException e) {
+            throw new RuntimeException(e);
         }
     }
 
