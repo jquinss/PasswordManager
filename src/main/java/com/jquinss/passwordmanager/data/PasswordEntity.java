@@ -49,16 +49,16 @@ public class PasswordEntity extends DataEntity {
         this.passwordPolicyId = passwordPolicyId;
     }
 
-    public Optional<String> getUsername() {
-        return Optional.ofNullable(username);
+    public String getUsername() {
+        return username;
     }
 
     public void setUsername(String username) {
         this.username = username.isEmpty() ? null : username;
     }
 
-    public Optional<String> getEmailAddress() {
-        return Optional.ofNullable(emailAddress);
+    public String getEmailAddress() {
+        return emailAddress;
     }
 
     public void setEmailAddress(String emailAddress) {
@@ -73,8 +73,8 @@ public class PasswordEntity extends DataEntity {
         this.password = password;
     }
 
-    public Optional<String> getUrl() {
-        return Optional.ofNullable(url);
+    public String getUrl() {
+        return url;
     }
 
     public void setUrl(String url) {
