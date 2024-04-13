@@ -1,6 +1,7 @@
 package com.jquinss.passwordmanager.managers;
 
 import com.jquinss.passwordmanager.control.DataEntityTreeItem;
+import com.jquinss.passwordmanager.controllers.PasswordManagerPaneController;
 import com.jquinss.passwordmanager.data.DataEntity;
 import com.jquinss.passwordmanager.data.Folder;
 import com.jquinss.passwordmanager.data.PasswordEntity;
@@ -26,6 +27,7 @@ public class TreeViewManager {
     private final UserSession userSession;
     private final CryptoUtils.AsymmetricCrypto asymmetricCrypto;
     private final ContextMenuBuilder contextMenuBuilder = new ContextMenuBuilder();
+    private PasswordManagerPaneController passwordManagerPaneController;
 
     public TreeViewManager(TreeView<DataEntity> treeView, UserSession userSession, CryptoUtils.AsymmetricCrypto asymmetricCrypto) {
         this.treeView = treeView;
@@ -183,14 +185,14 @@ public class TreeViewManager {
     }
 
     private void encryptFields(PasswordEntity pwdEntity) {
-        pwdEntity.getUsername().ifPresent(username -> pwdEntity.setUsername(encryptText(username)));
-        pwdEntity.getEmailAddress().ifPresent(emailAddress -> pwdEntity.setEmailAddress(encryptText(emailAddress)));
+        pwdEntity.setUsername(encryptText(pwdEntity.getUsername()));
+        pwdEntity.setEmailAddress(encryptText(pwdEntity.getEmailAddress()));
         pwdEntity.setPassword(encryptText(pwdEntity.getPassword()));
     }
 
     private void decryptFields(PasswordEntity pwdEntity) {
-        pwdEntity.getUsername().ifPresent(username -> pwdEntity.setUsername(decryptText(username)));
-        pwdEntity.getEmailAddress().ifPresent(emailAddress -> pwdEntity.setEmailAddress(decryptText(emailAddress)));
+        pwdEntity.setUsername(decryptText(pwdEntity.getUsername()));
+        pwdEntity.setEmailAddress(decryptText((pwdEntity.getEmailAddress())));
         pwdEntity.setPassword(decryptText(pwdEntity.getPassword()));
     }
 
@@ -321,5 +323,9 @@ public class TreeViewManager {
                 };
             }
         });
+    }
+
+    public void setPasswordManagerPaneController(PasswordManagerPaneController passwordManagerPaneController) {
+        this.passwordManagerPaneController = passwordManagerPaneController;
     }
 }
