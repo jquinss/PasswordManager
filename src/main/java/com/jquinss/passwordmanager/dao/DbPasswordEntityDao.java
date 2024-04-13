@@ -130,11 +130,11 @@ public class DbPasswordEntityDao implements PasswordEntityDao {
     private PreparedStatement buildSetOperationPreparedStatement(Connection conn, PasswordEntity pwdEntity, String sqlStatement) throws SQLException {
         PreparedStatement ps = conn.prepareStatement(sqlStatement);
         ps.setString( 1, pwdEntity.getName());
-        ps.setString(2, pwdEntity.getUsername().get());
+        ps.setString(2, pwdEntity.getUsername());
         ps.setString(3, pwdEntity.getPassword());
-        ps.setString(4, pwdEntity.getEmailAddress().get());
-        ps.setString(5, pwdEntity.getUrl().get());
-        ps.setString(6, pwdEntity.getDescription().get());
+        ps.setString(4, pwdEntity.getEmailAddress());
+        ps.setString(5, pwdEntity.getUrl());
+        ps.setString(6, pwdEntity.getDescription());
         ps.setBoolean(7, pwdEntity.isPasswordExpires());
         ps.setString(8, pwdEntity.getExpirationDate().format(dateTimeFormatter));
         ps.setInt(9, pwdEntity.getUserId());
