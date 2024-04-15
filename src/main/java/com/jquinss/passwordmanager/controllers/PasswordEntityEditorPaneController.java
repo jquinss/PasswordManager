@@ -166,7 +166,7 @@ public class PasswordEntityEditorPaneController implements Initializable {
     }
 
     public void viewPasswordEntity(PasswordEntity pwdEntity) {
-        setViewMode();
+        setViewMode(pwdEntity);
         resetFields();
         loadPasswordEntity(pwdEntity);
     }
