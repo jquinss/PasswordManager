@@ -1,14 +1,23 @@
 package com.jquinss.passwordmanager.controllers;
 
+import com.jquinss.passwordmanager.data.DataEntity;
+import com.jquinss.passwordmanager.data.Folder;
+import com.jquinss.passwordmanager.data.PasswordEntity;
 import com.jquinss.passwordmanager.data.PasswordPolicy;
+import com.jquinss.passwordmanager.enums.EditorMode;
+import com.jquinss.passwordmanager.managers.DatabaseManager;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.util.Callback;
 import net.synedra.validatorfx.Check;
 import net.synedra.validatorfx.Validator;
 
 import java.net.URL;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -16,6 +25,7 @@ import java.util.ResourceBundle;
 
 public class PasswordEntityEditorPaneController implements Initializable {
     public Button saveButton;
+    public Button generatePasswordButton;
     @FXML
     private ScrollPane passwordEntityEditorMainPane;
     @FXML
@@ -36,8 +46,12 @@ public class PasswordEntityEditorPaneController implements Initializable {
     private DatePicker passwordExpirationDatePicker;
     @FXML
     private CheckBox showPasswordCheckBox;
+    private EditorMode editorMode;
+    private PasswordManagerPaneController passwordManagerPaneController;
 
     private final Validator validator = new Validator();
+
+    private final ObservableList<PasswordPolicy> passwordPolicyObsList = FXCollections.observableArrayList();
 
     @FXML
     private void save() {
@@ -50,13 +64,49 @@ public class PasswordEntityEditorPaneController implements Initializable {
     }
 
     @FXML
-    public void generatePassword() {
+    private void generatePassword() {
         // TODO
     }
 
     @FXML
     private void copyToClipboard(ActionEvent event) {
         // TODO
+    }
+
+    private void initializePasswordPolicyComboBox() {
+        setPasswordPolicyComboBoxCellFactory();
+        passwordPolicyComboBox.setItems(passwordPolicyObsList);
+        loadPasswordPolicies();
+        setDefaultPasswordPolicy();;
+    }
+
+    private void setPasswordPolicyComboBoxCellFactory() {
+        passwordPolicyComboBox.setCellFactory(new Callback<ListView<PasswordPolicy>, ListCell<PasswordPolicy>>() {
+            @Override
+            public ListCell<PasswordPolicy> call(ListView<PasswordPolicy> param) {
+                return new ListCell<PasswordPolicy>() {
+                    @Override
+                    protected void updateItem(PasswordPolicy item, boolean empty) {
+                        super.updateItem(item, empty);
+
+                        if (item != null) {
+                            setText(item.toString());
+                        } else {
+                            setText(null);
+                        }
+                    }
+                };
+            }
+        });
+    }
+
+    private void loadPasswordPolicies() {
+        try {
+            passwordPolicyObsList.setAll(DatabaseManager.getInstance().getAllPasswordPolicies());
+        }
+        catch (SQLException e) {
+            throw new RuntimeException(e);
+        };
     }
 
     private void initializeValidator() {
@@ -102,12 +152,105 @@ public class PasswordEntityEditorPaneController implements Initializable {
         catch (DateTimeParseException e) {
             return false;
         }
+    }
 
+    public void createPasswordEntity(Folder folder) {
+        setEditMode(EditorMode.CREATE, folder);
+        resetFields();
+    }
+
+    public void editPasswordEntity(PasswordEntity pwdEntity) {
+        setEditMode(EditorMode.EDIT, pwdEntity);
+        resetFields();
+        loadPasswordEntity(pwdEntity);
+    }
+
+    public void viewPasswordEntity(PasswordEntity pwdEntity) {
+        setViewMode();
+        resetFields();
+        loadPasswordEntity(pwdEntity);
+    }
+
+    private void setViewMode(PasswordEntity pwdEntity) {
+        editorMode = EditorMode.VIEW;
+        editorMode.setDataEntity(pwdEntity);
+        setTextFieldsEditable(false);
+        disableControls(true);
+    }
+
+    private void setEditMode(EditorMode editorMode, DataEntity dataEntity) {
+        this.editorMode = editorMode;
+        this.editorMode.setDataEntity(dataEntity);
+        setTextFieldsEditable(true);
+        disableControls(false);
+    }
+
+    private void setHideMode() {
+        editorMode = EditorMode.HIDE;
+        passwordEntityEditorMainPane.setVisible(false);
+    }
+
+    private void setTextFieldsEditable(boolean editable) {
+        nameTextField.setEditable(editable);
+        descriptionTextField.setEditable(editable);
+        urlTextField.setEditable(editable);
+        usernameTextField.setEditable(editable);
+        passwordField.setEditable(editable);
+    }
+
+    private void disableControls(boolean disable) {
+        passwordPolicyComboBox.setDisable(disable);
+        passwordExpiresCheckBox.setDisable(disable);
+        passwordExpirationDatePicker.setDisable(disable);
+        generatePasswordButton.setDisable(disable);
+    }
+
+    private void loadPasswordEntity(PasswordEntity pwdEntity) {
+        nameTextField.setText(pwdEntity.getName());
+        descriptionTextField.setText(pwdEntity.getDescription());
+        urlTextField.setText(pwdEntity.getUrl());
+        usernameTextField.setText(pwdEntity.getUsername());
+        passwordField.setText(pwdEntity.getPassword());
+        setPasswordPolicy(pwdEntity);
+        passwordExpiresCheckBox.setSelected(pwdEntity.isPasswordExpires());
+        passwordExpirationDatePicker.setValue(pwdEntity.getExpirationDate());
+    }
+
+    private void setPasswordPolicy(PasswordEntity pwdEntty) {
+        for (PasswordPolicy pwdPolicy : passwordPolicyObsList) {
+            if (pwdPolicy.getId() == pwdEntty.getPasswordPolicyId()) {
+                passwordPolicyComboBox.getSelectionModel().select(pwdPolicy);
+            }
+        }
+    }
+
+    private void resetFields() {
+        nameTextField.clear();
+        descriptionTextField.clear();
+        urlTextField.clear();
+        usernameTextField.clear();
+        passwordField.clear();
+        setDefaultPasswordPolicy();
+        passwordExpiresCheckBox.setSelected(false);
+        passwordExpirationDatePicker.setValue(null);
+    }
+
+    private void setDefaultPasswordPolicy() {
+        for (PasswordPolicy pwdPolicy : passwordPolicyObsList) {
+            if (pwdPolicy.isDefaultPolicy()) {
+                passwordPolicyComboBox.getSelectionModel().select(pwdPolicy);
+            }
+        }
+    }
+
+    void setPasswordManagerPaneController(PasswordManagerPaneController passwordManagerPaneController) {
+        this.passwordManagerPaneController = passwordManagerPaneController;
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        //passwordEntityEditorMainPane.setVisible(false);
         initializeValidator();
+        initializePasswordPolicyComboBox();
+        //setHideMode();
     }
 }
