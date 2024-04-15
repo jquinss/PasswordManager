@@ -1,7 +1,10 @@
 package com.jquinss.passwordmanager.controllers;
 
 import com.jquinss.passwordmanager.data.DataEntity;
+import com.jquinss.passwordmanager.data.Folder;
+import com.jquinss.passwordmanager.data.PasswordEntity;
 import com.jquinss.passwordmanager.data.User;
+import com.jquinss.passwordmanager.enums.EditorMode;
 import com.jquinss.passwordmanager.managers.TreeViewManager;
 import com.jquinss.passwordmanager.security.UserSession;
 import com.jquinss.passwordmanager.util.misc.CryptoUtils;
@@ -43,11 +46,28 @@ public class PasswordManagerPaneController implements Initializable {
 
     private void initializeTreeViewManager() {
         treeViewManager = new TreeViewManager(treeView, userSession, asymmetricCrypto);
+        treeViewManager.setPasswordManagerPaneController(this);
         treeViewManager.initializeTreeView();
+    }
+
+    private void initializePasswordEntityEditorPaneController() {
+        passwordEntityEditorPaneController.setPasswordManagerPaneController(this);
+    }
+
+    public void loadPasswordEntityInEditor(PasswordEntity passwordEntity, EditorMode editorMode) {
+        switch(editorMode) {
+            case EDIT -> passwordEntityEditorPaneController.editPasswordEntity(passwordEntity);
+            case VIEW -> passwordEntityEditorPaneController.viewPasswordEntity(passwordEntity);
+        }
+    }
+
+    public void createPasswordEntityInEditor(Folder folder) {
+        passwordEntityEditorPaneController.createPasswordEntity(folder);
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         initializeTreeViewManager();
+        initializePasswordEntityEditorPaneController();
     }
 }
