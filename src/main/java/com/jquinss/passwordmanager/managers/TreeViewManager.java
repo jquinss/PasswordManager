@@ -112,7 +112,6 @@ public class TreeViewManager {
     }
 
     private void createPasswordEntity() {
-        // TODO
         passwordManagerPaneController.createPasswordEntityInEditor((Folder) treeView.getSelectionModel().getSelectedItem().getValue());
     }
 
@@ -137,7 +136,7 @@ public class TreeViewManager {
     }
 
     private void viewPasswordEntity() {
-        // TODO
+        passwordManagerPaneController.viewPasswordEntityInEditor((PasswordEntity) treeView.getSelectionModel().getSelectedItem().getValue());
     }
 
     private void duplicatePasswordEntity() {
