@@ -12,6 +12,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.util.Callback;
 import net.synedra.validatorfx.Check;
 import net.synedra.validatorfx.Validator;
@@ -26,6 +27,7 @@ import java.util.ResourceBundle;
 public class PasswordEntityEditorPaneController implements Initializable {
     public Button saveButton;
     public Button generatePasswordButton;
+    public HBox dialogButtons;
     @FXML
     private ScrollPane passwordEntityEditorMainPane;
     @FXML
@@ -199,6 +201,8 @@ public class PasswordEntityEditorPaneController implements Initializable {
         editorMode.setDataEntity(pwdEntity);
         setTextFieldsEditable(false);
         disableControls(true);
+        dialogButtons.setVisible(false);
+        passwordEntityEditorMainPane.setVisible(true);
     }
 
     private void setEditMode(EditorMode editorMode, DataEntity dataEntity) {
@@ -206,6 +210,7 @@ public class PasswordEntityEditorPaneController implements Initializable {
         this.editorMode.setDataEntity(dataEntity);
         setTextFieldsEditable(true);
         disableControls(false);
+        dialogButtons.setVisible(true);
         passwordEntityEditorMainPane.setVisible(true);
     }
 
