@@ -56,6 +56,11 @@ public class PasswordEntityEditorPaneController implements Initializable {
     @FXML
     private void save() {
         // TODO
+        switch (editorMode) {
+            case CREATE -> createPasswordEntity();
+        }
+
+        setHideMode();
     }
 
     @FXML
@@ -71,6 +76,24 @@ public class PasswordEntityEditorPaneController implements Initializable {
     @FXML
     private void copyToClipboard(ActionEvent event) {
         // TODO
+    }
+
+    private void createPasswordEntity() {
+        editorMode.getDataEntity().ifPresent(entity -> {
+            Folder folder = (Folder) entity;
+            PasswordEntity pwdEntity = new PasswordEntity(entity.getId(), nameTextField.getText(), passwordField.getText());
+            pwdEntity.setDescription(descriptionTextField.getText());
+            pwdEntity.setUsername(usernameTextField.getText());
+            pwdEntity.setUrl(urlTextField.getText());
+            pwdEntity.setPasswordExpires(passwordExpiresCheckBox.isSelected());
+            if (passwordExpiresCheckBox.isSelected()) {
+                pwdEntity.setExpirationDate(passwordExpirationDatePicker.getValue());
+            }
+
+            passwordManagerPaneController.addPasswordEntityToTreeView(pwdEntity, folder);
+        });
+
+
     }
 
     private void initializePasswordPolicyComboBox() {
@@ -154,18 +177,18 @@ public class PasswordEntityEditorPaneController implements Initializable {
         }
     }
 
-    public void createPasswordEntity(Folder folder) {
+    public void openPasswordEntityEditorInCreateMode(Folder folder) {
         setEditMode(EditorMode.CREATE, folder);
         resetFields();
     }
 
-    public void editPasswordEntity(PasswordEntity pwdEntity) {
+    public void openPasswordEntityEditorInEditMode(PasswordEntity pwdEntity) {
         setEditMode(EditorMode.EDIT, pwdEntity);
         resetFields();
         loadPasswordEntity(pwdEntity);
     }
 
-    public void viewPasswordEntity(PasswordEntity pwdEntity) {
+    public void openPasswordEntityEditorInViewMode(PasswordEntity pwdEntity) {
         setViewMode(pwdEntity);
         resetFields();
         loadPasswordEntity(pwdEntity);
@@ -183,6 +206,7 @@ public class PasswordEntityEditorPaneController implements Initializable {
         this.editorMode.setDataEntity(dataEntity);
         setTextFieldsEditable(true);
         disableControls(false);
+        passwordEntityEditorMainPane.setVisible(true);
     }
 
     private void setHideMode() {
@@ -251,6 +275,6 @@ public class PasswordEntityEditorPaneController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         initializeValidator();
         initializePasswordPolicyComboBox();
-        //setHideMode();
+        setHideMode();
     }
 }
