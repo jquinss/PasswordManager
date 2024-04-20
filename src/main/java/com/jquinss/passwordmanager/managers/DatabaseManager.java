@@ -85,6 +85,14 @@ public class DatabaseManager {
         folderDao.delete(folders);
     }
 
+    public void addPasswordEntity(PasswordEntity passwordEntity) throws SQLException {
+        passwordEntityDao.add(passwordEntity);
+    }
+
+    public void deletePasswordEntity(PasswordEntity passwordEntity) throws SQLException {
+        passwordEntityDao.delete(passwordEntity);
+    }
+
     public List<PasswordEntity> getAllPasswordEntitiesByFolderId(int folderId) throws SQLException {
         return passwordEntityDao.getAllByFolderId(folderId);
     }
