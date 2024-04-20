@@ -113,10 +113,19 @@ public class TreeViewManager {
 
     private void createPasswordEntity() {
         // TODO
+        passwordManagerPaneController.createPasswordEntityInEditor((Folder) treeView.getSelectionModel().getSelectedItem().getValue());
     }
 
     private void deletePasswordEntity() {
-        // TODO
+        TreeItem<DataEntity> treeItem = treeView.getSelectionModel().getSelectedItem();
+        try {
+            DatabaseManager.getInstance().deletePasswordEntity((PasswordEntity) treeItem.getValue());
+            treeItem.getParent().getChildren().remove(treeItem);
+        }
+        catch (SQLException e) {
+            DialogBuilder.buildAlertDialog("Error", "Error deleting password entity",
+                    "A database error has occurred during the operation", Alert.AlertType.ERROR);
+        }
     }
 
     private void renamePasswordEntity() {
@@ -137,6 +146,25 @@ public class TreeViewManager {
 
     private void copyPasswordToClipboard() {
         // TODO
+    }
+
+    public void addPasswordEntity(PasswordEntity passwordEntity, Folder folder) {
+        try {
+            encryptFields(passwordEntity); // encrypt fields to save to the database
+            DatabaseManager.getInstance().addPasswordEntity(passwordEntity);
+            decryptFields(passwordEntity);
+            TreeItem<DataEntity> treeItem = buildTreeItem(passwordEntity);
+
+            for (TreeItem<DataEntity> item : treeView.getRoot().getChildren()) {
+                if (item.getValue().getId() == folder.getId()) {
+                    item.getChildren().add(treeItem);
+                }
+            }
+        }
+        catch (SQLException e) {
+            DialogBuilder.buildAlertDialog("Error", "Error creating password entity",
+                    "A database error has occurred during the operation", Alert.AlertType.ERROR);
+        }
     }
 
     public void initializeTreeView() {
