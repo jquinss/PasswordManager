@@ -54,7 +54,7 @@ public class PasswordEntity extends DataEntity {
     }
 
     public void setUsername(String username) {
-        this.username = username.isEmpty() ? null : username;
+        this.username = username == null || username.isEmpty() ? null : username;
     }
 
     public String getEmailAddress() {
@@ -62,7 +62,7 @@ public class PasswordEntity extends DataEntity {
     }
 
     public void setEmailAddress(String emailAddress) {
-        this.emailAddress = emailAddress.isEmpty() ? null : emailAddress;
+        this.emailAddress = emailAddress == null || emailAddress.isEmpty() ? null : emailAddress;
     }
 
     public String getPassword() {
@@ -78,7 +78,7 @@ public class PasswordEntity extends DataEntity {
     }
 
     public void setUrl(String url) {
-        this.url = url.isEmpty() ? null : url;
+        this.url = url == null || url.isEmpty() ? null : url;
     }
 
     public boolean isPasswordExpires() {
