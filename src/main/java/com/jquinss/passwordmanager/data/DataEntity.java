@@ -37,6 +37,6 @@ public abstract class DataEntity {
     }
 
     public void setDescription(String description) {
-        this.description = description.isEmpty() ? null : description;
+        this.description = description == null || description.isEmpty() ? null : description;
     }
 }
