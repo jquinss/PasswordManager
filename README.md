@@ -32,13 +32,13 @@ This a JavaFX desktop application for managing password. The application is inte
 * Users can view basic information about password entities for quick identification.
 * Users can autogenerate passwords.
 * Users can customize the criteria used to autogenerate passwords (e.g. length, number to characters, etc.).
+* Users can create policies to enforce the strength of passwords.
 * Users can create different profiles for password criteria.
-* Users can create database backups.
-* Users can recover backups.
-* Users can set expiration dates for passwords.
 * Users can be informed about the strength of the generated password.
 * Users can copy password properties to the clipboard.
 * Users can have an option to see the hidden password.
+* Users can create database backups.
+* Users can recover backups.
 * Users can generate key pairs (public-private keys).
 
 ## Status
