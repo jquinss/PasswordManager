@@ -11,6 +11,7 @@ public class PasswordSpecs {
     }
 
     public void setNumLowerCaseChars(int numLowerCaseChars) {
+        validatePositiveInteger(numLowerCaseChars);
         this.numLowerCaseChars = numLowerCaseChars;
     }
 
@@ -19,6 +20,7 @@ public class PasswordSpecs {
     }
 
     public void setNumUpperCaseChars(int numUpperCaseChars) {
+        validatePositiveInteger(numUpperCaseChars);
         this.numUpperCaseChars = numUpperCaseChars;
     }
 
@@ -27,6 +29,7 @@ public class PasswordSpecs {
     }
 
     public void setNumDigits(int numDigits) {
+        validatePositiveInteger(numDigits);
         this.numDigits = numDigits;
     }
 
@@ -35,6 +38,13 @@ public class PasswordSpecs {
     }
 
     public void setNumSymbols(int numSymbols) {
+        validatePositiveInteger(numSymbols);
         this.numSymbols = numSymbols;
+    }
+
+    private void validatePositiveInteger(int num) {
+        if (num < 0) {
+            throw new RuntimeException("Must be a positive integer");
+        }
     }
 }
