@@ -11,60 +11,50 @@ public class PasswordGenerator {
     private static final int[] DIGIT_RANGE = {48, 57};
     private static final char[] SYMBOLS_ASCII = {'~', '`', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '-',
             '+', '=', '{', '[', '}', ']', '|', '\\', ':', ';', '"', '\'', '<', ',', '>', '.', '?', '/'};
-    private final int numLowerCaseChars;
-    private final int numUpperCaseChars;
-    private final int numDigits;
-    private final int numSymbols;
+    private final PasswordSpecs passwordSpecs = new PasswordSpecs();
 
     private PasswordGenerator(Builder builder) {
-        this.numLowerCaseChars = builder.numLowerCaseChars;
-        this.numUpperCaseChars = builder.numUpperCaseChars;
-        this.numDigits = builder.numDigits;
-        this.numSymbols = builder.numSymbols;
+        this.passwordSpecs.setNumLowerCaseChars(builder.passwordSpecs.getNumLowerCaseChars());
+        this.passwordSpecs.setNumUpperCaseChars(builder.passwordSpecs.getNumUpperCaseChars());
+        this.passwordSpecs.setNumDigits(builder.passwordSpecs.getNumDigits());
+        this.passwordSpecs.setNumSymbols(builder.passwordSpecs.getNumSymbols());
     }
 
     public static class Builder {
-        private int numLowerCaseChars;
-        private int numUpperCaseChars;
-        private int numDigits;
-        private int numSymbols;
+        private PasswordSpecs passwordSpecs = new PasswordSpecs();
 
         public Builder numLowerCaseChars(int numLowerCaseChars) {
-            validatePositiveInteger(numLowerCaseChars);
-            this.numLowerCaseChars= numLowerCaseChars;
+            this.passwordSpecs.setNumLowerCaseChars(numLowerCaseChars);
             return this;
         }
 
         public Builder numUpperCaseChars(int numUpperCaseChars) {
-            validatePositiveInteger(numUpperCaseChars);
-            this.numUpperCaseChars = numUpperCaseChars;
+            this.passwordSpecs.setNumUpperCaseChars(numUpperCaseChars);
             return this;
         }
 
         public Builder numDigits(int numDigits) {
-            validatePositiveInteger(numDigits);
-            this.numDigits = numDigits;
+            this.passwordSpecs.setNumDigits(numDigits);
             return this;
         }
 
         public Builder numSymbols(int numSymbols) {
-            validatePositiveInteger(numSymbols);
-            this.numSymbols = numSymbols;
+            this.passwordSpecs.setNumSymbols(numSymbols);
             return this;
         }
 
+        public Builder passwordSpecs(PasswordSpecs passwordSpecs) {
+            this.passwordSpecs = passwordSpecs;
+            return this;
+
+        }
+
         public PasswordGenerator build() {
-            if (this.numLowerCaseChars + this.numUpperCaseChars +
-                    this.numDigits + this.numSymbols <= 0) {
+            if ((this.passwordSpecs.getNumLowerCaseChars() + this.passwordSpecs.getNumUpperCaseChars() +
+            this.passwordSpecs.getNumDigits() + this.passwordSpecs.getNumSymbols()) <= 0) {
                 throw new RuntimeException("The password needs to have at least 1 character");
             }
             return new PasswordGenerator(this);
-        }
-
-        private void validatePositiveInteger(int num) {
-            if (num < 0) {
-                throw new RuntimeException("Must be a positive integer");
-            }
         }
     }
 
@@ -75,13 +65,13 @@ public class PasswordGenerator {
     }
 
     public String generatePassword() {
-        char[] lowerCaseChars = getRandomCharSampleFromIntRange(numLowerCaseChars, LOWER_CASE_ASCII_RANGE[0],
+        char[] lowerCaseChars = getRandomCharSampleFromIntRange(passwordSpecs.getNumLowerCaseChars(), LOWER_CASE_ASCII_RANGE[0],
                 LOWER_CASE_ASCII_RANGE[1], Character::toString);
-        char[] upperCaseChars = getRandomCharSampleFromIntRange(numUpperCaseChars, UPPER_CASE_ASCII_RANGE[0],
+        char[] upperCaseChars = getRandomCharSampleFromIntRange(passwordSpecs.getNumUpperCaseChars(), UPPER_CASE_ASCII_RANGE[0],
                 UPPER_CASE_ASCII_RANGE[1], Character::toString);
-        char[] digits = getRandomCharSampleFromIntRange(numDigits, DIGIT_RANGE[0], DIGIT_RANGE[1],
+        char[] digits = getRandomCharSampleFromIntRange(passwordSpecs.getNumDigits(), DIGIT_RANGE[0], DIGIT_RANGE[1],
                 Character:: toString);
-        char[] symbols = getRandomCharSampleFromIntRange(numSymbols, 0, SYMBOLS_ASCII.length - 1,
+        char[] symbols = getRandomCharSampleFromIntRange(passwordSpecs.getNumSymbols(), 0, SYMBOLS_ASCII.length - 1,
                 i -> Character.toString(SYMBOLS_ASCII[i]));
 
         int totalSize = lowerCaseChars.length + upperCaseChars.length + digits.length + symbols.length;
