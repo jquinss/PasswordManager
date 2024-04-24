@@ -11,51 +11,10 @@ public class PasswordGenerator {
     private static final int[] DIGIT_RANGE = {48, 57};
     private static final char[] SYMBOLS_ASCII = {'~', '`', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '-',
             '+', '=', '{', '[', '}', ']', '|', '\\', ':', ';', '"', '\'', '<', ',', '>', '.', '?', '/'};
-    private final PasswordSpecs passwordSpecs = new PasswordSpecs();
+    private PasswordSpecs passwordSpecs;
 
-    private PasswordGenerator(Builder builder) {
-        this.passwordSpecs.setNumLowerCaseChars(builder.passwordSpecs.getNumLowerCaseChars());
-        this.passwordSpecs.setNumUpperCaseChars(builder.passwordSpecs.getNumUpperCaseChars());
-        this.passwordSpecs.setNumDigits(builder.passwordSpecs.getNumDigits());
-        this.passwordSpecs.setNumSymbols(builder.passwordSpecs.getNumSymbols());
-    }
-
-    public static class Builder {
-        private PasswordSpecs passwordSpecs = new PasswordSpecs();
-
-        public Builder numLowerCaseChars(int numLowerCaseChars) {
-            this.passwordSpecs.setNumLowerCaseChars(numLowerCaseChars);
-            return this;
-        }
-
-        public Builder numUpperCaseChars(int numUpperCaseChars) {
-            this.passwordSpecs.setNumUpperCaseChars(numUpperCaseChars);
-            return this;
-        }
-
-        public Builder numDigits(int numDigits) {
-            this.passwordSpecs.setNumDigits(numDigits);
-            return this;
-        }
-
-        public Builder numSymbols(int numSymbols) {
-            this.passwordSpecs.setNumSymbols(numSymbols);
-            return this;
-        }
-
-        public Builder passwordSpecs(PasswordSpecs passwordSpecs) {
-            this.passwordSpecs = passwordSpecs;
-            return this;
-
-        }
-
-        public PasswordGenerator build() {
-            if ((this.passwordSpecs.getNumLowerCaseChars() + this.passwordSpecs.getNumUpperCaseChars() +
-            this.passwordSpecs.getNumDigits() + this.passwordSpecs.getNumSymbols()) <= 0) {
-                throw new RuntimeException("The password needs to have at least 1 character");
-            }
-            return new PasswordGenerator(this);
-        }
+    private PasswordGenerator(PasswordSpecs passwordSpecs) {
+        this.passwordSpecs = passwordSpecs;
     }
 
     private char[] getRandomCharSampleFromIntRange(int size, int min, int max, IntFunction<String> mapper) {
