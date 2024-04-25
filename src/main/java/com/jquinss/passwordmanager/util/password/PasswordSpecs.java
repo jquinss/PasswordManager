@@ -40,7 +40,7 @@ public class PasswordSpecs {
             return this;
         }
 
-        public Builder minUppercaseChars(int numUpperCaseChars) {
+        public Builder numUppercaseChars(int numUpperCaseChars) {
             validatePositiveInteger(numUpperCaseChars);
             this.numUpperCaseChars = numUpperCaseChars;
             return this;
