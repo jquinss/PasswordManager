@@ -67,7 +67,7 @@ public class PasswordEntityEditorPaneController implements Initializable {
 
     @FXML
     private void cancel() {
-        // TODO
+        setHideMode();
     }
 
     @FXML
@@ -216,6 +216,7 @@ public class PasswordEntityEditorPaneController implements Initializable {
 
     private void setHideMode() {
         editorMode = EditorMode.HIDE;
+        editorMode.setDataEntity(null);
         passwordEntityEditorMainPane.setVisible(false);
     }
 
