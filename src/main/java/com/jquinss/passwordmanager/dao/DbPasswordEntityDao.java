@@ -11,8 +11,8 @@ import java.util.List;
 import java.util.Optional;
 
 public class DbPasswordEntityDao implements PasswordEntityDao {
-    public static final String DATE_TIM_FORMAT = "yyyy-MM-dd";
-    public static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(DATE_TIM_FORMAT);
+    public static final String DATE_TIME_FORMAT = "yyyy-MM-dd";
+    public static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT);
     private final DataSource dataSource;
 
     public DbPasswordEntityDao(DataSource dataSource) {
