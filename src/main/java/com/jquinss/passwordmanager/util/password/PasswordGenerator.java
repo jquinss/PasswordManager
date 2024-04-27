@@ -13,7 +13,7 @@ public class PasswordGenerator {
             '+', '=', '{', '[', '}', ']', '|', '\\', ':', ';', '"', '\'', '<', ',', '>', '.', '?', '/'};
     private PasswordSpecs passwordSpecs;
 
-    private PasswordGenerator(PasswordSpecs passwordSpecs) {
+    public PasswordGenerator(PasswordSpecs passwordSpecs) {
         this.passwordSpecs = passwordSpecs;
     }
 
