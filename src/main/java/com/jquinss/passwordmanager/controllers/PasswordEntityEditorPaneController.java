@@ -3,6 +3,7 @@ package com.jquinss.passwordmanager.controllers;
 import com.jquinss.passwordmanager.data.*;
 import com.jquinss.passwordmanager.enums.EditorMode;
 import com.jquinss.passwordmanager.managers.DatabaseManager;
+import com.jquinss.passwordmanager.util.password.PasswordGenerator;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -55,6 +56,7 @@ public class PasswordEntityEditorPaneController implements Initializable {
     private final Validator validator = new Validator();
     private final ObservableList<PasswordPolicy> passwordPolicyObsList = FXCollections.observableArrayList();
     private final ObservableList<PasswordGeneratorPolicy> passwordGeneratorPolicyObsList = FXCollections.observableArrayList();
+    private PasswordGenerator passwordGenerator;
 
     @FXML
     private void save() {
@@ -73,7 +75,7 @@ public class PasswordEntityEditorPaneController implements Initializable {
 
     @FXML
     private void generatePassword() {
-        // TODO
+        passwordField.setText(passwordGenerator.generatePassword());
     }
 
     @FXML
@@ -185,6 +187,10 @@ public class PasswordEntityEditorPaneController implements Initializable {
                 passwordGeneratorPolicyComboBox.getSelectionModel().select(pwdGenPolicy);
             }
         }
+    }
+
+    private void initializePasswordGenerator() {
+        passwordGenerator = new PasswordGenerator(passwordGeneratorPolicyComboBox.getValue().getPasswordSpecs());
     }
 
     private void initializeValidator() {
@@ -328,6 +334,7 @@ public class PasswordEntityEditorPaneController implements Initializable {
         initializeValidator();
         initializePasswordPolicyComboBox();
         initializePasswordGeneratorPolicyComboBox();
+        initializePasswordGenerator();
         setHideMode();
     }
 }
