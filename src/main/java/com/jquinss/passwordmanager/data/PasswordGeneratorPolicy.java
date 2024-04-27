@@ -43,4 +43,9 @@ public class PasswordGeneratorPolicy {
     public void setPasswordSpecs(PasswordSpecs passwordSpecs) {
         this.passwordSpecs = passwordSpecs;
     }
+
+    @Override
+    public String toString() {
+        return getName();
+    }
 }
