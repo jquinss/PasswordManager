@@ -1,9 +1,6 @@
 package com.jquinss.passwordmanager.controllers;
 
-import com.jquinss.passwordmanager.data.DataEntity;
-import com.jquinss.passwordmanager.data.Folder;
-import com.jquinss.passwordmanager.data.PasswordEntity;
-import com.jquinss.passwordmanager.data.PasswordPolicy;
+import com.jquinss.passwordmanager.data.*;
 import com.jquinss.passwordmanager.enums.EditorMode;
 import com.jquinss.passwordmanager.managers.DatabaseManager;
 import javafx.collections.FXCollections;
@@ -25,9 +22,14 @@ import java.time.format.DateTimeParseException;
 import java.util.ResourceBundle;
 
 public class PasswordEntityEditorPaneController implements Initializable {
-    public Button saveButton;
-    public Button generatePasswordButton;
-    public HBox dialogButtons;
+    @FXML
+    private Button saveButton;
+    @FXML
+    private Button generatePasswordButton;
+    @FXML
+    private HBox dialogButtons;
+    @FXML
+    private ComboBox<PasswordGeneratorPolicy> passwordGeneratorPolicyComboBox;
     @FXML
     private ScrollPane passwordEntityEditorMainPane;
     @FXML
@@ -50,10 +52,9 @@ public class PasswordEntityEditorPaneController implements Initializable {
     private CheckBox showPasswordCheckBox;
     private EditorMode editorMode;
     private PasswordManagerPaneController passwordManagerPaneController;
-
     private final Validator validator = new Validator();
-
     private final ObservableList<PasswordPolicy> passwordPolicyObsList = FXCollections.observableArrayList();
+    private final ObservableList<PasswordGeneratorPolicy> passwordGeneratorPolicyObsList = FXCollections.observableArrayList();
 
     @FXML
     private void save() {
@@ -132,6 +133,58 @@ public class PasswordEntityEditorPaneController implements Initializable {
         catch (SQLException e) {
             throw new RuntimeException(e);
         };
+    }
+
+    private void setDefaultPasswordPolicy() {
+        for (PasswordPolicy pwdPolicy : passwordPolicyObsList) {
+            if (pwdPolicy.isDefaultPolicy()) {
+                passwordPolicyComboBox.getSelectionModel().select(pwdPolicy);
+            }
+        }
+    }
+
+    private void initializePasswordGeneratorPolicyComboBox() {
+        setPasswordGeneratorPolicyComboBoxCellFactory();
+        passwordGeneratorPolicyComboBox.setItems(passwordGeneratorPolicyObsList);
+        loadPasswordGeneratorPolicies();
+        setDefaultPasswordGeneratorPolicy();;
+    }
+
+    private void setPasswordGeneratorPolicyComboBoxCellFactory() {
+        passwordGeneratorPolicyComboBox.setCellFactory(new Callback<ListView<PasswordGeneratorPolicy>, ListCell<PasswordGeneratorPolicy>>() {
+            @Override
+            public ListCell<PasswordGeneratorPolicy> call(ListView<PasswordGeneratorPolicy> param) {
+                return new ListCell<PasswordGeneratorPolicy>() {
+                    @Override
+                    protected void updateItem(PasswordGeneratorPolicy item, boolean empty) {
+                        super.updateItem(item, empty);
+
+                        if (item != null) {
+                            setText(item.toString());
+                        } else {
+                            setText(null);
+                        }
+                    }
+                };
+            }
+        });
+    }
+
+    private void loadPasswordGeneratorPolicies() {
+        try {
+            passwordGeneratorPolicyObsList.setAll(DatabaseManager.getInstance().getAllPasswordGeneratorPolicies());
+        }
+        catch (SQLException e) {
+            throw new RuntimeException(e);
+        };
+    }
+
+    private void setDefaultPasswordGeneratorPolicy() {
+        for (PasswordGeneratorPolicy pwdGenPolicy : passwordGeneratorPolicyObsList) {
+            if (pwdGenPolicy.isDefaultPolicy()) {
+                passwordGeneratorPolicyComboBox.getSelectionModel().select(pwdGenPolicy);
+            }
+        }
     }
 
     private void initializeValidator() {
@@ -230,6 +283,7 @@ public class PasswordEntityEditorPaneController implements Initializable {
 
     private void disableControls(boolean disable) {
         passwordPolicyComboBox.setDisable(disable);
+        passwordGeneratorPolicyComboBox.setDisable(disable);
         passwordExpiresCheckBox.setDisable(disable);
         passwordExpirationDatePicker.setDisable(disable);
         generatePasswordButton.setDisable(disable);
@@ -265,14 +319,6 @@ public class PasswordEntityEditorPaneController implements Initializable {
         passwordExpirationDatePicker.setValue(null);
     }
 
-    private void setDefaultPasswordPolicy() {
-        for (PasswordPolicy pwdPolicy : passwordPolicyObsList) {
-            if (pwdPolicy.isDefaultPolicy()) {
-                passwordPolicyComboBox.getSelectionModel().select(pwdPolicy);
-            }
-        }
-    }
-
     void setPasswordManagerPaneController(PasswordManagerPaneController passwordManagerPaneController) {
         this.passwordManagerPaneController = passwordManagerPaneController;
     }
@@ -281,6 +327,7 @@ public class PasswordEntityEditorPaneController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         initializeValidator();
         initializePasswordPolicyComboBox();
+        initializePasswordGeneratorPolicyComboBox();
         setHideMode();
     }
 }
