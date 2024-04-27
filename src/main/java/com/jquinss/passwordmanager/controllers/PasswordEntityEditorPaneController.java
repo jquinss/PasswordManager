@@ -10,6 +10,8 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.HBox;
 import javafx.util.Callback;
 import net.synedra.validatorfx.Check;
@@ -80,7 +82,19 @@ public class PasswordEntityEditorPaneController implements Initializable {
 
     @FXML
     private void copyToClipboard(ActionEvent event) {
-        // TODO
+        String buttonId = ((Control) event.getSource()).getId();
+        switch (buttonId) {
+            case "copyPasswordButton" -> copyTextControlInputToClipboard(passwordField);
+            case "copyUsernameButton" -> copyTextControlInputToClipboard(usernameTextField);
+            case "copyUrlButton" -> copyTextControlInputToClipboard(urlTextField);
+        }
+    }
+
+    private void copyTextControlInputToClipboard(TextField textField) {
+        Clipboard clipboard = Clipboard.getSystemClipboard();
+        ClipboardContent content = new ClipboardContent();
+        content.putString(textField.getText());
+        clipboard.setContent(content);
     }
 
     private void createPasswordEntity() {
