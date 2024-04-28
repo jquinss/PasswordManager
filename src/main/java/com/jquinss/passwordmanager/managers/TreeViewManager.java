@@ -136,7 +136,16 @@ public class TreeViewManager {
     }
 
     private void editPasswordEntity() {
-        // TODO
+        TreeItem<DataEntity> treeItem = treeView.getSelectionModel().getSelectedItem();
+        setEditMode(TreeViewMode.EDIT, treeItem);
+        try {
+            // creates a copy of the PasswordEntity instance in case any exception occurs inserting the the db
+            PasswordEntity pwdEntityCopy = (PasswordEntity) ((PasswordEntity) treeItem.getValue()).clone();
+            passwordManagerPaneController.editPasswordEntityInEditor(pwdEntityCopy);
+        }
+        catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void viewPasswordEntity() {
@@ -157,6 +166,7 @@ public class TreeViewManager {
         treeViewMode.getTreeItem().ifPresent(treeItem -> {
             switch (treeViewMode) {
                 case CREATE -> addPasswordEntity(passwordEntity, treeItem);
+                case EDIT -> modifyPasswordEntity(passwordEntity);
             }
         });
 
@@ -177,6 +187,24 @@ public class TreeViewManager {
         finally {
             setViewMode();
         }
+    }
+
+    private void modifyPasswordEntity(PasswordEntity passwordEntityCopy) {
+        treeViewMode.getTreeItem().ifPresent(treeItem -> {
+            try {
+                encryptFields(passwordEntityCopy); // encrypt fields to save to the database
+                DatabaseManager.getInstance().updatePasswordEntity(passwordEntityCopy);
+                decryptFields(passwordEntityCopy);
+                treeItem.setValue(passwordEntityCopy);
+            }
+            catch (SQLException e) {
+                DialogBuilder.buildAlertDialog("Error", "Error modifying password entity",
+                        "A database error has occurred during the operation", Alert.AlertType.ERROR);
+            }
+            finally {
+                setViewMode();
+            }
+        });
     }
 
     public void initializeTreeView() {
