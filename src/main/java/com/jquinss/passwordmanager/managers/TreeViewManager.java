@@ -208,7 +208,6 @@ public class TreeViewManager {
     }
 
     public void initializeTreeView() {
-        // TODO
         setTreeViewCellFactory();
         initializeRootTreeItem();
         loadTreeItems();
