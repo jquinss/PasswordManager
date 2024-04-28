@@ -168,7 +168,7 @@ public class TreeViewManager {
             DatabaseManager.getInstance().addPasswordEntity(passwordEntity);
             decryptFields(passwordEntity);
             TreeItem<DataEntity> treeItem = buildTreeItem(passwordEntity);
-            folderTreeItem.getChildren().add(folderTreeItem);
+            folderTreeItem.getChildren().add(treeItem);
         }
         catch (SQLException e) {
             DialogBuilder.buildAlertDialog("Error", "Error creating password entity",
