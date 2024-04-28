@@ -101,6 +101,10 @@ public class DatabaseManager {
         passwordEntityDao.delete(passwordEntity);
     }
 
+    public void updatePasswordEntity(PasswordEntity passwordEntity) throws SQLException {
+        passwordEntityDao.update(passwordEntity);
+    }
+
     public List<PasswordEntity> getAllPasswordEntitiesByFolderId(int folderId) throws SQLException {
         return passwordEntityDao.getAllByFolderId(folderId);
     }
