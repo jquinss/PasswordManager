@@ -54,15 +54,14 @@ public class PasswordManagerPaneController implements Initializable {
         passwordEntityEditorPaneController.setPasswordManagerPaneController(this);
     }
 
-    public void loadPasswordEntityInEditor(PasswordEntity passwordEntity, EditorMode editorMode) {
-        switch(editorMode) {
-            case EDIT -> passwordEntityEditorPaneController.openPasswordEntityEditorInEditMode(passwordEntity);
-            case VIEW -> passwordEntityEditorPaneController.openPasswordEntityEditorInViewMode(passwordEntity);
-        }
-    }
+
 
     public void createPasswordEntityInEditor(Folder folder) {
         passwordEntityEditorPaneController.openPasswordEntityEditorInCreateMode(folder);
+    }
+
+    public void editPasswordEntityInEditor(PasswordEntity passwordEntity) {
+        passwordEntityEditorPaneController.openPasswordEntityEditorInEditMode(passwordEntity);
     }
 
     public void viewPasswordEntityInEditor(PasswordEntity passwordEntity) {
