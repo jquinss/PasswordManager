@@ -69,8 +69,12 @@ public class PasswordManagerPaneController implements Initializable {
         passwordEntityEditorPaneController.openPasswordEntityEditorInViewMode(passwordEntity);
     }
 
-    void addPasswordEntityToTreeView(PasswordEntity passwordEntity, Folder folder) {
-        treeViewManager.addPasswordEntity(passwordEntity, folder);
+    void savePasswordEntity(PasswordEntity passwordEntity) {
+        treeViewManager.savePasswordEntity(passwordEntity);
+    }
+
+    void cancelEditMode() {
+        treeViewManager.setViewMode();
     }
 
     @Override
