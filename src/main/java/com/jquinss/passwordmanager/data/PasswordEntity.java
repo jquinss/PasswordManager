@@ -1,6 +1,7 @@
 package com.jquinss.passwordmanager.data;
 
 import java.time.LocalDate;
+import java.util.Objects;
 import java.util.Optional;
 
 public class PasswordEntity extends DataEntity {
@@ -95,5 +96,25 @@ public class PasswordEntity extends DataEntity {
 
     public void setExpirationDate(LocalDate expirationDate) {
         this.expirationDate = expirationDate;
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        Object object = super.clone();
+        PasswordEntity pwdEntity = (PasswordEntity) object;
+        pwdEntity.setId(this.getId());
+        pwdEntity.setName(this.getName());
+        pwdEntity.setDescription(this.getDescription());
+        pwdEntity.setUserId(this.userId);
+        pwdEntity.setFolderId(this.folderId);
+        pwdEntity.setPasswordPolicyId(this.passwordPolicyId);
+        pwdEntity.setUsername(this.username);
+        pwdEntity.setEmailAddress(this.emailAddress);
+        pwdEntity.setPassword(this.password);
+        pwdEntity.setUrl(this.url);
+        pwdEntity.setPasswordExpires(this.passwordExpires);
+        pwdEntity.setExpirationDate(this.expirationDate);
+
+        return pwdEntity;
     }
 }
