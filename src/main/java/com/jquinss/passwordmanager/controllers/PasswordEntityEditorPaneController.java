@@ -65,6 +65,7 @@ public class PasswordEntityEditorPaneController implements Initializable {
         // TODO
         switch (editorMode) {
             case CREATE -> createPasswordEntity();
+            case EDIT -> editPasswordEntity();
         }
 
         setHideMode();
@@ -72,6 +73,7 @@ public class PasswordEntityEditorPaneController implements Initializable {
 
     @FXML
     private void cancel() {
+        passwordManagerPaneController.cancelEditMode();
         setHideMode();
     }
 
@@ -109,10 +111,24 @@ public class PasswordEntityEditorPaneController implements Initializable {
                 pwdEntity.setExpirationDate(passwordExpirationDatePicker.getValue());
             }
 
-            passwordManagerPaneController.addPasswordEntityToTreeView(pwdEntity, folder);
+            passwordManagerPaneController.savePasswordEntity(pwdEntity);
         });
+    }
 
+    private void editPasswordEntity() {
+        // TODO
+        editorMode.getDataEntity().ifPresent(entity -> {
+            PasswordEntity pwdEntity = (PasswordEntity) entity;
+            pwdEntity.setDescription(descriptionTextField.getText());
+            pwdEntity.setUsername(usernameTextField.getText());
+            pwdEntity.setUrl(urlTextField.getText());
+            pwdEntity.setPasswordExpires(passwordExpiresCheckBox.isSelected());
+            if (passwordExpiresCheckBox.isSelected()) {
+                pwdEntity.setExpirationDate(passwordExpirationDatePicker.getValue());
+            }
 
+            passwordManagerPaneController.savePasswordEntity(pwdEntity);
+        });
     }
 
     private void initializePasswordPolicyComboBox() {
