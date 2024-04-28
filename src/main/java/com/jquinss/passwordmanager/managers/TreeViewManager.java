@@ -6,6 +6,7 @@ import com.jquinss.passwordmanager.data.DataEntity;
 import com.jquinss.passwordmanager.data.Folder;
 import com.jquinss.passwordmanager.data.PasswordEntity;
 import com.jquinss.passwordmanager.data.RootFolder;
+import com.jquinss.passwordmanager.enums.TreeViewMode;
 import com.jquinss.passwordmanager.security.UserSession;
 import com.jquinss.passwordmanager.util.misc.CryptoUtils;
 import com.jquinss.passwordmanager.util.misc.DialogBuilder;
@@ -27,6 +28,7 @@ public class TreeViewManager {
     private final UserSession userSession;
     private final CryptoUtils.AsymmetricCrypto asymmetricCrypto;
     private final ContextMenuBuilder contextMenuBuilder = new ContextMenuBuilder();
+    private TreeViewMode treeViewMode;
     private PasswordManagerPaneController passwordManagerPaneController;
 
     public TreeViewManager(TreeView<DataEntity> treeView, UserSession userSession, CryptoUtils.AsymmetricCrypto asymmetricCrypto) {
@@ -112,7 +114,9 @@ public class TreeViewManager {
     }
 
     private void createPasswordEntity() {
-        passwordManagerPaneController.createPasswordEntityInEditor((Folder) treeView.getSelectionModel().getSelectedItem().getValue());
+        TreeItem<DataEntity> treeItem = treeView.getSelectionModel().getSelectedItem();
+        setEditMode(TreeViewMode.CREATE, treeItem);
+        passwordManagerPaneController.createPasswordEntityInEditor((Folder) treeItem.getValue());
     }
 
     private void deletePasswordEntity() {
@@ -136,7 +140,9 @@ public class TreeViewManager {
     }
 
     private void viewPasswordEntity() {
-        passwordManagerPaneController.viewPasswordEntityInEditor((PasswordEntity) treeView.getSelectionModel().getSelectedItem().getValue());
+        setViewMode();
+        passwordManagerPaneController.viewPasswordEntityInEditor((PasswordEntity) treeView.
+                getSelectionModel().getSelectedItem().getValue());
     }
 
     private void duplicatePasswordEntity() {
@@ -147,22 +153,29 @@ public class TreeViewManager {
         // TODO
     }
 
-    public void addPasswordEntity(PasswordEntity passwordEntity, Folder folder) {
+    public void savePasswordEntity(PasswordEntity passwordEntity) {
+        treeViewMode.getTreeItem().ifPresent(treeItem -> {
+            switch (treeViewMode) {
+                case CREATE -> addPasswordEntity(passwordEntity, treeItem);
+            }
+        });
+
+    }
+
+    private void addPasswordEntity(PasswordEntity passwordEntity, TreeItem<DataEntity> folderTreeItem) {
         try {
             encryptFields(passwordEntity); // encrypt fields to save to the database
             DatabaseManager.getInstance().addPasswordEntity(passwordEntity);
             decryptFields(passwordEntity);
             TreeItem<DataEntity> treeItem = buildTreeItem(passwordEntity);
-
-            for (TreeItem<DataEntity> item : treeView.getRoot().getChildren()) {
-                if (item.getValue().getId() == folder.getId()) {
-                    item.getChildren().add(treeItem);
-                }
-            }
+            folderTreeItem.getChildren().add(folderTreeItem);
         }
         catch (SQLException e) {
             DialogBuilder.buildAlertDialog("Error", "Error creating password entity",
                     "A database error has occurred during the operation", Alert.AlertType.ERROR);
+        }
+        finally {
+            setViewMode();
         }
     }
 
@@ -171,6 +184,7 @@ public class TreeViewManager {
         setTreeViewCellFactory();
         initializeRootTreeItem();
         loadTreeItems();
+        setViewMode();
     }
 
     private void initializeRootTreeItem() {
@@ -354,5 +368,17 @@ public class TreeViewManager {
 
     public void setPasswordManagerPaneController(PasswordManagerPaneController passwordManagerPaneController) {
         this.passwordManagerPaneController = passwordManagerPaneController;
+    }
+
+    public void setViewMode() {
+        this.treeViewMode = TreeViewMode.VIEW;
+        treeViewMode.setTreeItem(null);
+        treeView.setDisable(false);
+    }
+
+    private void setEditMode(TreeViewMode treeViewMode, TreeItem<DataEntity> treeItem) {
+        this.treeViewMode = treeViewMode;
+        treeViewMode.setTreeItem(treeItem);
+        treeView.setDisable(true);
     }
 }
