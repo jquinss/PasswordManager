@@ -29,6 +29,7 @@ This a JavaFX desktop application for managing password. The application is inte
 * Users can customize the criteria used to autogenerate passwords (e.g. length, number to characters, etc.).
 * Users can copy password properties to the clipboard from the editor.
 * Users can edit password entities.
+* Users can duplicate existing password entities.
 
 ### To Do
 
