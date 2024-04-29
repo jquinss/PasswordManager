@@ -155,7 +155,21 @@ public class TreeViewManager {
     }
 
     private void duplicatePasswordEntity() {
-        // TODO
+        TreeItem<DataEntity> selectedTreeItem = treeView.getSelectionModel().getSelectedItem();
+        PasswordEntity pwdEntity = (PasswordEntity) selectedTreeItem.getValue();
+        try {
+            PasswordEntity pwdEntityCopy = (PasswordEntity) pwdEntity.clone();
+            pwdEntityCopy.setName("Copy of " + pwdEntity.getName());
+            savePasswordEntityToDatabase(pwdEntityCopy);
+            savePasswordEntityToTreeView(pwdEntity, selectedTreeItem.getParent());
+        }
+        catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
+        catch (SQLException e) {
+            DialogBuilder.buildAlertDialog("Error", "Error creating new password entity",
+                    "A database error has occurred during the operation", Alert.AlertType.ERROR);
+        }
     }
 
     private void copyPasswordToClipboard() {
@@ -174,11 +188,8 @@ public class TreeViewManager {
 
     private void addPasswordEntity(PasswordEntity passwordEntity, TreeItem<DataEntity> folderTreeItem) {
         try {
-            encryptFields(passwordEntity); // encrypt fields to save to the database
-            DatabaseManager.getInstance().addPasswordEntity(passwordEntity);
-            decryptFields(passwordEntity);
-            TreeItem<DataEntity> treeItem = buildTreeItem(passwordEntity);
-            folderTreeItem.getChildren().add(treeItem);
+            savePasswordEntityToDatabase(passwordEntity);
+            savePasswordEntityToTreeView(passwordEntity, folderTreeItem);
         }
         catch (SQLException e) {
             DialogBuilder.buildAlertDialog("Error", "Error creating password entity",
@@ -187,6 +198,17 @@ public class TreeViewManager {
         finally {
             setViewMode();
         }
+    }
+
+    private void savePasswordEntityToDatabase(PasswordEntity passwordEntity) throws SQLException {
+        encryptFields(passwordEntity); // encrypt fields to save to the database
+        DatabaseManager.getInstance().addPasswordEntity(passwordEntity);
+        decryptFields(passwordEntity);
+    }
+
+    private void savePasswordEntityToTreeView(PasswordEntity passwordEntity, TreeItem<DataEntity> folderTreeItem) {
+        TreeItem<DataEntity> treeItem = buildTreeItem(passwordEntity);
+        folderTreeItem.getChildren().add(treeItem);
     }
 
     private void modifyPasswordEntity(PasswordEntity passwordEntityCopy) {
