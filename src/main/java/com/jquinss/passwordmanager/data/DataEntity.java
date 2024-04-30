@@ -2,7 +2,7 @@ package com.jquinss.passwordmanager.data;
 
 import java.util.Optional;
 
-public abstract class DataEntity {
+public abstract class DataEntity implements Cloneable {
     private int id;
     private String name;
     private String description;
@@ -38,5 +38,16 @@ public abstract class DataEntity {
 
     public void setDescription(String description) {
         this.description = description == null || description.isEmpty() ? null : description;
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        Object object = super.clone();
+        DataEntity dataEntity = (DataEntity) object;
+        dataEntity.setId(this.getId());
+        dataEntity.setName(this.getName());
+        dataEntity.setDescription(this.getDescription());
+
+        return dataEntity;
     }
 }
