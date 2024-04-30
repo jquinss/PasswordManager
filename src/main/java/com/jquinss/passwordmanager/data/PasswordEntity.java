@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.util.Objects;
 import java.util.Optional;
 
-public class PasswordEntity extends DataEntity {
+public class PasswordEntity extends DataEntity implements Cloneable {
     private int userId;
     private int folderId;
     private int passwordPolicyId;
@@ -102,9 +102,6 @@ public class PasswordEntity extends DataEntity {
     public Object clone() throws CloneNotSupportedException {
         Object object = super.clone();
         PasswordEntity pwdEntity = (PasswordEntity) object;
-        pwdEntity.setId(this.getId());
-        pwdEntity.setName(this.getName());
-        pwdEntity.setDescription(this.getDescription());
         pwdEntity.setUserId(this.userId);
         pwdEntity.setFolderId(this.folderId);
         pwdEntity.setPasswordPolicyId(this.passwordPolicyId);
