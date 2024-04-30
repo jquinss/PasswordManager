@@ -131,10 +131,6 @@ public class TreeViewManager {
         }
     }
 
-    private void renamePasswordEntity() {
-        // TODO
-    }
-
     private void editPasswordEntity() {
         TreeItem<DataEntity> treeItem = treeView.getSelectionModel().getSelectedItem();
         setEditMode(TreeViewMode.EDIT, treeItem);
@@ -371,7 +367,6 @@ public class TreeViewManager {
         MenuItem duplicatePasswordEntityItem = new MenuItem("Duplicate");
         MenuItem viewPasswordEntityItem = new MenuItem("View");
         MenuItem editPasswordEntityItem = new MenuItem("Edit");
-        MenuItem renamePasswordEntityItem = new MenuItem("Rename");
         MenuItem deletePasswordEntityItem = new MenuItem("Delete");
 
         PasswordEntityContextMenu() {
@@ -379,11 +374,10 @@ public class TreeViewManager {
             duplicatePasswordEntityItem.setOnAction(e -> duplicatePasswordEntity());
             viewPasswordEntityItem.setOnAction(e -> viewPasswordEntity());
             editPasswordEntityItem.setOnAction(e -> editPasswordEntity());
-            renamePasswordEntityItem.setOnAction(e -> renamePasswordEntity());
             deletePasswordEntityItem.setOnAction(e -> deletePasswordEntity());
 
             getItems().addAll(copyPasswordToClipboardItem, viewPasswordEntityItem, duplicatePasswordEntityItem,
-                    editPasswordEntityItem, renamePasswordEntityItem, deletePasswordEntityItem);
+                    editPasswordEntityItem, deletePasswordEntityItem);
         }
     }
 
