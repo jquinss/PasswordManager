@@ -117,9 +117,8 @@ public class DbPasswordEntityDao implements PasswordEntityDao {
 
     private PreparedStatement buildUpdatePasswordEntityPreparedStatement(Connection conn, PasswordEntity pwdEntity) throws SQLException {
         String statement = """
-                UPDATE password_entity SET name = ?, SET user_name = ?,  SET password = ?, SET email_address = ?, SET URL = ?, SET description = ?,
-                 SET expires = ?, SET expiration_date = ?, SET user_id = ?, SET folder_id = ?, SET password_policy_id = ? 
-                 WHERE password_entity_id = ?""";
+                 UPDATE password_entity SET name=?, user_name=?, password=?, email_address=?, URL=?, description=?, 
+                 expires=?, expiration_date=?, user_id=?, folder_id=?, password_policy_id=? WHERE password_entity_id=?""";
 
         PreparedStatement ps = buildSetOperationPreparedStatement(conn, pwdEntity, statement);
         ps.setInt(12, pwdEntity.getId());
