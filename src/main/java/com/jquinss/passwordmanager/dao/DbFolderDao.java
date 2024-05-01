@@ -173,7 +173,7 @@ public class DbFolderDao implements FolderDao {
     }
 
     private PreparedStatement buildUpdateFolderPreparedStatement(Connection conn, Folder folder) throws SQLException {
-        String statement = "UPDATE folder SET parent_folder_id = ?, SET folder_name = ?,  SET description = ?";
+        String statement = "UPDATE folder SET parent_folder_id=?, folder_name=?, description=?";
         PreparedStatement ps = conn.prepareStatement(statement);
         ps.setInt(1, folder.getParentFolderId());
         ps.setString(2, folder.getName());

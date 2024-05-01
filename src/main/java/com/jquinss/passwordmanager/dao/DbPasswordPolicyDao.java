@@ -121,9 +121,9 @@ public class DbPasswordPolicyDao implements PasswordPolicyDao {
 
     private PreparedStatement buildUpdatePasswordPolicyPreparedStatement(Connection conn, PasswordPolicy pwdPolicy) throws SQLException {
         String statement = """
-                UPDATE password_policy SET password_policy_name = ?, SET min_length = ?,  SET min_lower_case_chars = ?, 
-                 SET min_upper_case_chars = ?, SET min_digits = ?, SET min_symbols = ?, SET max_consec_equal_chars = ?,  
-                 SET default_policy = ? WHERE password_policy_id = ?""";
+                UPDATE password_policy SET password_policy_name=?, min_length=?, min_lower_case_chars=?, 
+                 min_upper_case_chars=?, min_digits=?, min_symbols=?, max_consec_equal_chars=?, default_policy=? 
+                 WHERE password_policy_id = ?""";
 
         PreparedStatement ps = buildSetOperationPreparedStatement(conn, pwdPolicy, statement);
         ps.setInt(9, pwdPolicy.getId());

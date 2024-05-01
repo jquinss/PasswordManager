@@ -127,8 +127,8 @@ public class DbPasswordGeneratorPolicyDao implements PasswordGeneratorPolicyDao 
 
     private PreparedStatement buildUpdatePasswordGenPolicyPreparedStatement(Connection conn, PasswordGeneratorPolicy pwdGenPolicy) throws SQLException {
         String statement = """
-                UPDATE password_gen_policy SET password_gen_policy_name = ?, SET lower_case_chars = ?, SET upper_case_chars = ?, 
-                SET digits = ?, SET symbols = ?,  SET default_policy = ? WHERE password_policy_id = ?""";
+                UPDATE password_gen_policy SET password_gen_policy_name=?, lower_case_chars=?, upper_case_chars=?, 
+                digits=?, symbols=?, default_policy=? WHERE password_policy_id=?""";
 
         PreparedStatement ps = buildSetOperationPreparedStatement(conn, pwdGenPolicy, statement);
         ps.setInt(7, pwdGenPolicy.getId());
