@@ -44,6 +44,8 @@ public class PasswordEntityEditorPaneController implements Initializable {
     @FXML
     private TextField usernameTextField;
     @FXML
+    private TextField emailAddressTextField;
+    @FXML
     private PasswordField passwordField;
     @FXML
     private ComboBox<PasswordPolicy> passwordPolicyComboBox;
@@ -89,6 +91,7 @@ public class PasswordEntityEditorPaneController implements Initializable {
             case "copyPasswordButton" -> copyTextControlInputToClipboard(passwordField);
             case "copyUsernameButton" -> copyTextControlInputToClipboard(usernameTextField);
             case "copyUrlButton" -> copyTextControlInputToClipboard(urlTextField);
+            case "copyEmailAddressButton" -> copyTextControlInputToClipboard(emailAddressTextField);
         }
     }
 
@@ -106,6 +109,7 @@ public class PasswordEntityEditorPaneController implements Initializable {
             pwdEntity.setDescription(descriptionTextField.getText());
             pwdEntity.setUsername(usernameTextField.getText());
             pwdEntity.setUrl(urlTextField.getText());
+            pwdEntity.setEmailAddress(emailAddressTextField.getText());
             pwdEntity.setPasswordExpires(passwordExpiresCheckBox.isSelected());
             if (passwordExpiresCheckBox.isSelected()) {
                 pwdEntity.setExpirationDate(passwordExpirationDatePicker.getValue());
@@ -119,9 +123,12 @@ public class PasswordEntityEditorPaneController implements Initializable {
         // TODO
         editorMode.getDataEntity().ifPresent(entity -> {
             PasswordEntity pwdEntity = (PasswordEntity) entity;
+            pwdEntity.setName(nameTextField.getText());
+            pwdEntity.setPassword(passwordField.getText());
             pwdEntity.setDescription(descriptionTextField.getText());
             pwdEntity.setUsername(usernameTextField.getText());
             pwdEntity.setUrl(urlTextField.getText());
+            pwdEntity.setEmailAddress(emailAddressTextField.getText());
             pwdEntity.setPasswordExpires(passwordExpiresCheckBox.isSelected());
             if (passwordExpiresCheckBox.isSelected()) {
                 pwdEntity.setExpirationDate(passwordExpirationDatePicker.getValue());
