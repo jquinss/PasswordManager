@@ -24,7 +24,7 @@ public class PasswordStrengthChecker {
         return strength;
     }
 
-    private boolean passwordMeetsStrengthCriteria(Password password, PasswordStrengthCriteria criteria) {
+    public boolean passwordMeetsStrengthCriteria(Password password, PasswordStrengthCriteria criteria) {
             return (password.getNumLowerCaseChars() >= criteria.getMinLowerCaseChars()
                     && password.getNumUpperCaseChars() >= criteria.getMinUpperCaseChars()
                     && password.getNumDigits() >= criteria.getMinDigits()
