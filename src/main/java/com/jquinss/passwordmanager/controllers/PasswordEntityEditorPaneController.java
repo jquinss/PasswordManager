@@ -3,7 +3,10 @@ package com.jquinss.passwordmanager.controllers;
 import com.jquinss.passwordmanager.data.*;
 import com.jquinss.passwordmanager.enums.EditorMode;
 import com.jquinss.passwordmanager.managers.DatabaseManager;
+import com.jquinss.passwordmanager.util.password.Password;
 import com.jquinss.passwordmanager.util.password.PasswordGenerator;
+import com.jquinss.passwordmanager.util.password.PasswordStrengthChecker;
+import com.jquinss.passwordmanager.util.password.PasswordStrengthCriteria;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -60,6 +63,7 @@ public class PasswordEntityEditorPaneController implements Initializable {
     private final Validator validator = new Validator();
     private final ObservableList<PasswordPolicy> passwordPolicyObsList = FXCollections.observableArrayList();
     private final ObservableList<PasswordGeneratorPolicy> passwordGeneratorPolicyObsList = FXCollections.observableArrayList();
+    private final PasswordStrengthChecker passwordStrengthChecker = new PasswordStrengthChecker();
     private PasswordGenerator passwordGenerator;
 
     @FXML
@@ -234,6 +238,7 @@ public class PasswordEntityEditorPaneController implements Initializable {
         createRequiredTextFieldCheck(nameTextField);
         createRequiredTextFieldCheck(passwordField);
         createDateCheck();
+        createPasswordEnforcementCheck();
         saveButton.disableProperty().bind(validator.containsErrorsProperty());
     }
 
@@ -263,6 +268,17 @@ public class PasswordEntityEditorPaneController implements Initializable {
         }).dependsOn("passwordExpires", passwordExpiresCheckBox.selectedProperty())
                 .dependsOn("passwordExpirationDate", passwordExpirationDatePicker.getEditor().textProperty())
                 .decorates(passwordExpirationDatePicker.getEditor())
+                .immediate();
+    }
+
+    private void createPasswordEnforcementCheck() {
+        validator.createCheck().withMethod(c -> {
+            PasswordStrengthCriteria pwdStrengthCriteria = passwordPolicyComboBox.getSelectionModel().getSelectedItem().getPasswordStrengthCriteria();
+            if (!passwordStrengthChecker.passwordMeetsStrengthCriteria(new Password(c.get("password")), pwdStrengthCriteria)) {
+                c.error("Password does not meet the policy enforcement criteria:\n" + pwdStrengthCriteria);
+            }
+        }).dependsOn("password", passwordField.textProperty())
+                .decorates(passwordField)
                 .immediate();
     }
 
