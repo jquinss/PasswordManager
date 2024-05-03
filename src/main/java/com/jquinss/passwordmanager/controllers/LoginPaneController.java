@@ -51,7 +51,8 @@ public class LoginPaneController {
                     passwordManagerController.loadPasswordManagerPane(user, keyPair);
                 }
                 else {
-                    throw new LoadKeyPairException();
+                    showErrorMessage("Error: Invalid username or password");
+                    clearFields();
                 }
             }
             else {
