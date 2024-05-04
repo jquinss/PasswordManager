@@ -72,3 +72,11 @@
     -fx-background-color: transparent;
     -fx-text-fill: #E17B02;
 }
+
+.copy-clipboard-button {
+    -fx-background-color: transparent;
+}
+
+.copy-clipboard-button:hover {
+    -fx-background-color: transparent;
+}
