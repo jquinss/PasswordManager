@@ -46,7 +46,6 @@ public class LoginPaneController {
 
                 if (validCredentials) {
                     hideMessage();
-                    showSuccessMessage("Authentication successful");
                     KeyPair keyPair = loadKeyPair(user, password);
                     passwordManagerController.loadPasswordManagerPane(user, keyPair);
                 }
@@ -63,8 +62,7 @@ public class LoginPaneController {
         catch (SQLException e) {
             showErrorMessage("Error: Cannot connect to the database");
         }
-        catch (NoSuchAlgorithmException | InvalidKeySpecException | InvalidAlgorithmParameterException | NoSuchPaddingException |
-                IllegalBlockSizeException | BadPaddingException | InvalidKeyException | LoadKeyPairException e) {
+        catch (LoadKeyPairException e) {
             showErrorMessage("Error: Error loading key-pair from database");
         }
         catch (Exception e) {
@@ -106,8 +104,8 @@ public class LoginPaneController {
         passwordField.clear();
     }
 
-    private KeyPair loadKeyPair(User user, String password) throws SQLException, NoSuchAlgorithmException, InvalidKeySpecException,
-            InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
+    private KeyPair loadKeyPair(User user, String password) throws LoadKeyPairException {
+        try {
             byte[] publicKey = user.getPublicKey();
             byte[] encryptedPrivateKey = user.getPrivateKey();
 
@@ -116,7 +114,10 @@ public class LoginPaneController {
             SecretKey key = CryptoUtils.getSecretKeyFromPassword(password, salt);
             byte[] privateKey = CryptoUtils.decrypt(encryptedPrivateKey, SettingsManager.getInstance().getSymmetricEncryptionAlgorithm(),
                     key, ivParameterSpec);
-
-        return CryptoUtils.loadKeyPair(publicKey, privateKey, SettingsManager.getInstance().getKeyPairAlgorithm());
+            return CryptoUtils.loadKeyPair(publicKey, privateKey, SettingsManager.getInstance().getKeyPairAlgorithm());
+        }
+        catch (Exception e) {
+            throw new LoadKeyPairException();
+        }
     }
 }
