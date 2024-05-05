@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-public class TreeViewManager {
+public class TreeViewController {
     private final TreeView<DataEntity> treeView;
     private final UserSession userSession;
     private final CryptoUtils.AsymmetricCrypto asymmetricCrypto;
@@ -34,7 +34,7 @@ public class TreeViewManager {
     private TreeViewMode treeViewMode;
     private PasswordManagerPaneController passwordManagerPaneController;
 
-    public TreeViewManager(TreeView<DataEntity> treeView, UserSession userSession, CryptoUtils.AsymmetricCrypto asymmetricCrypto) {
+    public TreeViewController(TreeView<DataEntity> treeView, UserSession userSession, CryptoUtils.AsymmetricCrypto asymmetricCrypto) {
         this.treeView = treeView;
         this.userSession = userSession;
         this.asymmetricCrypto = asymmetricCrypto;
@@ -390,13 +390,13 @@ public class TreeViewManager {
 
         PasswordEntityContextMenu() {
             copyPasswordToClipboardItem.setId("copyPasswordToClipboardItem");
-            copyPasswordToClipboardItem .setOnAction(TreeViewManager.this::copyToClipboard);
+            copyPasswordToClipboardItem .setOnAction(TreeViewController.this::copyToClipboard);
             copyUsernameToClipboardItem.setId("copyUsernameToClipboardItem");
-            copyUsernameToClipboardItem.setOnAction(TreeViewManager.this::copyToClipboard);
+            copyUsernameToClipboardItem.setOnAction(TreeViewController.this::copyToClipboard);
             copyURLToClipboardItem.setId("copyURLToClipboardItem");
-            copyURLToClipboardItem.setOnAction(TreeViewManager.this::copyToClipboard);
+            copyURLToClipboardItem.setOnAction(TreeViewController.this::copyToClipboard);
             copyEmailAddressToClipboardItem.setId("copyEmailAddressToClipboardItem");
-            copyEmailAddressToClipboardItem.setOnAction(TreeViewManager.this::copyToClipboard);
+            copyEmailAddressToClipboardItem.setOnAction(TreeViewController.this::copyToClipboard);
             duplicatePasswordEntityItem.setOnAction(e -> duplicatePasswordEntity());
             viewPasswordEntityItem.setOnAction(e -> viewPasswordEntity());
             editPasswordEntityItem.setOnAction(e -> editPasswordEntity());

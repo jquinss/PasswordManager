@@ -4,8 +4,7 @@ import com.jquinss.passwordmanager.data.DataEntity;
 import com.jquinss.passwordmanager.data.Folder;
 import com.jquinss.passwordmanager.data.PasswordEntity;
 import com.jquinss.passwordmanager.data.User;
-import com.jquinss.passwordmanager.enums.EditorMode;
-import com.jquinss.passwordmanager.managers.TreeViewManager;
+import com.jquinss.passwordmanager.managers.TreeViewController;
 import com.jquinss.passwordmanager.security.UserSession;
 import com.jquinss.passwordmanager.util.misc.CryptoUtils;
 import javafx.fxml.FXML;
@@ -23,7 +22,7 @@ public class PasswordManagerPaneController implements Initializable {
     private PasswordEntityEditorPaneController passwordEntityEditorPaneController;
     private final UserSession userSession = new UserSession();
     private final CryptoUtils.AsymmetricCrypto asymmetricCrypto;
-    private TreeViewManager treeViewManager;
+    private TreeViewController treeViewController;
     private PasswordManagerController passwordManagerController;
 
     public PasswordManagerPaneController(User user, CryptoUtils.AsymmetricCrypto asymmetricCrypto) {
@@ -44,10 +43,10 @@ public class PasswordManagerPaneController implements Initializable {
         passwordManagerController.loadLoginPane();
     }
 
-    private void initializeTreeViewManager() {
-        treeViewManager = new TreeViewManager(treeView, userSession, asymmetricCrypto);
-        treeViewManager.setPasswordManagerPaneController(this);
-        treeViewManager.initializeTreeView();
+    private void initializetreeViewController() {
+        treeViewController = new TreeViewController(treeView, userSession, asymmetricCrypto);
+        treeViewController.setPasswordManagerPaneController(this);
+        treeViewController.initializeTreeView();
     }
 
     private void initializePasswordEntityEditorPaneController() {
@@ -69,16 +68,16 @@ public class PasswordManagerPaneController implements Initializable {
     }
 
     void savePasswordEntity(PasswordEntity passwordEntity) {
-        treeViewManager.savePasswordEntity(passwordEntity);
+        treeViewController.savePasswordEntity(passwordEntity);
     }
 
     void cancelEditMode() {
-        treeViewManager.setViewMode();
+        treeViewController.setViewMode();
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        initializeTreeViewManager();
+        initializetreeViewController();
         initializePasswordEntityEditorPaneController();
     }
 }
