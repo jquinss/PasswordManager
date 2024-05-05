@@ -157,7 +157,7 @@ public class TreeViewManager {
             PasswordEntity pwdEntityCopy = (PasswordEntity) pwdEntity.clone();
             pwdEntityCopy.setName("Copy of " + pwdEntity.getName());
             savePasswordEntityToDatabase(pwdEntityCopy);
-            savePasswordEntityToTreeView(pwdEntity, selectedTreeItem.getParent());
+            savePasswordEntityToTreeView(pwdEntityCopy, selectedTreeItem.getParent());
         }
         catch (CloneNotSupportedException e) {
             throw new RuntimeException(e);
