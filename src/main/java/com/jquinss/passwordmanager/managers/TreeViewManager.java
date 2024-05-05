@@ -10,12 +10,9 @@ import com.jquinss.passwordmanager.enums.TreeViewMode;
 import com.jquinss.passwordmanager.security.UserSession;
 import com.jquinss.passwordmanager.util.misc.CryptoUtils;
 import com.jquinss.passwordmanager.util.misc.DialogBuilder;
-import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.Clipboard;
-import javafx.scene.input.ClipboardContent;
 import javafx.util.Callback;
 import javafx.util.Pair;
 
@@ -171,20 +168,8 @@ public class TreeViewManager {
         }
     }
 
-    private void copyToClipboard(ActionEvent event) {
-        String menuItemId = ((MenuItem) event.getSource()).getId();
-        PasswordEntity pwdEntity = (PasswordEntity) treeView.getSelectionModel().getSelectedItem().getValue();
-        Clipboard clipboard = Clipboard.getSystemClipboard();
-        ClipboardContent content = new ClipboardContent();
-
-        switch (menuItemId) {
-            case "copyPasswordToClipboardItem" -> content.putString(pwdEntity.getPassword());
-            case "copyUsernameToClipboardItem" -> content.putString(pwdEntity.getUsername());
-            case "copyEmailAddressToClipboardItem" -> content.putString(pwdEntity.getEmailAddress());
-            case "copyURLToClipboardItem" -> content.putString(pwdEntity.getUrl());
-        }
-
-        clipboard.setContent(content);
+    private void copyPasswordToClipboard() {
+        // TODO
     }
 
     public void savePasswordEntity(PasswordEntity passwordEntity) {
@@ -353,8 +338,8 @@ public class TreeViewManager {
     }
 
     private class RootFolderContextMenu extends ContextMenu {
-        final MenuItem addFolder = new MenuItem("Add Folder");
-        final MenuItem removeFolders = new MenuItem("Delete All Folders");
+        MenuItem addFolder = new MenuItem("Add Folder");
+        MenuItem removeFolders = new MenuItem("Delete All Folders");
 
         RootFolderContextMenu() {
             addFolder.setOnAction(e -> createFolder());
@@ -364,9 +349,9 @@ public class TreeViewManager {
     }
 
     private class FolderContextMenu extends ContextMenu {
-        final MenuItem createPasswordEntityMenuItem = new MenuItem("Create New Password...");
-        final MenuItem renameFolderMenuItem = new MenuItem("Rename");
-        final MenuItem deleteFolderMenuItem = new MenuItem("Delete");
+        MenuItem createPasswordEntityMenuItem = new MenuItem("Create New Password...");
+        MenuItem renameFolderMenuItem = new MenuItem("Rename");
+        MenuItem deleteFolderMenuItem = new MenuItem("Delete");
 
         FolderContextMenu() {
             createPasswordEntityMenuItem.setOnAction(e -> createPasswordEntity());
@@ -378,34 +363,20 @@ public class TreeViewManager {
     }
 
     private class PasswordEntityContextMenu extends ContextMenu {
-        final Menu copyToClipboardMenu = new Menu("Copy to Clipboard");
-        final MenuItem copyPasswordToClipboardItem = new MenuItem("Password");
-        final MenuItem copyUsernameToClipboardItem = new MenuItem("Username");
-        final MenuItem copyEmailAddressToClipboardItem = new MenuItem("Email address");
-        final MenuItem copyURLToClipboardItem = new MenuItem("URL");
-        final MenuItem duplicatePasswordEntityItem = new MenuItem("Duplicate");
-        final MenuItem viewPasswordEntityItem = new MenuItem("View");
-        final MenuItem editPasswordEntityItem = new MenuItem("Edit");
-        final MenuItem deletePasswordEntityItem = new MenuItem("Delete");
+        MenuItem copyPasswordToClipboardItem = new MenuItem("Copy Password to Clipboard");
+        MenuItem duplicatePasswordEntityItem = new MenuItem("Duplicate");
+        MenuItem viewPasswordEntityItem = new MenuItem("View");
+        MenuItem editPasswordEntityItem = new MenuItem("Edit");
+        MenuItem deletePasswordEntityItem = new MenuItem("Delete");
 
         PasswordEntityContextMenu() {
-            copyPasswordToClipboardItem.setId("copyPasswordToClipboardItem");
-            copyPasswordToClipboardItem .setOnAction(TreeViewManager.this::copyToClipboard);
-            copyUsernameToClipboardItem.setId("copyUsernameToClipboardItem");
-            copyUsernameToClipboardItem.setOnAction(TreeViewManager.this::copyToClipboard);
-            copyURLToClipboardItem.setId("copyURLToClipboardItem");
-            copyURLToClipboardItem.setOnAction(TreeViewManager.this::copyToClipboard);
-            copyEmailAddressToClipboardItem.setId("copyEmailAddressToClipboardItem");
-            copyEmailAddressToClipboardItem.setOnAction(TreeViewManager.this::copyToClipboard);
+            copyPasswordToClipboardItem .setOnAction(e -> copyPasswordToClipboard());
             duplicatePasswordEntityItem.setOnAction(e -> duplicatePasswordEntity());
             viewPasswordEntityItem.setOnAction(e -> viewPasswordEntity());
             editPasswordEntityItem.setOnAction(e -> editPasswordEntity());
             deletePasswordEntityItem.setOnAction(e -> deletePasswordEntity());
 
-            copyToClipboardMenu.getItems().addAll(copyPasswordToClipboardItem, copyUsernameToClipboardItem ,
-                    copyURLToClipboardItem, copyEmailAddressToClipboardItem);
-
-            getItems().addAll(copyToClipboardMenu, viewPasswordEntityItem, duplicatePasswordEntityItem,
+            getItems().addAll(copyPasswordToClipboardItem, viewPasswordEntityItem, duplicatePasswordEntityItem,
                     editPasswordEntityItem, deletePasswordEntityItem);
         }
     }
