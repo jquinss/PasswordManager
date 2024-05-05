@@ -31,6 +31,7 @@ This a JavaFX desktop application for managing password. The application is inte
 * Users can edit password entities.
 * Users can duplicate existing password entities.
 * Users can have an option to see the hidden password.
+* Users can copy password properties to the clipboard from the treeview context menu.
 
 ### To Do
 
@@ -38,7 +39,6 @@ This a JavaFX desktop application for managing password. The application is inte
 * Users can create policies to enforce the strength of passwords.
 * Users can create policies to generate passwords with particular requirements.
 * Users can be informed about the strength of the generated password.
-* Users can copy password properties to the clipboard from the treeview context menu.
 * Users can create database backups.
 * Users can recover backups.
 * Users can generate key pairs (public-private keys).
