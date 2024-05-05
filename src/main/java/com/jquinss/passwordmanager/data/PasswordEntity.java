@@ -17,6 +17,7 @@ public class PasswordEntity extends DataEntity implements Cloneable {
 
     public PasswordEntity(int id, int folderId, String name, String password) {
         this(folderId, name, password);
+        setId(id);
         this.password = password;
     }
 
