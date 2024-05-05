@@ -51,6 +51,8 @@ public class PasswordEntityEditorPaneController implements Initializable {
     @FXML
     private PasswordField passwordField;
     @FXML
+    private TextField clearPasswordField;
+    @FXML
     private ComboBox<PasswordPolicy> passwordPolicyComboBox;
     @FXML
     private CheckBox passwordExpiresCheckBox;
@@ -291,6 +293,22 @@ public class PasswordEntityEditorPaneController implements Initializable {
         }
     }
 
+    private void initializeShowPasswordCheckBox() {
+        passwordField.textProperty().bindBidirectional(clearPasswordField.textProperty());
+        showPasswordCheckBox.selectedProperty().addListener((obs, oldValue, newValue) -> {
+            if (newValue) {
+                clearPasswordField.toFront();
+                clearPasswordField.setVisible(true);
+                passwordField.setVisible(false);
+            }
+            else {
+                passwordField.toFront();
+                clearPasswordField.setVisible(false);
+                passwordField.setVisible(true);
+            }
+        });
+    }
+
     public void openPasswordEntityEditorInCreateMode(Folder folder) {
         setEditMode(EditorMode.CREATE, folder);
         resetFields();
@@ -338,6 +356,7 @@ public class PasswordEntityEditorPaneController implements Initializable {
         urlTextField.setEditable(editable);
         usernameTextField.setEditable(editable);
         passwordField.setEditable(editable);
+        clearPasswordField.setEditable(editable);
     }
 
     private void disableControls(boolean disable) {
@@ -387,6 +406,7 @@ public class PasswordEntityEditorPaneController implements Initializable {
         initializeValidator();
         initializePasswordPolicyComboBox();
         initializePasswordGeneratorPolicyComboBox();
+        initializeShowPasswordCheckBox();
         initializePasswordGenerator();
         setHideMode();
     }
