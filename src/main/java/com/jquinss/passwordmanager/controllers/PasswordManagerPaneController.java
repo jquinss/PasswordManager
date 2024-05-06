@@ -16,7 +16,7 @@ import java.util.ResourceBundle;
 
 public class PasswordManagerPaneController implements Initializable {
     @FXML
-    public TreeView<DataEntity> treeView;
+    private TreeView<DataEntity> treeView;
     @FXML
     private PasswordEntityEditorPaneController passwordEntityEditorPaneController;
     private final UserSession userSession = new UserSession();
@@ -54,15 +54,15 @@ public class PasswordManagerPaneController implements Initializable {
 
 
 
-    public void createPasswordEntityInEditor(Folder folder) {
+    void createPasswordEntityInEditor(Folder folder) {
         passwordEntityEditorPaneController.openPasswordEntityEditorInCreateMode(folder);
     }
 
-    public void editPasswordEntityInEditor(PasswordEntity passwordEntity) {
+    void editPasswordEntityInEditor(PasswordEntity passwordEntity) {
         passwordEntityEditorPaneController.openPasswordEntityEditorInEditMode(passwordEntity);
     }
 
-    public void viewPasswordEntityInEditor(PasswordEntity passwordEntity) {
+    void viewPasswordEntityInEditor(PasswordEntity passwordEntity) {
         passwordEntityEditorPaneController.openPasswordEntityEditorInViewMode(passwordEntity);
     }
 
