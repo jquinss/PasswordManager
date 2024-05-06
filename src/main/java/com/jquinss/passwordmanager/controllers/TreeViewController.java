@@ -187,7 +187,7 @@ public class TreeViewController {
         clipboard.setContent(content);
     }
 
-    public void savePasswordEntity(PasswordEntity passwordEntity) {
+    void savePasswordEntity(PasswordEntity passwordEntity) {
         treeViewMode.getTreeItem().ifPresent(treeItem -> {
             switch (treeViewMode) {
                 case CREATE -> addPasswordEntity(passwordEntity, treeItem);
@@ -240,7 +240,7 @@ public class TreeViewController {
         });
     }
 
-    public void initializeTreeView() {
+    void initializeTreeView() {
         setTreeViewCellFactory();
         initializeRootTreeItem();
         loadTreeItems();
@@ -438,11 +438,11 @@ public class TreeViewController {
         });
     }
 
-    public void setPasswordManagerPaneController(PasswordManagerPaneController passwordManagerPaneController) {
+    void setPasswordManagerPaneController(PasswordManagerPaneController passwordManagerPaneController) {
         this.passwordManagerPaneController = passwordManagerPaneController;
     }
 
-    public void setViewMode() {
+    void setViewMode() {
         this.treeViewMode = TreeViewMode.VIEW;
         treeViewMode.setTreeItem(null);
         treeView.setDisable(false);
