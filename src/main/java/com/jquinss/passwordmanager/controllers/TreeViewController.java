@@ -1,12 +1,12 @@
-package com.jquinss.passwordmanager.managers;
+package com.jquinss.passwordmanager.controllers;
 
 import com.jquinss.passwordmanager.control.DataEntityTreeItem;
-import com.jquinss.passwordmanager.controllers.PasswordManagerPaneController;
 import com.jquinss.passwordmanager.data.DataEntity;
 import com.jquinss.passwordmanager.data.Folder;
 import com.jquinss.passwordmanager.data.PasswordEntity;
 import com.jquinss.passwordmanager.data.RootFolder;
 import com.jquinss.passwordmanager.enums.TreeViewMode;
+import com.jquinss.passwordmanager.managers.DatabaseManager;
 import com.jquinss.passwordmanager.security.UserSession;
 import com.jquinss.passwordmanager.util.misc.CryptoUtils;
 import com.jquinss.passwordmanager.util.misc.DialogBuilder;
