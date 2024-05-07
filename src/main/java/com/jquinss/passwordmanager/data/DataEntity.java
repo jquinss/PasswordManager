@@ -41,13 +41,15 @@ public abstract class DataEntity implements Cloneable {
     }
 
     @Override
-    public Object clone() throws CloneNotSupportedException {
-        Object object = super.clone();
-        DataEntity dataEntity = (DataEntity) object;
-        dataEntity.setId(this.getId());
-        dataEntity.setName(this.getName());
-        dataEntity.setDescription(this.getDescription());
-
-        return dataEntity;
+    public Object clone() {
+        try {
+            DataEntity dataEntity = (DataEntity) super.clone();
+            dataEntity.setId(this.getId());
+            dataEntity.setName(this.getName());
+            dataEntity.setDescription(this.getDescription());
+            return dataEntity;
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
