@@ -85,6 +85,10 @@ public class DatabaseManager {
         return folderDao.getRootByUserId(userId);
     }
 
+    public void updateFolder(Folder folder) throws SQLException {
+        folderDao.update(folder);
+    }
+
     public void deleteFolder(Folder folder) throws SQLException {
         folderDao.delete(folder);
     }
