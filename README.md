@@ -35,6 +35,7 @@ This a JavaFX desktop application for managing password. The application is inte
 
 ### To Do
 
+* Users can edit folders.
 * Users can view basic information about password entities for quick identification.
 * Users can create policies to enforce the strength of passwords.
 * Users can create policies to generate passwords with particular requirements.
