@@ -100,9 +100,8 @@ public class PasswordEntity extends DataEntity implements Cloneable {
     }
 
     @Override
-    public Object clone() throws CloneNotSupportedException {
-        Object object = super.clone();
-        PasswordEntity pwdEntity = (PasswordEntity) object;
+    public Object clone() {
+        PasswordEntity pwdEntity = (PasswordEntity) super.clone();
         pwdEntity.setUserId(this.userId);
         pwdEntity.setFolderId(this.folderId);
         pwdEntity.setPasswordPolicyId(this.passwordPolicyId);
