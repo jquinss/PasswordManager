@@ -112,7 +112,7 @@ public class TreeViewController {
         }
     }
 
-    private void renameFolder() {
+    private void editFolder() {
         // TODO
     }
 
@@ -137,14 +137,9 @@ public class TreeViewController {
     private void editPasswordEntity() {
         TreeItem<DataEntity> treeItem = treeView.getSelectionModel().getSelectedItem();
         setEditMode(TreeViewMode.EDIT, treeItem);
-        try {
-            // creates a copy of the PasswordEntity instance in case any exception occurs inserting the the db
-            PasswordEntity pwdEntityCopy = (PasswordEntity) ((PasswordEntity) treeItem.getValue()).clone();
-            passwordManagerPaneController.editPasswordEntityInEditor(pwdEntityCopy);
-        }
-        catch (CloneNotSupportedException e) {
-            throw new RuntimeException(e);
-        }
+        // creates a copy of the PasswordEntity instance in case any exception occurs inserting the the db
+        PasswordEntity pwdEntityCopy = (PasswordEntity) ((PasswordEntity) treeItem.getValue()).clone();
+        passwordManagerPaneController.editPasswordEntityInEditor(pwdEntityCopy);
     }
 
     private void viewPasswordEntity() {
@@ -161,9 +156,6 @@ public class TreeViewController {
             pwdEntityCopy.setName("Copy of " + pwdEntity.getName());
             savePasswordEntityToDatabase(pwdEntityCopy);
             savePasswordEntityToTreeView(pwdEntityCopy, selectedTreeItem.getParent());
-        }
-        catch (CloneNotSupportedException e) {
-            throw new RuntimeException(e);
         }
         catch (SQLException e) {
             DialogBuilder.buildAlertDialog("Error", "Error creating new password entity",
@@ -365,7 +357,7 @@ public class TreeViewController {
 
     private class FolderContextMenu extends ContextMenu {
         final MenuItem createPasswordEntityMenuItem = new MenuItem("Create New Password...");
-        final MenuItem renameFolderMenuItem = new MenuItem("Rename");
+        final MenuItem renameFolderMenuItem = new MenuItem("Edit");
         final MenuItem deleteFolderMenuItem = new MenuItem("Delete");
 
         FolderContextMenu() {
