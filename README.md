@@ -23,6 +23,7 @@ This a JavaFX desktop application for managing password. The application is inte
 * Users can log in with username and password.
 * Users can create password entities that have different properties (e.g. name, username, password, url, etc.)
 * Users can organize password entities in separate folders.
+* Users can edit folders.
 * Users can view password entities.
 * Users can remove password entities.
 * Users can autogenerate passwords.
@@ -35,7 +36,6 @@ This a JavaFX desktop application for managing password. The application is inte
 
 ### To Do
 
-* Users can edit folders.
 * Users can view basic information about password entities for quick identification.
 * Users can create policies to enforce the strength of passwords.
 * Users can create policies to generate passwords with particular requirements.
