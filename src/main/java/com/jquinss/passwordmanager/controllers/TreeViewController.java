@@ -46,7 +46,7 @@ public class TreeViewController {
 
     private void createFolder() {
         Dialog<Pair<String, String>> dialog = DialogBuilder.buildTwoTextFieldInputDialog("Create folder",
-                "Create a new folder:", "Folder name", "Description", true);
+                "Create a new folder:", "Folder name", "Description", true, Optional.empty());
         Optional<Pair<String, String>> optional = dialog.showAndWait();
         optional.ifPresent(pair -> {
             try {
@@ -113,7 +113,32 @@ public class TreeViewController {
     }
 
     private void editFolder() {
-        // TODO
+        TreeItem<DataEntity> dataEntityTreeItem = treeView.getSelectionModel().getSelectedItem();
+        Folder folder = (Folder) dataEntityTreeItem.getValue();
+        Pair<String, String> defaultValues = new Pair<>(folder.getName(), folder.getDescription());
+        Dialog<Pair<String, String>> dialog = DialogBuilder.buildTwoTextFieldInputDialog("Edit folder",
+                "Edit folder:", "Folder name", "Description", true,
+                Optional.ofNullable(defaultValues));
+
+        Optional<Pair<String, String>> optional = dialog.showAndWait();
+        optional.ifPresent(pair -> {
+            try {
+                editFolderTreeItem(dataEntityTreeItem, pair.getKey(), pair.getValue());
+            }
+            catch (SQLException e) {
+                DialogBuilder.buildAlertDialog("Error", "Error editing folder",
+                        "A database error has occurred during the operation", Alert.AlertType.ERROR);
+            }
+        });
+    }
+
+    private void editFolderTreeItem(TreeItem<DataEntity> treeItem, String name, String description) throws SQLException {
+        Folder folder = (Folder) treeItem.getValue();
+        Folder folderCopy = folder.clone();
+        folderCopy.setName(name);
+        folderCopy.setDescription(description);
+        DatabaseManager.getInstance().updateFolder(folderCopy);
+        treeItem.setValue(folderCopy);
     }
 
     private void createPasswordEntity() {
@@ -357,15 +382,15 @@ public class TreeViewController {
 
     private class FolderContextMenu extends ContextMenu {
         final MenuItem createPasswordEntityMenuItem = new MenuItem("Create New Password...");
-        final MenuItem renameFolderMenuItem = new MenuItem("Edit");
+        final MenuItem editFolderMenuItem = new MenuItem("Edit");
         final MenuItem deleteFolderMenuItem = new MenuItem("Delete");
 
         FolderContextMenu() {
             createPasswordEntityMenuItem.setOnAction(e -> createPasswordEntity());
-            renameFolderMenuItem.setOnAction(e -> renameFolder());
+           editFolderMenuItem.setOnAction(e -> editFolder());
             deleteFolderMenuItem.setOnAction(e -> deleteFolder());
 
-            getItems().addAll(createPasswordEntityMenuItem, renameFolderMenuItem, deleteFolderMenuItem);
+            getItems().addAll(createPasswordEntityMenuItem,editFolderMenuItem, deleteFolderMenuItem);
         }
     }
 
