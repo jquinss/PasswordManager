@@ -9,6 +9,8 @@ import javafx.util.Pair;
 import net.synedra.validatorfx.Check;
 import net.synedra.validatorfx.Validator;
 
+import java.util.Optional;
+
 public class DialogBuilder {
     private DialogBuilder() {}
 
@@ -21,7 +23,8 @@ public class DialogBuilder {
     }
 
     public static Dialog<Pair<String, String>> buildTwoTextFieldInputDialog(String title, String headerText, String firstFieldName,
-                                                                            String secondFieldName, boolean isOptionalSecondField) {
+                                                                            String secondFieldName, boolean isOptionalSecondField,
+                                                                            Optional<Pair<String, String>> defaultValues) {
         Validator validator = new Validator();
         Dialog<Pair<String, String>> dialog = new Dialog<>();
 
@@ -38,8 +41,16 @@ public class DialogBuilder {
         TextField firstField = new TextField();
         firstField.setPromptText(firstFieldName);
 
+
         TextField secondField = new TextField();
         secondField.setPromptText(secondFieldName);
+
+        defaultValues.ifPresent(
+                values -> {
+                    firstField.setText(values.getKey());
+                    secondField.setText(values.getValue());
+                }
+        );
 
         grid.add(new Label(firstFieldName), 0, 0);
         grid.add(firstField, 1, 0);
@@ -71,7 +82,7 @@ public class DialogBuilder {
 
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == ButtonType.OK) {
-                return new Pair<>(firstField.getText().trim(), secondField.getText().trim());
+                return new Pair<>(firstField.getText().trim(), secondField.getText());
             }
 
             return null;
