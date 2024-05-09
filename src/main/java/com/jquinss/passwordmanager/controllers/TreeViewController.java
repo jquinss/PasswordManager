@@ -173,11 +173,11 @@ public class TreeViewController {
                 getSelectionModel().getSelectedItem().getValue());
     }
 
-    private void viewPasswordEntityInQuickViewPane(PasswordEntity passwordEntity) {
-        passwordManagerPaneController.viewInQuickViewPane(passwordEntity);
+    private void viewDataEntityInQuickViewPane(DataEntity dataEntity) {
+        passwordManagerPaneController.viewInQuickViewPane(dataEntity);
     }
 
-    private void hidePasswordEntityInQuickViewPane() {
+    private void hideDataEntityInQuickViewPane() {
         passwordManagerPaneController.hideQuickViewPane();
     }
 
