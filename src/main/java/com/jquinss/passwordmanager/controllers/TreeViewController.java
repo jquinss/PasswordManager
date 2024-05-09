@@ -173,6 +173,10 @@ public class TreeViewController {
                 getSelectionModel().getSelectedItem().getValue());
     }
 
+    private void quickViewPasswordEntity(PasswordEntity passwordEntity) {
+        passwordManagerPaneController.viewInQuickViewPane(passwordEntity);
+    }
+
     private void duplicatePasswordEntity() {
         TreeItem<DataEntity> selectedTreeItem = treeView.getSelectionModel().getSelectedItem();
         PasswordEntity pwdEntity = (PasswordEntity) selectedTreeItem.getValue();
