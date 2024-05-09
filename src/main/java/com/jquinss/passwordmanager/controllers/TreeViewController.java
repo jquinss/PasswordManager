@@ -174,7 +174,7 @@ public class TreeViewController {
     }
 
     private void viewDataEntityInQuickViewPane(DataEntity dataEntity) {
-        passwordManagerPaneController.viewInQuickViewPane(dataEntity);
+        passwordManagerPaneController.viewDataEntityInQuickViewPane(dataEntity);
     }
 
     private void hideDataEntityInQuickViewPane() {
@@ -267,6 +267,7 @@ public class TreeViewController {
 
     void initializeTreeView() {
         setTreeViewCellFactory();
+        setSelectedTreeItemListener();
         initializeRootTreeItem();
         loadTreeItems();
         setViewMode();
@@ -459,6 +460,17 @@ public class TreeViewController {
                         }
                     }
                 };
+            }
+        });
+    }
+
+    private void setSelectedTreeItemListener() {
+        treeView.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
+            if (newValue != null) {
+                passwordManagerPaneController.viewDataEntityInQuickViewPane(newValue.getValue());
+            }
+            else {
+                passwordManagerPaneController.hideQuickViewPane();
             }
         });
     }
