@@ -8,13 +8,25 @@ import com.jquinss.passwordmanager.security.UserSession;
 import com.jquinss.passwordmanager.util.misc.CryptoUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Label;
 import javafx.scene.control.TreeView;
+import javafx.scene.layout.VBox;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class PasswordManagerPaneController implements Initializable {
+    @FXML
+    private VBox quickViewPane;
+    @FXML
+    private VBox entityNameVBox;
+    @FXML
+    private Label entityName;
+    @FXML
+    private VBox entityDescriptionVBox;
+    @FXML
+    private Label entityDescription;
     @FXML
     private TreeView<DataEntity> treeView;
     @FXML
@@ -52,7 +64,22 @@ public class PasswordManagerPaneController implements Initializable {
         passwordEntityEditorPaneController.setPasswordManagerPaneController(this);
     }
 
+    void viewDataEntityInQuickViewPane(DataEntity dataEntity) {
+        quickViewPane.setVisible(true);
+        entityName.setText(dataEntity.getName());
+        if (dataEntity.getDescription() != null) {
+            entityDescriptionVBox.setVisible(true);
+            entityDescription.setText(dataEntity.getDescription());
+        }
+        else {
+            entityDescriptionVBox.setVisible(false);
+        }
+    }
 
+    void hideQuickViewPane() {
+        // TODO
+
+    }
 
     void createPasswordEntityInEditor(Folder folder) {
         passwordEntityEditorPaneController.openPasswordEntityEditorInCreateMode(folder);
