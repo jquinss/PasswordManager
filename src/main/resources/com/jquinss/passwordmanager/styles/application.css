@@ -1,3 +1,17 @@
+/* Styles for the Password Manager Pane */
+
+#pwd-manager-pane {
+    -fx-background-color: #353836;
+}
+
+
+/* Styles for the Password Entity Editor Pane */
+
+#pwd-editor-pane {
+    -fx-background-color: #353836;
+}
+
+
 /* Styles for the root node */
 
 .root {
@@ -5,13 +19,8 @@
 }
 
 
-.pane-background {
-    -fx-background-color: #414743;
-}
-
-
-
 /* Styles for labels */
+
 .label {
 	-fx-font-size: 10pt;
 	-fx-text-fill: white;
@@ -31,7 +40,9 @@
     -fx-text-fill: yellow;
 }
 
+
 /* Styles for the text field */
+
 .text-field {
 	-fx-text-fill: white;
   -fx-border-color: grey;
@@ -40,8 +51,9 @@
 }
 
 .text-field:focused {
-    -fx-border-color: #E17B02;
+    -fx-border-color: #4b6eaf;
 }
+
 
 /* Styles for the buttons */
 
@@ -50,11 +62,10 @@
 	-fx-background-color: grey;
 	-fx-text-fill: white;
 	-fx-border-width: 1;
-	/* -fx-pref-width: 100px; */
 }
 
 .button:hover {
-    -fx-background-color: #E17B02;
+    -fx-background-color: #4b6eaf;
 	-fx-text-fill: black;
 }
 
@@ -70,7 +81,7 @@
 
 .link-style-button:hover {
     -fx-background-color: transparent;
-    -fx-text-fill: #E17B02;
+    -fx-text-fill: #4b6eaf;
 }
 
 .copy-clipboard-button {
@@ -79,4 +90,82 @@
 
 .copy-clipboard-button:hover {
     -fx-background-color: transparent;
+}
+
+
+/* Styles for the treeview */
+
+.tree-view {
+    -fx-background-color: #414743;
+}
+
+.tree-cell {
+    -fx-background-color: #414743;
+    -fx-text-fill: white;
+}
+
+.tree-view:focused .tree-cell:filled:selected {
+    -fx-background-color: #4b6eaf;
+    -fx-text-fill: black;
+}
+
+.tree-cell > .tree-disclosure-node > .arrow  {
+    -fx-background-color: white;
+}
+
+
+/* Styles for the date picker */
+
+.date-picker .button {
+	-fx-background-color: #414743;
+}
+
+.date-picker .arrow-button {
+    -fx-background-color: white;
+}
+
+.date-picker-popup > .month-year-pane {
+    -fx-background-color: #414743;
+}
+
+
+/* Styles for the SplitPane */
+
+.split-pane-divider {
+    -fx-padding: 0 1 0 1 ;
+    -fx-background-color: grey ;
+    -fx-background-insets: 0;
+}
+
+
+/* Styles for the ContextMenu */
+
+.context-menu {
+    -fx-background-color: #414743;
+    -fx-text-fill: white;
+    -fx-font-size: 8pt;
+}
+
+
+/* Styles for the menu bar and items */
+
+.menu-bar {
+	-fx-background-color: #414743;
+}
+
+.menu:hover, .menu:showing {
+	-fx-background-color: #4b6eaf;
+}
+
+.menu-item:focused {
+	-fx-background-color: #4b6eaf;
+}
+
+.menu .context-menu {
+	-fx-background-color: #414743;
+}
+
+
+.quick-view-pane {
+    -fx-background-color: #414743;
 }
