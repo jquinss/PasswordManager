@@ -92,6 +92,13 @@
     -fx-background-color: transparent;
 }
 
+#generate-pwd-button {
+    -fx-background-color: transparent;
+}
+
+#generate-pwd-button: hover {
+    -fx-background-color: transparent;
+}
 
 /* Styles for the treeview */
 
