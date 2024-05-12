@@ -6,6 +6,7 @@ import com.jquinss.passwordmanager.managers.SettingsManager;
 import com.jquinss.passwordmanager.util.misc.CryptoUtils;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -37,6 +38,7 @@ public class PasswordManagerController {
         controller.setPasswordManagerController(this);
         Scene scene = new Scene(root, 560, 400);
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
+        setWindowLogo(stage, this, "/com/jquinss/passwordmanager/images/logo.png");
         stage.setScene(scene);
         stage.show();
     }
@@ -93,5 +95,9 @@ public class PasswordManagerController {
         } catch (SQLException | IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    static void setWindowLogo(Stage stage, Object context, String imageFile) {
+        stage.getIcons().add(new Image(context.getClass().getResource(imageFile).toString()));
     }
 }
