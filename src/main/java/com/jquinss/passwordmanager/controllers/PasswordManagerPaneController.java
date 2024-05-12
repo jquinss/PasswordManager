@@ -6,6 +6,7 @@ import com.jquinss.passwordmanager.data.PasswordEntity;
 import com.jquinss.passwordmanager.data.User;
 import com.jquinss.passwordmanager.security.UserSession;
 import com.jquinss.passwordmanager.util.misc.CryptoUtils;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
@@ -45,13 +46,18 @@ public class PasswordManagerPaneController implements Initializable {
         this.passwordManagerController = passwordManagerController;
     }
 
-    private void terminateUserSession() {
-        userSession.terminate();
+    @FXML
+    public void exitApplication() {
+        passwordManagerController.exitApplication();
     }
 
     private void logOut() throws IOException {
         terminateUserSession();
         passwordManagerController.loadLoginPane();
+    }
+
+    private void terminateUserSession() {
+        userSession.terminate();
     }
 
     private void initializetreeViewController() {
