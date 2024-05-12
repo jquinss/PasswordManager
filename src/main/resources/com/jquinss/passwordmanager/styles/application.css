@@ -169,3 +169,23 @@
 .quick-view-pane {
     -fx-background-color: #414743;
 }
+
+/* Styles for the checkbox */
+
+.check-box {
+	-fx-text-fill: white;
+}
+
+.check-box .box {
+	-fx-background-color: white;
+	-fx-border-color:grey;
+	-fx-border-radius:3px;
+}
+
+.check-box:selected .mark {
+	-fx-background-color: white;
+}
+
+.check-box:selected .box {
+	-fx-background-color: #4b6eaf;
+}
