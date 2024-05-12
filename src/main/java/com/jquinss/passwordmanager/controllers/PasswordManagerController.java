@@ -82,6 +82,10 @@ public class PasswordManagerController {
         return stage;
     }
 
+    void exitApplication() {
+        stage.close();
+    }
+
     private void initializeDatabase() {
         try {
             Files.createDirectories(Path.of(SettingsManager.getInstance().getDatabaseDir()));
