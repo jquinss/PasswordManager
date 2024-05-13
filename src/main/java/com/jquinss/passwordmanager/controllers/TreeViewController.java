@@ -139,6 +139,9 @@ public class TreeViewController {
         folderCopy.setDescription(description);
         DatabaseManager.getInstance().updateFolder(folderCopy);
         treeItem.setValue(folderCopy);
+        // refresh quick view
+        hideDataEntityInQuickViewPane();
+        viewDataEntityInQuickViewPane(folderCopy);
     }
 
     private void createPasswordEntity() {
@@ -254,6 +257,9 @@ public class TreeViewController {
                 DatabaseManager.getInstance().updatePasswordEntity(passwordEntityCopy);
                 decryptFields(passwordEntityCopy);
                 treeItem.setValue(passwordEntityCopy);
+                // refresh quick view pane
+                hideDataEntityInQuickViewPane();
+                viewDataEntityInQuickViewPane(passwordEntityCopy);
             }
             catch (SQLException e) {
                 DialogBuilder.buildAlertDialog("Error", "Error modifying password entity",
