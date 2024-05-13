@@ -13,6 +13,8 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.HBox;
@@ -29,9 +31,19 @@ import java.util.ResourceBundle;
 
 public class PasswordEntityEditorPaneController implements Initializable {
     @FXML
+    private Button copyUrlButton;
+    @FXML
+    private Button copyUsernameButton;
+    @FXML
+    private Button copyEmailAddressButton;
+    @FXML
+    private Button copyPasswordButton;
+    @FXML
     private Button saveButton;
     @FXML
     private Button generatePasswordButton;
+    @FXML
+    private ImageView generatePasswordImage;
     @FXML
     private HBox dialogButtons;
     @FXML
@@ -236,6 +248,14 @@ public class PasswordEntityEditorPaneController implements Initializable {
         passwordGenerator = new PasswordGenerator(passwordGeneratorPolicyComboBox.getValue().getPasswordSpecs());
     }
 
+    private void setTooltips() {
+        Tooltip.install(generatePasswordButton, new Tooltip("Generate password"));
+        Tooltip.install(copyPasswordButton, new Tooltip("Copy password to clipboard"));
+        Tooltip.install(copyUrlButton, new Tooltip("Copy URL to clipboard"));
+        Tooltip.install(copyUsernameButton, new Tooltip("Copy username to clipboard"));
+        Tooltip.install(copyEmailAddressButton, new Tooltip("Copy email address to clipboard"));
+    }
+
     private void initializeValidator() {
         createRequiredTextFieldCheck(nameTextField);
         createRequiredTextFieldCheck(passwordField);
@@ -408,6 +428,7 @@ public class PasswordEntityEditorPaneController implements Initializable {
         initializePasswordGeneratorPolicyComboBox();
         initializeShowPasswordCheckBox();
         initializePasswordGenerator();
+        setTooltips();
         setHideMode();
     }
 }
