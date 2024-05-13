@@ -85,18 +85,22 @@
 }
 
 .copy-clipboard-button {
+    -fx-graphic: url("../images/copy_clipboard.png");
     -fx-background-color: transparent;
 }
 
 .copy-clipboard-button:hover {
+    -fx-graphic: url("../images/copy_clipboard_hover.png");
     -fx-background-color: transparent;
 }
 
 #generate-pwd-button {
+    -fx-graphic: url("../images/generate_pwd.png");
     -fx-background-color: transparent;
 }
 
 #generate-pwd-button: hover {
+    -fx-graphic: url("../images/generate_pwd_hover.png");
     -fx-background-color: transparent;
 }
 
