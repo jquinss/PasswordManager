@@ -10,6 +10,7 @@ import com.jquinss.passwordmanager.managers.DatabaseManager;
 import com.jquinss.passwordmanager.security.UserSession;
 import com.jquinss.passwordmanager.util.misc.CryptoUtils;
 import com.jquinss.passwordmanager.util.misc.DialogBuilder;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -22,6 +23,7 @@ import javafx.util.Pair;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import java.sql.SQLException;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -38,10 +40,6 @@ public class TreeViewController {
         this.treeView = treeView;
         this.userSession = userSession;
         this.asymmetricCrypto = asymmetricCrypto;
-    }
-
-    private void deleteAllFolders() {
-        // TODO
     }
 
     private void createFolder() {
@@ -390,8 +388,7 @@ public class TreeViewController {
 
         RootFolderContextMenu() {
             addFolder.setOnAction(e -> createFolder());
-            removeFolders.setOnAction(e -> deleteAllFolders());
-            getItems().addAll(addFolder, removeFolders);
+            getItems().addAll(addFolder);
         }
     }
 
