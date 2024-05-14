@@ -144,7 +144,7 @@
 
 .split-pane-divider {
     -fx-padding: 0 1 0 1 ;
-    -fx-background-color: grey ;
+    -fx-background-color: grey;
     -fx-background-insets: 0;
 }
 
@@ -199,4 +199,11 @@
 
 .check-box:selected .box {
 	-fx-background-color: #4b6eaf;
+}
+
+
+/* Styles for the DialogPane */
+
+.dialog-pane:header .header-panel {
+  -fx-background-color: #414743;
 }
