@@ -6,15 +6,18 @@ import com.jquinss.passwordmanager.data.PasswordEntity;
 import com.jquinss.passwordmanager.data.User;
 import com.jquinss.passwordmanager.security.UserSession;
 import com.jquinss.passwordmanager.util.misc.CryptoUtils;
+import com.jquinss.passwordmanager.util.misc.DialogBuilder;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.VBox;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class PasswordManagerPaneController implements Initializable {
@@ -55,6 +58,13 @@ public class PasswordManagerPaneController implements Initializable {
     private void logOut() throws IOException {
         terminateUserSession();
         passwordManagerController.loadLoginPane();
+    }
+
+    @FXML
+    public void showAboutDialog() {
+        Alert aboutDialog = DialogBuilder.buildAlertDialog("About", "", "Password Manager v1.0\n\nCreated by Joaquin Sampedro", Alert.AlertType.INFORMATION);
+        aboutDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
+        aboutDialog.showAndWait();
     }
 
     private void terminateUserSession() {
