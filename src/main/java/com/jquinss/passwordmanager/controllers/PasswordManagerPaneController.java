@@ -51,6 +51,7 @@ public class PasswordManagerPaneController implements Initializable {
         passwordManagerController.exitApplication();
     }
 
+    @FXML
     private void logOut() throws IOException {
         terminateUserSession();
         passwordManagerController.loadLoginPane();
