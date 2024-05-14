@@ -207,3 +207,14 @@
 .dialog-pane:header .header-panel {
   -fx-background-color: #414743;
 }
+
+
+/* Styles for the ComboBox */
+
+.combo-box-popup .list-view .list-cell {
+    -fx-background-color: grey;
+}
+
+.combo-box-popup .list-view .list-cell:hover {
+    -fx-background-color: #4b6eaf;
+}
