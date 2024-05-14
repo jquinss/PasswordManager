@@ -17,6 +17,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
+import javafx.scene.layout.Pane;
 import javafx.util.Callback;
 import javafx.util.Pair;
 
@@ -45,14 +46,17 @@ public class TreeViewController {
     private void createFolder() {
         Dialog<Pair<String, String>> dialog = DialogBuilder.buildTwoTextFieldInputDialog("Create folder",
                 "Create a new folder:", "Folder name", "Description", true, Optional.empty());
+        dialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
         Optional<Pair<String, String>> optional = dialog.showAndWait();
         optional.ifPresent(pair -> {
             try {
                 createFolderTreeItem(treeView.getSelectionModel().getSelectedItem(), pair.getKey(), pair.getValue());
             }
             catch (SQLException e) {
-                DialogBuilder.buildAlertDialog("Error", "Error creating folder",
+                Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Error creating folder",
                         "A database error has occurred during the operation", Alert.AlertType.ERROR);
+                alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
+                alertDialog.showAndWait();
             }
         });
     }
@@ -78,6 +82,8 @@ public class TreeViewController {
         }
         else {
             Alert alertDialog = DialogBuilder.buildAlertDialog("Confirmation", "The folder is not empty", "Are you sure you want to delete all the files?", Alert.AlertType.CONFIRMATION);
+            alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
+
             alertDialog.showAndWait().ifPresent(response -> {
                 if (response == ButtonType.OK) {
                     deleteAllPasswordEntitiesInFolder(treeItem);
@@ -94,8 +100,10 @@ public class TreeViewController {
             folderTreeItem.getParent().getChildren().remove(folderTreeItem);
         }
         catch (SQLException e) {
-            DialogBuilder.buildAlertDialog("Error", "Error deleting folder",
+            Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Error deleting folder",
                     "A database error has occurred during the operation", Alert.AlertType.ERROR);
+            alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
+            alertDialog.showAndWait();
         }
     }
 
@@ -105,8 +113,10 @@ public class TreeViewController {
             DatabaseManager.getInstance().deletePasswordEntities(passwordEntities);
         }
         catch (SQLException e) {
-            DialogBuilder.buildAlertDialog("Error", "Error deleting password entities",
+            Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Error deleting password entities",
                     "A database error has occurred during the operation", Alert.AlertType.ERROR);
+            alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
+            alertDialog.showAndWait();
         }
     }
 
@@ -117,6 +127,7 @@ public class TreeViewController {
         Dialog<Pair<String, String>> dialog = DialogBuilder.buildTwoTextFieldInputDialog("Edit folder",
                 "Edit folder:", "Folder name", "Description", true,
                 Optional.ofNullable(defaultValues));
+        dialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
 
         Optional<Pair<String, String>> optional = dialog.showAndWait();
         optional.ifPresent(pair -> {
@@ -124,8 +135,10 @@ public class TreeViewController {
                 editFolderTreeItem(dataEntityTreeItem, pair.getKey(), pair.getValue());
             }
             catch (SQLException e) {
-                DialogBuilder.buildAlertDialog("Error", "Error editing folder",
+                Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Error editing folder",
                         "A database error has occurred during the operation", Alert.AlertType.ERROR);
+                alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
+                alertDialog.showAndWait();
             }
         });
     }
@@ -155,8 +168,10 @@ public class TreeViewController {
             treeItem.getParent().getChildren().remove(treeItem);
         }
         catch (SQLException e) {
-            DialogBuilder.buildAlertDialog("Error", "Error deleting password entity",
+            Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Error deleting password entity",
                     "A database error has occurred during the operation", Alert.AlertType.ERROR);
+            alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
+            alertDialog.showAndWait();
         }
     }
 
@@ -192,8 +207,10 @@ public class TreeViewController {
             savePasswordEntityToTreeView(pwdEntityCopy, selectedTreeItem.getParent());
         }
         catch (SQLException e) {
-            DialogBuilder.buildAlertDialog("Error", "Error creating new password entity",
+            Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Error creating new password entity",
                     "A database error has occurred during the operation", Alert.AlertType.ERROR);
+            alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
+            alertDialog.showAndWait();
         }
     }
 
@@ -229,8 +246,10 @@ public class TreeViewController {
             savePasswordEntityToTreeView(passwordEntity, folderTreeItem);
         }
         catch (SQLException e) {
-            DialogBuilder.buildAlertDialog("Error", "Error creating password entity",
+            Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Error creating password entity",
                     "A database error has occurred during the operation", Alert.AlertType.ERROR);
+            alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
+            alertDialog.showAndWait();
         }
         finally {
             setViewMode();
@@ -260,8 +279,10 @@ public class TreeViewController {
                 viewDataEntityInQuickViewPane(passwordEntityCopy);
             }
             catch (SQLException e) {
-                DialogBuilder.buildAlertDialog("Error", "Error modifying password entity",
+                Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Error modifying password entity",
                         "A database error has occurred during the operation", Alert.AlertType.ERROR);
+                alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
+                alertDialog.showAndWait();
             }
             finally {
                 setViewMode();
