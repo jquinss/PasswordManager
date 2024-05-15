@@ -218,3 +218,23 @@
 .combo-box-popup .list-view .list-cell:hover {
     -fx-background-color: #4b6eaf;
 }
+
+/* Styles for the tab pane */
+
+.tab-pane .tab-header-area .tab-header-background {
+    -fx-background-color: #414743;
+}
+
+.tab-pane .tab {
+	-fx-background-color: #414743;
+}
+
+.tab-pane .tab .tab-label {
+	-fx-text-fill: white;
+	-fx-font-size: 10pt;
+	-fx-opacity: 0.4;
+}
+
+.tab-pane .tab:selected .tab-label {
+	-fx-opacity: 1;
+}
