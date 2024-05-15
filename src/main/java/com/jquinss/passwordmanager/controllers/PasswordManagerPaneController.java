@@ -9,11 +9,16 @@ import com.jquinss.passwordmanager.util.misc.CryptoUtils;
 import com.jquinss.passwordmanager.util.misc.DialogBuilder;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
@@ -58,6 +63,22 @@ public class PasswordManagerPaneController implements Initializable {
     private void logOut() throws IOException {
         terminateUserSession();
         passwordManagerController.loadLoginPane();
+    }
+
+    @FXML
+    public void openPasswordPoliciesPane() throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/jquinss/passwordmanager/fxml/PasswordPoliciesPane.fxml"));
+        Parent parent = fxmlLoader.load();
+
+        Scene scene = new Scene(parent, 400, 380);
+        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
+
+        Stage stage = new Stage();
+        stage.setResizable(false);
+        stage.setTitle("Password Policies");
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.setScene(scene);
+        stage.showAndWait();
     }
 
     @FXML
