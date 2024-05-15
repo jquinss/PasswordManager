@@ -238,3 +238,36 @@
 .tab-pane .tab:selected .tab-label {
 	-fx-opacity: 1;
 }
+
+/* Styles for the table view */
+
+.table-view {
+	-fx-background-color: #353836;
+	-fx-border-color: #353836;
+}
+
+.table-view:focused {
+	-fx-border-color: #4b6eaf;
+}
+
+.table-view .column-header {
+	-fx-background-color: #414743;
+}
+
+.table-view .placeholder .label {
+    -fx-font-size: 7.5pt;
+}
+
+.table-cell {
+    -fx-background-color: #353836;
+    -fx-text-fill: white;
+}
+
+.table-view:row-selection .table-row-cell:selected .table-cell {
+    -fx-background-color: #4b6eaf;
+}
+
+.table-view:cell-selection .table-cell:selected {
+    -fx-background-color: #4b6eaf;
+}
+
