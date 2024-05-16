@@ -2,6 +2,7 @@ package com.jquinss.passwordmanager.controllers;
 
 import com.jquinss.passwordmanager.data.PasswordGeneratorPolicy;
 import com.jquinss.passwordmanager.data.PasswordPolicy;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -65,7 +66,14 @@ public class PasswordPoliciesPaneController {
     }
 
     private void initializePasswordEnforcementPoliciesTableView() {
-        // TODO
+        passwordEnforcementPolicyNameTableColumn.setCellValueFactory(cellData -> {
+            return new SimpleStringProperty(cellData.getValue().getName());
+        });
+
+        passwordEnforcementIsDefaultPolicyTableColumn.setCellValueFactory(cellData -> {
+            boolean state = cellData.getValue().isDefaultPolicy();
+            return state ? new SimpleStringProperty("Yes") : new SimpleStringProperty("No");
+        });
     }
 
     private void initializePasswordGeneratorPoliciesTableView() {
