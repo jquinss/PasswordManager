@@ -77,7 +77,14 @@ public class PasswordPoliciesPaneController {
     }
 
     private void initializePasswordGeneratorPoliciesTableView() {
-        // TODO
+        passwordGeneratorPolicyNameTableColumn.setCellValueFactory(cellData -> {
+            return new SimpleStringProperty(cellData.getValue().getName());
+        });
+
+        passwordGeneratorIsDefaultPolicyTableColumn.setCellValueFactory(cellData -> {
+            boolean state = cellData.getValue().isDefaultPolicy();
+            return state ? new SimpleStringProperty("Yes") : new SimpleStringProperty("No");
+        });
     }
 
     private void loadPasswordEnforcementPolicies() {
