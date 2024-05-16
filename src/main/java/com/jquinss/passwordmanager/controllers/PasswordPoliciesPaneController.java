@@ -2,12 +2,16 @@ package com.jquinss.passwordmanager.controllers;
 
 import com.jquinss.passwordmanager.data.PasswordGeneratorPolicy;
 import com.jquinss.passwordmanager.data.PasswordPolicy;
+import com.jquinss.passwordmanager.managers.DatabaseManager;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+
+import java.sql.SQLException;
+import java.util.List;
 
 public class PasswordPoliciesPaneController {
     @FXML
@@ -23,7 +27,7 @@ public class PasswordPoliciesPaneController {
     @FXML
     private TableColumn<PasswordGeneratorPolicy, String> passwordGeneratorIsDefaultPolicyTableColumn;
 
-    private final ObservableList<PasswordPolicy> passwordPolicyObsList = FXCollections.observableArrayList();
+    private final ObservableList<PasswordPolicy> passwordEnforcementPolicyObsList = FXCollections.observableArrayList();
     private final ObservableList<PasswordGeneratorPolicy> passwordGeneratorPolicyObsList = FXCollections.observableArrayList();
 
     @FXML
@@ -74,6 +78,8 @@ public class PasswordPoliciesPaneController {
             boolean state = cellData.getValue().isDefaultPolicy();
             return state ? new SimpleStringProperty("Yes") : new SimpleStringProperty("No");
         });
+
+        passwordEnforcementPoliciesTableView.setItems(passwordEnforcementPolicyObsList);
     }
 
     private void initializePasswordGeneratorPoliciesTableView() {
@@ -85,10 +91,18 @@ public class PasswordPoliciesPaneController {
             boolean state = cellData.getValue().isDefaultPolicy();
             return state ? new SimpleStringProperty("Yes") : new SimpleStringProperty("No");
         });
+
+        passwordGeneratorPoliciesTableView.setItems(passwordGeneratorPolicyObsList);
     }
 
     private void loadPasswordEnforcementPolicies() {
-        // TODO
+        try {
+            List<PasswordPolicy> passwordEnforcementPolicies = DatabaseManager.getInstance().getAllPasswordPolicies();
+            passwordEnforcementPolicyObsList.setAll(passwordEnforcementPolicies);
+        }
+        catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void loadPasswordGeneratorPolicies() {
