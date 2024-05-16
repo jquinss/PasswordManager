@@ -1,22 +1,29 @@
 package com.jquinss.passwordmanager.controllers;
 
+import com.jquinss.passwordmanager.data.PasswordGeneratorPolicy;
+import com.jquinss.passwordmanager.data.PasswordPolicy;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 
 public class PasswordPoliciesPaneController {
     @FXML
-    private TableView passwordEnforcementPoliciesTableView;
+    private TableView<PasswordPolicy> passwordEnforcementPoliciesTableView;
     @FXML
-    private TableColumn passwordEnforcementPolicyNameTableColumn;
+    private TableColumn<PasswordPolicy, String> passwordEnforcementPolicyNameTableColumn;
     @FXML
-    private TableColumn passwordEnforcementIsDefaultPolicyTableColumn;
+    private TableColumn<PasswordPolicy, String> passwordEnforcementIsDefaultPolicyTableColumn;
     @FXML
-    private TableView passwordGeneratorPoliciesTableView;
+    private TableView<PasswordGeneratorPolicy> passwordGeneratorPoliciesTableView;
     @FXML
-    private TableColumn passwordGeneratorPolicyNameTableColumn;
+    private TableColumn<PasswordGeneratorPolicy, String> passwordGeneratorPolicyNameTableColumn;
     @FXML
-    private TableColumn passwordGeneratorIsDefaultPolicyTableColumn;
+    private TableColumn<PasswordGeneratorPolicy, String> passwordGeneratorIsDefaultPolicyTableColumn;
+
+    private final ObservableList<PasswordPolicy> passwordPolicyObsList = FXCollections.observableArrayList();
+    private final ObservableList<PasswordGeneratorPolicy> passwordGeneratorPolicyObsList = FXCollections.observableArrayList();
 
     @FXML
     private void addPasswordEnforcementPolicy() {
@@ -45,6 +52,31 @@ public class PasswordPoliciesPaneController {
 
     @FXML
     private void editPasswordGeneratorPolicy() {
+        // TODO
+    }
+
+    @FXML
+    private void initialize() {
+        // TODO
+        initializePasswordEnforcementPoliciesTableView();
+        initializePasswordGeneratorPoliciesTableView();
+        loadPasswordEnforcementPolicies();
+        loadPasswordGeneratorPolicies();
+    }
+
+    private void initializePasswordEnforcementPoliciesTableView() {
+        // TODO
+    }
+
+    private void initializePasswordGeneratorPoliciesTableView() {
+        // TODO
+    }
+
+    private void loadPasswordEnforcementPolicies() {
+        // TODO
+    }
+
+    private void loadPasswordGeneratorPolicies() {
         // TODO
     }
 }
