@@ -106,6 +106,12 @@ public class PasswordPoliciesPaneController {
     }
 
     private void loadPasswordGeneratorPolicies() {
-        // TODO
+        try {
+            List<PasswordGeneratorPolicy> passwordGeneratorPolicies = DatabaseManager.getInstance().getAllPasswordGeneratorPolicies();
+            passwordGeneratorPolicyObsList.setAll(passwordGeneratorPolicies);
+        }
+        catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
