@@ -102,7 +102,7 @@ public class PasswordPoliciesPaneController {
 
     private void loadPasswordEnforcementPolicies() {
         try {
-            List<PasswordEnforcementPolicy> passwordEnforcementPolicies = DatabaseManager.getInstance().getAllPasswordPolicies();
+            List<PasswordEnforcementPolicy> passwordEnforcementPolicies = DatabaseManager.getInstance().getAllPasswordEnforcementPolicies();
             passwordEnforcementPolicyObsList.setAll(passwordEnforcementPolicies);
         }
         catch (SQLException e) {
