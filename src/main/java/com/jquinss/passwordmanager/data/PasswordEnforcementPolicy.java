@@ -2,32 +2,13 @@ package com.jquinss.passwordmanager.data;
 
 import com.jquinss.passwordmanager.util.password.PasswordStrengthCriteria;
 
-public class PasswordEnforcementPolicy {
-    private int id;
-    private String name;
+public class PasswordEnforcementPolicy extends PasswordPolicy {
     private PasswordStrengthCriteria passwordStrengthCriteria;
-    private boolean defaultPolicy = false;
 
     public PasswordEnforcementPolicy(int id, String name, PasswordStrengthCriteria passwordStrengthCriteria) {
-        this.id = id;
-        this.name = name;
+        setId(id);
+        setName(name);
         this.passwordStrengthCriteria = passwordStrengthCriteria;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String nam) {
-        this.name = name;
     }
 
     public PasswordStrengthCriteria getPasswordStrengthCriteria() {
@@ -36,18 +17,5 @@ public class PasswordEnforcementPolicy {
 
     public void setPasswordStrengthCriteria(PasswordStrengthCriteria passwordStrengthCriteria) {
         this.passwordStrengthCriteria = passwordStrengthCriteria;
-    }
-
-    public boolean isDefaultPolicy() {
-        return defaultPolicy;
-    }
-
-    public void setDefaultPolicy(boolean defaultPolicy) {
-        this.defaultPolicy = defaultPolicy;
-    }
-
-    @Override
-    public String toString() {
-        return getName();
     }
 }
