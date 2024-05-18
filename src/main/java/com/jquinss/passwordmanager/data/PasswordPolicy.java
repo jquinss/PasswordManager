@@ -17,7 +17,7 @@ public abstract class PasswordPolicy {
         return name;
     }
 
-    public void setName(String nam) {
+    public void setName(String name) {
         this.name = name;
     }
 
