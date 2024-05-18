@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
-public interface PasswordPolicyDao {
+public interface PasswordEnforcementPolicyDao {
     Optional<PasswordEnforcementPolicy> getById(int id) throws SQLException;
 
     List<PasswordEnforcementPolicy> getAll() throws SQLException;
