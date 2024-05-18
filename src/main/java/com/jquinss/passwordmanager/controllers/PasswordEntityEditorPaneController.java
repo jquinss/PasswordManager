@@ -13,7 +13,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
@@ -65,7 +64,7 @@ public class PasswordEntityEditorPaneController implements Initializable {
     @FXML
     private TextField clearPasswordField;
     @FXML
-    private ComboBox<PasswordPolicy> passwordPolicyComboBox;
+    private ComboBox<PasswordEnforcementPolicy> passwordPolicyComboBox;
     @FXML
     private CheckBox passwordExpiresCheckBox;
     @FXML
@@ -75,7 +74,7 @@ public class PasswordEntityEditorPaneController implements Initializable {
     private EditorMode editorMode;
     private PasswordManagerPaneController passwordManagerPaneController;
     private final Validator validator = new Validator();
-    private final ObservableList<PasswordPolicy> passwordPolicyObsList = FXCollections.observableArrayList();
+    private final ObservableList<PasswordEnforcementPolicy> passwordPolicyObsList = FXCollections.observableArrayList();
     private final ObservableList<PasswordGeneratorPolicy> passwordGeneratorPolicyObsList = FXCollections.observableArrayList();
     private final PasswordStrengthChecker passwordStrengthChecker = new PasswordStrengthChecker();
     private PasswordGenerator passwordGenerator;
@@ -164,12 +163,12 @@ public class PasswordEntityEditorPaneController implements Initializable {
     }
 
     private void setPasswordPolicyComboBoxCellFactory() {
-        passwordPolicyComboBox.setCellFactory(new Callback<ListView<PasswordPolicy>, ListCell<PasswordPolicy>>() {
+        passwordPolicyComboBox.setCellFactory(new Callback<ListView<PasswordEnforcementPolicy>, ListCell<PasswordEnforcementPolicy>>() {
             @Override
-            public ListCell<PasswordPolicy> call(ListView<PasswordPolicy> param) {
-                return new ListCell<PasswordPolicy>() {
+            public ListCell<PasswordEnforcementPolicy> call(ListView<PasswordEnforcementPolicy> param) {
+                return new ListCell<PasswordEnforcementPolicy>() {
                     @Override
-                    protected void updateItem(PasswordPolicy item, boolean empty) {
+                    protected void updateItem(PasswordEnforcementPolicy item, boolean empty) {
                         super.updateItem(item, empty);
 
                         if (item != null) {
@@ -193,7 +192,7 @@ public class PasswordEntityEditorPaneController implements Initializable {
     }
 
     private void setDefaultPasswordPolicy() {
-        for (PasswordPolicy pwdPolicy : passwordPolicyObsList) {
+        for (PasswordEnforcementPolicy pwdPolicy : passwordPolicyObsList) {
             if (pwdPolicy.isDefaultPolicy()) {
                 passwordPolicyComboBox.getSelectionModel().select(pwdPolicy);
             }
@@ -399,7 +398,7 @@ public class PasswordEntityEditorPaneController implements Initializable {
     }
 
     private void setPasswordPolicy(PasswordEntity pwdEntty) {
-        for (PasswordPolicy pwdPolicy : passwordPolicyObsList) {
+        for (PasswordEnforcementPolicy pwdPolicy : passwordPolicyObsList) {
             if (pwdPolicy.getId() == pwdEntty.getPasswordPolicyId()) {
                 passwordPolicyComboBox.getSelectionModel().select(pwdPolicy);
             }
