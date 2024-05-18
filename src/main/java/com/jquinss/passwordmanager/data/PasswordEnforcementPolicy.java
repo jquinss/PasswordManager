@@ -2,13 +2,13 @@ package com.jquinss.passwordmanager.data;
 
 import com.jquinss.passwordmanager.util.password.PasswordStrengthCriteria;
 
-public class PasswordPolicy {
+public class PasswordEnforcementPolicy {
     private int id;
     private String name;
     private PasswordStrengthCriteria passwordStrengthCriteria;
     private boolean defaultPolicy = false;
 
-    public PasswordPolicy(int id, String name, PasswordStrengthCriteria passwordStrengthCriteria) {
+    public PasswordEnforcementPolicy(int id, String name, PasswordStrengthCriteria passwordStrengthCriteria) {
         this.id = id;
         this.name = name;
         this.passwordStrengthCriteria = passwordStrengthCriteria;
