@@ -74,6 +74,10 @@ public class PasswordManagerPaneController implements Initializable {
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
 
         Stage stage = new Stage();
+
+        final PasswordPoliciesPaneController controller = fxmlLoader.getController();
+        controller.setStage(stage);
+
         stage.setResizable(false);
         stage.setTitle("Password Policies");
         stage.initModality(Modality.APPLICATION_MODAL);
