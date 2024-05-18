@@ -184,7 +184,7 @@ public class PasswordEntityEditorPaneController implements Initializable {
 
     private void loadPasswordPolicies() {
         try {
-            passwordPolicyObsList.setAll(DatabaseManager.getInstance().getAllPasswordPolicies());
+            passwordPolicyObsList.setAll(DatabaseManager.getInstance().getAllPasswordEnforcementPolicies());
         }
         catch (SQLException e) {
             throw new RuntimeException(e);
