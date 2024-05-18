@@ -1,7 +1,7 @@
 package com.jquinss.passwordmanager.controllers;
 
 import com.jquinss.passwordmanager.data.*;
-import com.jquinss.passwordmanager.enums.EditorMode;
+import com.jquinss.passwordmanager.enums.DataEntityEditorMode;
 import com.jquinss.passwordmanager.managers.DatabaseManager;
 import com.jquinss.passwordmanager.util.password.Password;
 import com.jquinss.passwordmanager.util.password.PasswordGenerator;
@@ -71,7 +71,7 @@ public class PasswordEntityEditorPaneController implements Initializable {
     private DatePicker passwordExpirationDatePicker;
     @FXML
     private CheckBox showPasswordCheckBox;
-    private EditorMode editorMode;
+    private DataEntityEditorMode editorMode;
     private PasswordManagerPaneController passwordManagerPaneController;
     private final Validator validator = new Validator();
     private final ObservableList<PasswordEnforcementPolicy> passwordPolicyObsList = FXCollections.observableArrayList();
@@ -329,12 +329,12 @@ public class PasswordEntityEditorPaneController implements Initializable {
     }
 
     public void openPasswordEntityEditorInCreateMode(Folder folder) {
-        setEditMode(EditorMode.CREATE, folder);
+        setEditMode(DataEntityEditorMode.CREATE, folder);
         resetFields();
     }
 
     public void openPasswordEntityEditorInEditMode(PasswordEntity pwdEntity) {
-        setEditMode(EditorMode.EDIT, pwdEntity);
+        setEditMode(DataEntityEditorMode.EDIT, pwdEntity);
         resetFields();
         loadPasswordEntity(pwdEntity);
     }
@@ -346,7 +346,7 @@ public class PasswordEntityEditorPaneController implements Initializable {
     }
 
     private void setViewMode(PasswordEntity pwdEntity) {
-        editorMode = EditorMode.VIEW;
+        editorMode = DataEntityEditorMode.VIEW;
         editorMode.setDataEntity(pwdEntity);
         setTextFieldsEditable(false);
         disableControls(true);
@@ -354,7 +354,7 @@ public class PasswordEntityEditorPaneController implements Initializable {
         passwordEntityEditorMainPane.setVisible(true);
     }
 
-    private void setEditMode(EditorMode editorMode, DataEntity dataEntity) {
+    private void setEditMode(DataEntityEditorMode editorMode, DataEntity dataEntity) {
         this.editorMode = editorMode;
         this.editorMode.setDataEntity(dataEntity);
         setTextFieldsEditable(true);
@@ -364,7 +364,7 @@ public class PasswordEntityEditorPaneController implements Initializable {
     }
 
     private void setHideMode() {
-        editorMode = EditorMode.HIDE;
+        editorMode = DataEntityEditorMode.HIDE;
         editorMode.setDataEntity(null);
         passwordEntityEditorMainPane.setVisible(false);
     }
