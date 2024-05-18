@@ -1,6 +1,6 @@
 package com.jquinss.passwordmanager.controllers;
 
-import com.jquinss.passwordmanager.control.PasswordEnforcementEditorDialog;
+import com.jquinss.passwordmanager.control.PasswordEnforcementPolicyEditorDialog;
 import com.jquinss.passwordmanager.data.PasswordGeneratorPolicy;
 import com.jquinss.passwordmanager.data.PasswordEnforcementPolicy;
 import com.jquinss.passwordmanager.managers.DatabaseManager;
@@ -36,7 +36,7 @@ public class PasswordPoliciesPaneController {
     @FXML
     private void addPasswordEnforcementPolicy() {
         // TODO
-        PasswordEnforcementEditorDialog dialog = new PasswordEnforcementEditorDialog(stage);
+        PasswordEnforcementPolicyEditorDialog dialog = new PasswordEnforcementPolicyEditorDialog(stage);
         dialog.showAndWait();
     }
 
