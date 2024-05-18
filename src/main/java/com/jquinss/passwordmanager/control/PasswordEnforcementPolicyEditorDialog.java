@@ -9,7 +9,7 @@ import javafx.stage.Window;
 
 import java.io.IOException;
 
-public class PasswordEnforcementEditorDialog extends Dialog<PasswordEnforcementPolicy> {
+public class PasswordEnforcementPolicyEditorDialog extends Dialog<PasswordEnforcementPolicy> {
     @FXML
     private TextField policyNameTextField;
     @FXML
@@ -29,7 +29,7 @@ public class PasswordEnforcementEditorDialog extends Dialog<PasswordEnforcementP
     @FXML
     private ButtonType saveButtonType;
 
-    public PasswordEnforcementEditorDialog(Window window) {
+    public PasswordEnforcementPolicyEditorDialog(Window window) {
         try {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(getClass().getResource("/com/jquinss/passwordmanager/fxml/PasswordEnforcementPolicyEditorPane.fxml"));
