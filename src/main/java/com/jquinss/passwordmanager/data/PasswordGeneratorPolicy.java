@@ -2,38 +2,11 @@ package com.jquinss.passwordmanager.data;
 
 import com.jquinss.passwordmanager.util.password.PasswordSpecs;
 
-public class PasswordGeneratorPolicy {
-    private int id;
-    private String name;
-    private boolean defaultPolicy = false;
+public class PasswordGeneratorPolicy extends PasswordPolicy {
     private PasswordSpecs passwordSpecs;
     public PasswordGeneratorPolicy(String name, PasswordSpecs passwordSpecs) {
-        this.name = name;
+        setName(name);
         this.passwordSpecs = passwordSpecs;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public boolean isDefaultPolicy() {
-        return defaultPolicy;
-    }
-
-    public void setDefaultPolicy(boolean defaultPolicy) {
-        this.defaultPolicy = defaultPolicy;
     }
 
     public PasswordSpecs getPasswordSpecs() {
@@ -42,10 +15,5 @@ public class PasswordGeneratorPolicy {
 
     public void setPasswordSpecs(PasswordSpecs passwordSpecs) {
         this.passwordSpecs = passwordSpecs;
-    }
-
-    @Override
-    public String toString() {
-        return getName();
     }
 }
