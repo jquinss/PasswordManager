@@ -4,7 +4,7 @@ import com.jquinss.passwordmanager.data.DataEntity;
 
 import java.util.Optional;
 
-public enum EditorMode {
+public enum DataEntityEditorMode {
     CREATE, EDIT, HIDE, VIEW;
 
     private DataEntity dataEntity;
