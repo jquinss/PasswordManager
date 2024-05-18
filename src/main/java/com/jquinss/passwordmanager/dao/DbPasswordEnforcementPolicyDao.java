@@ -9,11 +9,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class DbPasswordPolicyDao implements PasswordPolicyDao {
+public class DbPasswordEnforcementPolicyDao implements PasswordEnforcementPolicyDao {
 
     private final DataSource dataSource;
 
-    public DbPasswordPolicyDao(DataSource dataSource) {
+    public DbPasswordEnforcementPolicyDao(DataSource dataSource) {
         this.dataSource = dataSource;
     }
 
