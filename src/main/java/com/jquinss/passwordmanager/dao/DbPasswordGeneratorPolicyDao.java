@@ -1,9 +1,7 @@
 package com.jquinss.passwordmanager.dao;
 
 import com.jquinss.passwordmanager.data.PasswordGeneratorPolicy;
-import com.jquinss.passwordmanager.data.PasswordPolicy;
 import com.jquinss.passwordmanager.util.password.PasswordSpecs;
-import com.jquinss.passwordmanager.util.password.PasswordStrengthCriteria;
 
 import javax.sql.DataSource;
 import java.sql.*;
