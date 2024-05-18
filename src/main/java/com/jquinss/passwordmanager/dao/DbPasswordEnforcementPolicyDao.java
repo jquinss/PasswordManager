@@ -1,6 +1,6 @@
 package com.jquinss.passwordmanager.dao;
 
-import com.jquinss.passwordmanager.data.PasswordPolicy;
+import com.jquinss.passwordmanager.data.PasswordEnforcementPolicy;
 import com.jquinss.passwordmanager.util.password.PasswordStrengthCriteria;
 
 import javax.sql.DataSource;
@@ -18,7 +18,7 @@ public class DbPasswordPolicyDao implements PasswordPolicyDao {
     }
 
     @Override
-    public Optional<PasswordPolicy> getById(int id) throws SQLException {
+    public Optional<PasswordEnforcementPolicy> getById(int id) throws SQLException {
         try (Connection conn = dataSource.getConnection();
              PreparedStatement ps = buildGetPasswordPolicyByIdPreparedStatement(conn, id);
              ResultSet rs = ps.executeQuery()) {
@@ -31,8 +31,8 @@ public class DbPasswordPolicyDao implements PasswordPolicyDao {
     }
 
     @Override
-    public List<PasswordPolicy> getAll() throws SQLException {
-        List<PasswordPolicy> pwdEntities = new ArrayList<>();
+    public List<PasswordEnforcementPolicy> getAll() throws SQLException {
+        List<PasswordEnforcementPolicy> pwdEntities = new ArrayList<>();
         try (Connection conn = dataSource.getConnection();
              PreparedStatement ps = conn.prepareStatement("SELECT * FROM password_policy");
              ResultSet rs = ps.executeQuery()) {
@@ -46,7 +46,7 @@ public class DbPasswordPolicyDao implements PasswordPolicyDao {
     }
 
     @Override
-    public void add(PasswordPolicy pwdPolicy) throws SQLException {
+    public void add(PasswordEnforcementPolicy pwdPolicy) throws SQLException {
         try (Connection conn = dataSource.getConnection();
              PreparedStatement ps = buildAddPasswordPolicyPreparedStatement(conn, pwdPolicy);) {
 
@@ -65,7 +65,7 @@ public class DbPasswordPolicyDao implements PasswordPolicyDao {
     }
 
     @Override
-    public void update(PasswordPolicy pwdPolicy) throws SQLException {
+    public void update(PasswordEnforcementPolicy pwdPolicy) throws SQLException {
         try (Connection conn = dataSource.getConnection();
              PreparedStatement ps = buildUpdatePasswordPolicyPreparedStatement(conn, pwdPolicy)) {
             ps.executeUpdate();
@@ -73,7 +73,7 @@ public class DbPasswordPolicyDao implements PasswordPolicyDao {
     }
 
     @Override
-    public void delete(PasswordPolicy pwdPolicy) throws SQLException {
+    public void delete(PasswordEnforcementPolicy pwdPolicy) throws SQLException {
         try (Connection conn = dataSource.getConnection();
              PreparedStatement ps = buildDeletePasswordPolicyPreparedStatement(conn, pwdPolicy.getId())) {
             ps.executeUpdate();
@@ -89,7 +89,7 @@ public class DbPasswordPolicyDao implements PasswordPolicyDao {
         return ps;
     }
 
-    private PasswordPolicy createPasswordPolicy(ResultSet rs) throws SQLException {
+    private PasswordEnforcementPolicy createPasswordPolicy(ResultSet rs) throws SQLException {
         PasswordStrengthCriteria pwdStrengthCriteria = new PasswordStrengthCriteria.Builder()
                 .minLength(rs.getInt(3))
                 .minLowerCaseChars(rs.getInt(4))
@@ -98,7 +98,7 @@ public class DbPasswordPolicyDao implements PasswordPolicyDao {
                 .minSymbols(rs.getInt(7))
                 .maxConsecutiveChars(rs.getInt(8)).build();
 
-        PasswordPolicy pwdPolicy = new PasswordPolicy(rs.getInt(1), rs.getString(2), pwdStrengthCriteria);
+        PasswordEnforcementPolicy pwdPolicy = new PasswordEnforcementPolicy(rs.getInt(1), rs.getString(2), pwdStrengthCriteria);
         pwdPolicy.setDefaultPolicy(rs.getBoolean(9));
 
         return pwdPolicy;
@@ -111,7 +111,7 @@ public class DbPasswordPolicyDao implements PasswordPolicyDao {
         return ps;
     }
 
-    private PreparedStatement buildAddPasswordPolicyPreparedStatement(Connection conn, PasswordPolicy pwdPolicy) throws SQLException {
+    private PreparedStatement buildAddPasswordPolicyPreparedStatement(Connection conn, PasswordEnforcementPolicy pwdPolicy) throws SQLException {
         String statement = """
         INSERT INTO password_policy (password_policy_name, min_length, min_lower_case_chars, min_upper_case_chars,
         min_digits, min_symbols, max_consec_equal_chars, default_policy) VALUES (?,?,?,?,?,?,?,?)""";
@@ -119,7 +119,7 @@ public class DbPasswordPolicyDao implements PasswordPolicyDao {
         return buildSetOperationPreparedStatement(conn, pwdPolicy, statement);
     }
 
-    private PreparedStatement buildUpdatePasswordPolicyPreparedStatement(Connection conn, PasswordPolicy pwdPolicy) throws SQLException {
+    private PreparedStatement buildUpdatePasswordPolicyPreparedStatement(Connection conn, PasswordEnforcementPolicy pwdPolicy) throws SQLException {
         String statement = """
                 UPDATE password_policy SET password_policy_name=?, min_length=?, min_lower_case_chars=?, 
                  min_upper_case_chars=?, min_digits=?, min_symbols=?, max_consec_equal_chars=?, default_policy=? 
@@ -131,7 +131,7 @@ public class DbPasswordPolicyDao implements PasswordPolicyDao {
         return buildSetOperationPreparedStatement(conn, pwdPolicy, statement);
     }
 
-    private PreparedStatement buildSetOperationPreparedStatement(Connection conn, PasswordPolicy pwdPolicy, String sqlStatement) throws SQLException {
+    private PreparedStatement buildSetOperationPreparedStatement(Connection conn, PasswordEnforcementPolicy pwdPolicy, String sqlStatement) throws SQLException {
         PreparedStatement ps = conn.prepareStatement(sqlStatement);
         PasswordStrengthCriteria pwdStrengthCriteria = pwdPolicy.getPasswordStrengthCriteria();
         ps.setString(1, pwdPolicy.getName());
