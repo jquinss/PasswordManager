@@ -1,7 +1,8 @@
 package com.jquinss.passwordmanager.controllers;
 
+import com.jquinss.passwordmanager.control.PasswordEnforcementEditorDialog;
 import com.jquinss.passwordmanager.data.PasswordGeneratorPolicy;
-import com.jquinss.passwordmanager.data.PasswordPolicy;
+import com.jquinss.passwordmanager.data.PasswordEnforcementPolicy;
 import com.jquinss.passwordmanager.managers.DatabaseManager;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -9,30 +10,34 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.stage.Stage;
 
 import java.sql.SQLException;
 import java.util.List;
 
 public class PasswordPoliciesPaneController {
     @FXML
-    private TableView<PasswordPolicy> passwordEnforcementPoliciesTableView;
+    private TableView<PasswordEnforcementPolicy> passwordEnforcementPoliciesTableView;
     @FXML
-    private TableColumn<PasswordPolicy, String> passwordEnforcementPolicyNameTableColumn;
+    private TableColumn<PasswordEnforcementPolicy, String> passwordEnforcementPolicyNameTableColumn;
     @FXML
-    private TableColumn<PasswordPolicy, String> passwordEnforcementIsDefaultPolicyTableColumn;
+    private TableColumn<PasswordEnforcementPolicy, String> passwordEnforcementIsDefaultPolicyTableColumn;
     @FXML
     private TableView<PasswordGeneratorPolicy> passwordGeneratorPoliciesTableView;
     @FXML
     private TableColumn<PasswordGeneratorPolicy, String> passwordGeneratorPolicyNameTableColumn;
     @FXML
     private TableColumn<PasswordGeneratorPolicy, String> passwordGeneratorIsDefaultPolicyTableColumn;
+    private Stage stage;
 
-    private final ObservableList<PasswordPolicy> passwordEnforcementPolicyObsList = FXCollections.observableArrayList();
+    private final ObservableList<PasswordEnforcementPolicy> passwordEnforcementPolicyObsList = FXCollections.observableArrayList();
     private final ObservableList<PasswordGeneratorPolicy> passwordGeneratorPolicyObsList = FXCollections.observableArrayList();
 
     @FXML
     private void addPasswordEnforcementPolicy() {
         // TODO
+        PasswordEnforcementEditorDialog dialog = new PasswordEnforcementEditorDialog(stage);
+        dialog.showAndWait();
     }
 
     @FXML
@@ -97,7 +102,7 @@ public class PasswordPoliciesPaneController {
 
     private void loadPasswordEnforcementPolicies() {
         try {
-            List<PasswordPolicy> passwordEnforcementPolicies = DatabaseManager.getInstance().getAllPasswordPolicies();
+            List<PasswordEnforcementPolicy> passwordEnforcementPolicies = DatabaseManager.getInstance().getAllPasswordPolicies();
             passwordEnforcementPolicyObsList.setAll(passwordEnforcementPolicies);
         }
         catch (SQLException e) {
@@ -113,5 +118,9 @@ public class PasswordPoliciesPaneController {
         catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    void setStage(Stage stage) {
+        this.stage = stage;
     }
 }
