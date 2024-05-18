@@ -47,7 +47,7 @@ public class DatabaseManager {
     private final UserDao userDao = new DbUserDao(dataSource);
     private final PasswordEntityDao passwordEntityDao = new DbPasswordEntityDao(dataSource);
     private final FolderDao folderDao = new DbFolderDao(dataSource);
-    private final PasswordPolicyDao passwordPolicyDao = new DbPasswordPolicyDao(dataSource);
+    private final PasswordEnforcementPolicyDao passwordEnforcementPolicyDao = new DbPasswordEnforcementPolicyDao(dataSource);
     private final PasswordGeneratorPolicyDao passwordGeneratorPolicyDao = new DbPasswordGeneratorPolicyDao(dataSource);
     private static final DatabaseManager databaseManager = new DatabaseManager();
 
@@ -117,8 +117,8 @@ public class DatabaseManager {
         passwordEntityDao.delete(pwdEntities);
     }
 
-    public List<PasswordPolicy> getAllPasswordPolicies() throws SQLException {
-        return passwordPolicyDao.getAll();
+    public List<PasswordEnforcementPolicy> getAllPasswordEnforcementPolicies() throws SQLException {
+        return passwordEnforcementPolicyDao.getAll();
     }
 
     public List<PasswordGeneratorPolicy> getAllPasswordGeneratorPolicies() throws SQLException {
