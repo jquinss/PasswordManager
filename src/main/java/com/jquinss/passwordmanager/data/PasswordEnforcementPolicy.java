@@ -6,7 +6,11 @@ public class PasswordEnforcementPolicy extends PasswordPolicy {
     private PasswordStrengthCriteria passwordStrengthCriteria;
 
     public PasswordEnforcementPolicy(int id, String name, PasswordStrengthCriteria passwordStrengthCriteria) {
+        this(name, passwordStrengthCriteria);
         setId(id);
+    }
+
+    public PasswordEnforcementPolicy(String name, PasswordStrengthCriteria passwordStrengthCriteria) {
         setName(name);
         this.passwordStrengthCriteria = passwordStrengthCriteria;
     }
