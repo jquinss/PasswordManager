@@ -3,17 +3,21 @@ package com.jquinss.passwordmanager.controllers;
 import com.jquinss.passwordmanager.control.PasswordEnforcementPolicyEditorDialog;
 import com.jquinss.passwordmanager.data.PasswordGeneratorPolicy;
 import com.jquinss.passwordmanager.data.PasswordEnforcementPolicy;
+import com.jquinss.passwordmanager.enums.PasswordPolicyEditorMode;
 import com.jquinss.passwordmanager.managers.DatabaseManager;
+import com.jquinss.passwordmanager.util.misc.DialogBuilder;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.stage.Stage;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Objects;
 
 public class PasswordPoliciesPaneController {
     @FXML
@@ -35,9 +39,19 @@ public class PasswordPoliciesPaneController {
 
     @FXML
     private void addPasswordEnforcementPolicy() {
-        // TODO
-        PasswordEnforcementPolicyEditorDialog dialog = new PasswordEnforcementPolicyEditorDialog(stage);
-        dialog.showAndWait();
+        PasswordEnforcementPolicyEditorDialog dialog = new PasswordEnforcementPolicyEditorDialog(stage, PasswordPolicyEditorMode.CREATE);
+        dialog.showAndWait().ifPresent(passwordPolicy -> {
+            try {
+                DatabaseManager.getInstance().addPasswordEnforcementPolicy(passwordPolicy);
+                passwordEnforcementPolicyObsList.add(passwordPolicy);
+            }
+            catch (SQLException e) {
+                Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Error creating policy",
+                        "A database error has occurred during the operation", Alert.AlertType.ERROR);
+                alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
+                alertDialog.showAndWait();
+            }
+        });
     }
 
     @FXML
