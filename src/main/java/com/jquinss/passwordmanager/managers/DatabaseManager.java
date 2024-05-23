@@ -117,6 +117,10 @@ public class DatabaseManager {
         passwordEntityDao.delete(pwdEntities);
     }
 
+    public void addPasswordEnforcementPolicy(PasswordEnforcementPolicy passwordEnforcementPolicy) throws SQLException {
+        passwordEnforcementPolicyDao.add(passwordEnforcementPolicy);
+    }
+
     public List<PasswordEnforcementPolicy> getAllPasswordEnforcementPolicies() throws SQLException {
         return passwordEnforcementPolicyDao.getAll();
     }
