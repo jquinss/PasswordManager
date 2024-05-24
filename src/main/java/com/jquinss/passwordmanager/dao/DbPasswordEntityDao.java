@@ -110,7 +110,7 @@ public class DbPasswordEntityDao implements PasswordEntityDao {
     private PreparedStatement buildAddPasswordEntityPreparedStatement(Connection conn, PasswordEntity pwdEntity) throws SQLException {
         String statement = """
         INSERT INTO password_entity (name, user_name, password, email_address,
-        URL, description, expires, expiration_date, user_id, folder_id, password_policy_id) VALUES (?,?,?,?,?,?,?,?,?,?,?)""";
+        URL, description, expires, expiration_date, user_id, folder_id, password_enf_policy_id) VALUES (?,?,?,?,?,?,?,?,?,?,?)""";
 
         return buildSetOperationPreparedStatement(conn, pwdEntity, statement);
     }
@@ -118,7 +118,7 @@ public class DbPasswordEntityDao implements PasswordEntityDao {
     private PreparedStatement buildUpdatePasswordEntityPreparedStatement(Connection conn, PasswordEntity pwdEntity) throws SQLException {
         String statement = """
                  UPDATE password_entity SET name=?, user_name=?, password=?, email_address=?, URL=?, description=?, 
-                 expires=?, expiration_date=?, user_id=?, folder_id=?, password_policy_id=? WHERE password_entity_id=?""";
+                 expires=?, expiration_date=?, user_id=?, folder_id=?, password_enf_policy_id=? WHERE password_entity_id=?""";
 
         PreparedStatement ps = buildSetOperationPreparedStatement(conn, pwdEntity, statement);
         ps.setInt(12, pwdEntity.getId());
