@@ -97,7 +97,7 @@ public class PasswordManagerPaneController implements Initializable {
     }
 
     private void initializetreeViewController() {
-        treeViewController = new TreeViewController(treeView, userSession, asymmetricCrypto);
+        treeViewController = new TreeViewController(treeView, asymmetricCrypto);
         treeViewController.setPasswordManagerPaneController(this);
         treeViewController.initializeTreeView();
     }
@@ -141,6 +141,10 @@ public class PasswordManagerPaneController implements Initializable {
 
     void cancelEditMode() {
         treeViewController.setViewMode();
+    }
+
+    UserSession getUserSession() {
+        return userSession;
     }
 
     @Override
