@@ -113,6 +113,10 @@ public class DatabaseManager {
         return passwordEntityDao.getAllByFolderId(folderId);
     }
 
+    public List<PasswordEntity> getAllPasswordEntitiesByPasswordEnforcementPolicyId(int policyId) throws SQLException {
+        return passwordEntityDao.getAllByPasswordEnforcementPolicyId(policyId);
+    }
+
     public void deletePasswordEntities(List<PasswordEntity> pwdEntities) throws SQLException {
         passwordEntityDao.delete(pwdEntities);
     }
