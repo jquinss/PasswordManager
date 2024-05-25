@@ -7,17 +7,14 @@ import com.jquinss.passwordmanager.data.PasswordEntity;
 import com.jquinss.passwordmanager.data.RootFolder;
 import com.jquinss.passwordmanager.enums.TreeViewMode;
 import com.jquinss.passwordmanager.managers.DatabaseManager;
-import com.jquinss.passwordmanager.security.UserSession;
 import com.jquinss.passwordmanager.util.misc.CryptoUtils;
 import com.jquinss.passwordmanager.util.misc.DialogBuilder;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
-import javafx.scene.layout.Pane;
 import javafx.util.Callback;
 import javafx.util.Pair;
 
@@ -31,15 +28,13 @@ import java.util.Optional;
 
 public class TreeViewController {
     private final TreeView<DataEntity> treeView;
-    private final UserSession userSession;
     private final CryptoUtils.AsymmetricCrypto asymmetricCrypto;
     private final ContextMenuBuilder contextMenuBuilder = new ContextMenuBuilder();
     private TreeViewMode treeViewMode;
     private PasswordManagerPaneController passwordManagerPaneController;
 
-    public TreeViewController(TreeView<DataEntity> treeView, UserSession userSession, CryptoUtils.AsymmetricCrypto asymmetricCrypto) {
+    public TreeViewController(TreeView<DataEntity> treeView, CryptoUtils.AsymmetricCrypto asymmetricCrypto) {
         this.treeView = treeView;
-        this.userSession = userSession;
         this.asymmetricCrypto = asymmetricCrypto;
     }
 
@@ -300,7 +295,7 @@ public class TreeViewController {
 
     private void initializeRootTreeItem() {
         try {
-            Optional<RootFolder> optional = DatabaseManager.getInstance().getRootFolderByUserId(userSession.getCurrentUserId());
+            Optional<RootFolder> optional = DatabaseManager.getInstance().getRootFolderByUserId(passwordManagerPaneController.getUserSession().getCurrentUserId());
             if (optional.isPresent()) {
                 treeView.setRoot(buildTreeItem(optional.get()));
             }
@@ -370,7 +365,7 @@ public class TreeViewController {
     }
 
     private RootFolder createRootFolder() throws SQLException {
-        RootFolder rootFolder = new RootFolder("root", userSession.getCurrentUserId());
+        RootFolder rootFolder = new RootFolder("root", passwordManagerPaneController.getUserSession().getCurrentUserId());
         DatabaseManager.getInstance().addRootFolder(rootFolder);
         return rootFolder;
     }
