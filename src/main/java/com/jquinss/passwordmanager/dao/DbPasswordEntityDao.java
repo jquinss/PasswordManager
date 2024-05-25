@@ -48,7 +48,7 @@ public class DbPasswordEntityDao implements PasswordEntityDao {
     }
 
     @Override
-    public List<PasswordEntity> getAllByEnforcementPolicyId(int id) throws SQLException {
+    public List<PasswordEntity> getAllByPasswordEnforcementPolicyId(int id) throws SQLException {
         List<PasswordEntity> pwdEntities = new ArrayList<>();
         try (Connection conn = dataSource.getConnection();
              PreparedStatement ps = buildGetAllPasswordEntitiesByEnforcementPolicyIdPreparedStatement(conn, id);
