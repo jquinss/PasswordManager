@@ -48,6 +48,21 @@ public class DbPasswordEntityDao implements PasswordEntityDao {
     }
 
     @Override
+    public List<PasswordEntity> getAllByEnforcementPolicyId(int id) throws SQLException {
+        List<PasswordEntity> pwdEntities = new ArrayList<>();
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement ps = buildGetAllPasswordEntitiesByEnforcementPolicyIdPreparedStatement(conn, id);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                pwdEntities.add(createPasswordEntity(rs));
+            }
+        }
+
+        return pwdEntities;
+    }
+
+    @Override
     public List<PasswordEntity> getAllByFolderId(int id) throws SQLException {
         List<PasswordEntity> pwdEntities = new ArrayList<>();
         try (Connection conn = dataSource.getConnection();
@@ -161,6 +176,13 @@ public class DbPasswordEntityDao implements PasswordEntityDao {
 
     private PreparedStatement buildGetAllPasswordEntitiesByFolderIdPreparedStatement(Connection conn, int id) throws SQLException {
         PreparedStatement ps = conn.prepareStatement("SELECT * FROM password_entity WHERE folder_id = ?");
+        ps.setInt(1, id);
+
+        return ps;
+    }
+
+    private PreparedStatement buildGetAllPasswordEntitiesByEnforcementPolicyIdPreparedStatement(Connection conn, int id) throws SQLException {
+        PreparedStatement ps = conn.prepareStatement("SELECT * FROM password_entity WHERE password_enf_policy_id = ?");
         ps.setInt(1, id);
 
         return ps;
