@@ -13,7 +13,7 @@ public interface PasswordEntityDao {
 
     List<PasswordEntity> getAllByFolderId(int id) throws SQLException;
 
-    List<PasswordEntity> getAllByEnforcementPolicyId(int id) throws SQLException;
+    List<PasswordEntity> getAllByPasswordEnforcementPolicyId(int id) throws SQLException;
 
     void add(PasswordEntity pwdEntity) throws SQLException;
 
