@@ -9,6 +9,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 import javafx.stage.Modality;
 import javafx.stage.Window;
+import net.synedra.validatorfx.Check;
+import net.synedra.validatorfx.Validator;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -32,9 +34,8 @@ public class PasswordEnforcementPolicyEditorDialog extends Dialog<PasswordEnforc
     private CheckBox isDefaultPolicyCheckBox;
     @FXML
     private ButtonType saveButtonType;
-
     private final PasswordPolicyEditorMode passwordPolicyEditorMode;
-
+    private final Validator validator = new Validator();
     private PasswordEnforcementPolicy passwordEnforcementPolicy;
 
     public PasswordEnforcementPolicyEditorDialog(Window window, PasswordPolicyEditorMode passwordPolicyEditorMode) {
@@ -46,6 +47,7 @@ public class PasswordEnforcementPolicyEditorDialog extends Dialog<PasswordEnforc
             loader.setController(this);
 
             DialogPane dialogPane = loader.load();
+            dialogPane.lookupButton(saveButtonType).disableProperty().bind(validator.containsErrorsProperty());
             initOwner(window);
             initModality(Modality.APPLICATION_MODAL);
             setResizable(false);
@@ -102,6 +104,7 @@ public class PasswordEnforcementPolicyEditorDialog extends Dialog<PasswordEnforc
     @FXML
     public void initialize() {
         setTextFieldsFormatters();
+        initializeValidator();
     }
 
     private void setTextFieldsFormatters() {
@@ -111,6 +114,29 @@ public class PasswordEnforcementPolicyEditorDialog extends Dialog<PasswordEnforc
         minDigitsTextField.setTextFormatter(new TextFormatter<>(new IntRangeStringConverter(2, 20), 2));
         minUpperCaseCharsTextField.setTextFormatter(new TextFormatter<>(new IntRangeStringConverter(2, 20), 2));
         minLowerCaseCharsTextField.setTextFormatter(new TextFormatter<>(new IntRangeStringConverter(2, 20), 2));
+    }
+
+    private void initializeValidator() {
+        createRequiredTextFieldsCheck();
+    }
+
+    private void createRequiredTextFieldsCheck() {
+        createRequiredTextFieldCheck(policyNameTextField);
+    }
+
+    private void createRequiredTextFieldCheck(TextField textField) {
+        validator.createCheck()
+                .withMethod(this::required)
+                .dependsOn("text", textField.textProperty())
+                .decorates(textField)
+                .immediate();
+    }
+
+    private void required(Check.Context context) {
+        String text = context.get("text");
+        if (text == null || text.trim().isEmpty()) {
+            context.error("This field is required");
+        }
     }
 
     private void loadPasswordEnforcementPolicy(PasswordEnforcementPolicy passwordEnforcementPolicy) {
