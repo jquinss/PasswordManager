@@ -1,6 +1,7 @@
 package com.jquinss.passwordmanager.controllers;
 
 import com.jquinss.passwordmanager.control.PasswordEnforcementPolicyEditorDialog;
+import com.jquinss.passwordmanager.data.PasswordEntity;
 import com.jquinss.passwordmanager.data.PasswordGeneratorPolicy;
 import com.jquinss.passwordmanager.data.PasswordEnforcementPolicy;
 import com.jquinss.passwordmanager.enums.PasswordPolicyEditorMode;
@@ -56,7 +57,29 @@ public class PasswordPoliciesPaneController {
 
     @FXML
     private void removePasswordEnforcementPolicy() {
-        // TODO
+        PasswordEnforcementPolicy pwdEnforcementPolicy = passwordEnforcementPoliciesTableView.getSelectionModel().getSelectedItem();
+
+        if (pwdEnforcementPolicy != null) {
+            if (isPasswordEnforcementPolicyInUse(pwdEnforcementPolicy.getId())) {
+                Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Cannot remove policy",
+                        "The policy is in use", Alert.AlertType.ERROR);
+                alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
+                alertDialog.showAndWait();
+            }
+            else {
+                try {
+                    DatabaseManager.getInstance().deletePasswordEnforcementPolicy(pwdEnforcementPolicy);
+                    passwordEnforcementPolicyObsList.remove(pwdEnforcementPolicy);
+                }
+                catch (SQLException e) {
+                    Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Error removing policy",
+                            "A database error has occurred during the operation", Alert.AlertType.ERROR);
+                    alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
+                    alertDialog.showAndWait();
+                }
+            }
+        }
+
     }
 
     @FXML
@@ -77,6 +100,15 @@ public class PasswordPoliciesPaneController {
     @FXML
     private void editPasswordGeneratorPolicy() {
         // TODO
+    }
+
+    private boolean isPasswordEnforcementPolicyInUse(int policyId) {
+        try {
+            List<PasswordEntity> passwordEntities = DatabaseManager.getInstance().getAllPasswordEntitiesByPasswordEnforcementPolicyId(policyId);
+            return !passwordEntities.isEmpty();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @FXML
