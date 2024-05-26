@@ -153,7 +153,7 @@ public class DbPasswordEntityDao implements PasswordEntityDao {
         ps.setString(8, pwdEntity.getExpirationDate().format(dateTimeFormatter));
         ps.setInt(9, pwdEntity.getUserId());
         ps.setInt(10, pwdEntity.getFolderId());
-        ps.setInt(11, pwdEntity.getPasswordPolicyId());
+        ps.setInt(11, pwdEntity.getPasswordEnforcementPolicyId());
 
         return ps;
     }
@@ -198,7 +198,7 @@ public class DbPasswordEntityDao implements PasswordEntityDao {
         pwdEntity.setPasswordExpires(rs.getBoolean(8));
         pwdEntity.setExpirationDate(LocalDate.parse(rs.getString(9), dateTimeFormatter));
         pwdEntity.setUserId(rs.getInt(10));
-        pwdEntity.setPasswordPolicyId(rs.getInt(12));
+        pwdEntity.setPasswordEnforcementPolicyId(rs.getInt(12));
 
         return pwdEntity;
     }
