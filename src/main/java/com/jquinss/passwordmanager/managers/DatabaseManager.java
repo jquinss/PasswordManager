@@ -26,7 +26,7 @@ public class DatabaseManager {
     private static final String CREATE_PWD_ENTITY_TABLE_STATEMENT = """
             CREATE TABLE IF NOT EXISTS password_entity (password_entity_id INTEGER PRIMARY KEY, name TEXT NOT NULL, user_name TEXT,
             password TEXT NOT NULL, email_address TEXT, URL TEXT, description TEXT, expires INTEGER NOT NULL DEFAULT 0,
-            expiration_date TEXT, user_id INTEGER NOT NULL, folder_id INTEGER NOT NULL,
+            expiration_date TEXT, user_id INTEGER NOT NULL, folder_id INTEGER NOT NULL, password_enf_policy_enabled INTEGER NOT NULL DEFAULT 0,
             password_enf_policy_id INTEGER NOT NULL, FOREIGN KEY(user_id) REFERENCES user(user_id),
             FOREIGN KEY(folder_id) REFERENCES folder(folder_id), FOREIGN KEY(password_enf_policy_id) REFERENCES password_enf_policy(password_enf_policy_id));""";
     private static final String CREATE_PWD_ENFORCEMENT_POLICY_TABLE_STATEMENT = """
@@ -39,8 +39,8 @@ public class DatabaseManager {
             lower_case_chars INT NOT NULL, upper_case_chars INT NOT NULL, digits INT NOT NULL, symbols INT NOT NULL, 
             default_policy INTEGER NOT NULL DEFAULT 0);
             """;
-    private static final String INIT_PWD_ENF_POLICY_TABLE_STATEMENT = "INSERT OR IGNORE INTO password_enf_policy VALUES (0, 'default', 10, 3, 3, 3, 3, 2, 1)";
-    private static final String INIT_PWD_GEN_POLICY_TABLE_STATEMENT = "INSERT OR IGNORE INTO password_gen_policy VALUES (0, 'default', 3, 3, 3, 3, 1)";
+    //private static final String INIT_PWD_ENF_POLICY_TABLE_STATEMENT = "INSERT OR IGNORE INTO password_enf_policy VALUES (0, 'default', 10, 3, 3, 3, 3, 2, 1)";
+    //private static final String INIT_PWD_GEN_POLICY_TABLE_STATEMENT = "INSERT OR IGNORE INTO password_gen_policy VALUES (0, 'default', 3, 3, 3, 3, 1)";
 
     private static final String databaseURL = "jdbc:sqlite:" + SettingsManager.getInstance().getDatabasePath();
     private final DataSource dataSource = initializeDataSource();
@@ -148,8 +148,8 @@ public class DatabaseManager {
                 stmt.execute(CREATE_PWD_ENTITY_TABLE_STATEMENT);
                 stmt.execute(CREATE_PWD_ENFORCEMENT_POLICY_TABLE_STATEMENT);
                 stmt.execute(CREATE_PWD_GENERATOR_POLICY_TABLE_STATEMENT);
-                stmt.execute(INIT_PWD_ENF_POLICY_TABLE_STATEMENT);
-                stmt.execute(INIT_PWD_GEN_POLICY_TABLE_STATEMENT);
+                //stmt.execute(INIT_PWD_ENF_POLICY_TABLE_STATEMENT);
+                //stmt.execute(INIT_PWD_GEN_POLICY_TABLE_STATEMENT);
                 conn.commit();
                 conn.setAutoCommit(true);
                 System.out.println("Database has been created");
