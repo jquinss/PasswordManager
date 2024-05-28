@@ -64,6 +64,8 @@ public class PasswordEntityEditorPaneController implements Initializable {
     @FXML
     private TextField clearPasswordField;
     @FXML
+    private CheckBox enforcePolicyCheckBox;
+    @FXML
     private ComboBox<PasswordEnforcementPolicy> passwordEnforcementPolicyComboBox;
     @FXML
     private CheckBox passwordExpiresCheckBox;
@@ -127,6 +129,11 @@ public class PasswordEntityEditorPaneController implements Initializable {
             pwdEntity.setUsername(usernameTextField.getText());
             pwdEntity.setUrl(urlTextField.getText());
             pwdEntity.setEmailAddress(emailAddressTextField.getText());
+            pwdEntity.setPasswordEnforcementPolicyEnabled(enforcePolicyCheckBox.isSelected());
+            if (enforcePolicyCheckBox.isSelected()) {
+                pwdEntity.setPasswordEnforcementPolicyId(passwordEnforcementPolicyComboBox.getValue().getId());
+            }
+
             pwdEntity.setPasswordExpires(passwordExpiresCheckBox.isSelected());
             if (passwordExpiresCheckBox.isSelected()) {
                 pwdEntity.setExpirationDate(passwordExpirationDatePicker.getValue());
@@ -146,6 +153,11 @@ public class PasswordEntityEditorPaneController implements Initializable {
             pwdEntity.setUsername(usernameTextField.getText());
             pwdEntity.setUrl(urlTextField.getText());
             pwdEntity.setEmailAddress(emailAddressTextField.getText());
+            pwdEntity.setPasswordEnforcementPolicyEnabled(enforcePolicyCheckBox.isSelected());
+            if (enforcePolicyCheckBox.isSelected()) {
+                pwdEntity.setPasswordEnforcementPolicyId(passwordEnforcementPolicyComboBox.getValue().getId());
+            }
+
             pwdEntity.setPasswordExpires(passwordExpiresCheckBox.isSelected());
             if (passwordExpiresCheckBox.isSelected()) {
                 pwdEntity.setExpirationDate(passwordExpirationDatePicker.getValue());
@@ -158,8 +170,6 @@ public class PasswordEntityEditorPaneController implements Initializable {
     private void initializePasswordEnforcementPolicyComboBox() {
         setPasswordEnforcementPolicyComboBoxCellFactory();
         passwordEnforcementPolicyComboBox.setItems(passwordEnforcementPolicyObsList);
-        loadPasswordEnforcementPolicies();
-        setDefaultEnforcementPasswordPolicy();;
     }
 
     private void setPasswordEnforcementPolicyComboBoxCellFactory() {
@@ -182,6 +192,16 @@ public class PasswordEntityEditorPaneController implements Initializable {
         });
     }
 
+    private void initializePolicies() {
+        initializePasswordEnforcementPolicies();
+        initializePasswordGeneratorPolicies();
+    }
+
+    private void initializePasswordEnforcementPolicies() {
+        loadPasswordEnforcementPolicies();
+        setDefaultPasswordEnforcementPolicy();
+    }
+
     private void loadPasswordEnforcementPolicies() {
         try {
             passwordEnforcementPolicyObsList.setAll(DatabaseManager.getInstance().getAllPasswordEnforcementPolicies());
@@ -191,7 +211,7 @@ public class PasswordEntityEditorPaneController implements Initializable {
         };
     }
 
-    private void setDefaultEnforcementPasswordPolicy() {
+    private void setDefaultPasswordEnforcementPolicy() {
         for (PasswordEnforcementPolicy pwdPolicy : passwordEnforcementPolicyObsList) {
             if (pwdPolicy.isDefaultPolicy()) {
                 passwordEnforcementPolicyComboBox.getSelectionModel().select(pwdPolicy);
@@ -199,11 +219,13 @@ public class PasswordEntityEditorPaneController implements Initializable {
         }
     }
 
+    private void resetPasswordEnforcementPolicies() {
+        passwordEnforcementPolicyObsList.clear();
+    }
+
     private void initializePasswordGeneratorPolicyComboBox() {
         setPasswordGeneratorPolicyComboBoxCellFactory();
         passwordGeneratorPolicyComboBox.setItems(passwordGeneratorPolicyObsList);
-        loadPasswordGeneratorPolicies();
-        setDefaultPasswordGeneratorPolicy();;
     }
 
     private void setPasswordGeneratorPolicyComboBoxCellFactory() {
@@ -226,6 +248,11 @@ public class PasswordEntityEditorPaneController implements Initializable {
         });
     }
 
+    private void initializePasswordGeneratorPolicies() {
+        loadPasswordGeneratorPolicies();
+        setDefaultPasswordGeneratorPolicy();
+    }
+
     private void loadPasswordGeneratorPolicies() {
         try {
             passwordGeneratorPolicyObsList.setAll(DatabaseManager.getInstance().getAllPasswordGeneratorPolicies());
@@ -241,6 +268,10 @@ public class PasswordEntityEditorPaneController implements Initializable {
                 passwordGeneratorPolicyComboBox.getSelectionModel().select(pwdGenPolicy);
             }
         }
+    }
+
+    private void resetPasswordGeneratorPolicies() {
+        passwordGeneratorPolicyObsList.clear();
     }
 
     private void initializePasswordGenerator() {
@@ -260,6 +291,7 @@ public class PasswordEntityEditorPaneController implements Initializable {
         createRequiredTextFieldCheck(passwordField);
         createDateCheck();
         createPasswordEnforcementCheck();
+        //createPolicyEnforcementSelectionCheck();
         saveButton.disableProperty().bind(validator.containsErrorsProperty());
     }
 
@@ -294,12 +326,40 @@ public class PasswordEntityEditorPaneController implements Initializable {
 
     private void createPasswordEnforcementCheck() {
         validator.createCheck().withMethod(c -> {
-            PasswordStrengthCriteria pwdStrengthCriteria = passwordEnforcementPolicyComboBox.getSelectionModel().getSelectedItem().getPasswordStrengthCriteria();
-            if (!passwordStrengthChecker.passwordMeetsStrengthCriteria(new Password(c.get("password")), pwdStrengthCriteria)) {
-                c.error("Password does not meet the policy enforcement criteria:\n" + pwdStrengthCriteria);
+            if (c.get("enforcePolicyCheckBox")) {
+                if (!passwordEnforcementPolicyObsList.isEmpty() &&
+                        !passwordEnforcementPolicyComboBox.getSelectionModel().isEmpty()) {
+                    PasswordStrengthCriteria pwdStrengthCriteria =
+                            passwordEnforcementPolicyComboBox.getSelectionModel().getSelectedItem().getPasswordStrengthCriteria();
+                    if (!passwordStrengthChecker.passwordMeetsStrengthCriteria(new Password(c.get("password")), pwdStrengthCriteria)) {
+                        c.error("Password does not meet the policy enforcement criteria:\n" + pwdStrengthCriteria);
+                    }
+                }
+                else if (passwordEnforcementPolicyObsList.isEmpty()) {
+                    c.error("No password enforcement policies have been created");
+                } else if (passwordEnforcementPolicyComboBox.getSelectionModel().isEmpty()) {
+                    c.error("No password enforcement policies have been selected");
+                }
             }
         }).dependsOn("password", passwordField.textProperty())
+                .dependsOn("enforcePolicyCheckBox", enforcePolicyCheckBox.selectedProperty())
                 .decorates(passwordField)
+                .decorates(clearPasswordField)
+                .decorates(passwordEnforcementPolicyComboBox)
+                .immediate();
+    }
+
+    private void createPolicyEnforcementSelectionCheck() {
+        validator.createCheck().withMethod(c -> {
+            if (c.get("enforcementCheck")) {
+                if (passwordEnforcementPolicyObsList.isEmpty()) {
+                    c.error("No password enforcement policies have been created");
+                } else if (passwordEnforcementPolicyComboBox.getSelectionModel().isEmpty()) {
+                    c.error("No password enforcement policies have been selected");
+                }
+            }
+        }).dependsOn("enforcementCheck", enforcePolicyCheckBox.selectedProperty())
+                .decorates(passwordEnforcementPolicyComboBox)
                 .immediate();
     }
 
@@ -331,17 +391,22 @@ public class PasswordEntityEditorPaneController implements Initializable {
     public void openPasswordEntityEditorInCreateMode(Folder folder) {
         setEditMode(DataEntityEditorMode.CREATE, folder);
         resetFields();
+        initializePolicies();
+        initializePasswordGenerator();
     }
 
     public void openPasswordEntityEditorInEditMode(PasswordEntity pwdEntity) {
         setEditMode(DataEntityEditorMode.EDIT, pwdEntity);
         resetFields();
+        initializePolicies();
         loadPasswordEntity(pwdEntity);
+        initializePasswordGenerator();
     }
 
     public void openPasswordEntityEditorInViewMode(PasswordEntity pwdEntity) {
         setViewMode(pwdEntity);
         resetFields();
+        initializePolicies();
         loadPasswordEntity(pwdEntity);
     }
 
@@ -366,6 +431,7 @@ public class PasswordEntityEditorPaneController implements Initializable {
     private void setHideMode() {
         editorMode = DataEntityEditorMode.HIDE;
         editorMode.setDataEntity(null);
+
         passwordEntityEditorMainPane.setVisible(false);
     }
 
@@ -379,6 +445,7 @@ public class PasswordEntityEditorPaneController implements Initializable {
     }
 
     private void disableControls(boolean disable) {
+        enforcePolicyCheckBox.setDisable(disable);
         passwordEnforcementPolicyComboBox.setDisable(disable);
         passwordGeneratorPolicyComboBox.setDisable(disable);
         passwordExpiresCheckBox.setDisable(disable);
@@ -392,7 +459,11 @@ public class PasswordEntityEditorPaneController implements Initializable {
         urlTextField.setText(pwdEntity.getUrl());
         usernameTextField.setText(pwdEntity.getUsername());
         passwordField.setText(pwdEntity.getPassword());
-        setPasswordEnforcementPolicy(pwdEntity);
+        enforcePolicyCheckBox.setSelected(pwdEntity.isPasswordEnforcementPolicyEnabled());
+        if (pwdEntity.isPasswordEnforcementPolicyEnabled()) {
+            setPasswordEnforcementPolicy(pwdEntity);
+        }
+
         passwordExpiresCheckBox.setSelected(pwdEntity.isPasswordExpires());
         passwordExpirationDatePicker.setValue(pwdEntity.getExpirationDate());
     }
@@ -411,7 +482,10 @@ public class PasswordEntityEditorPaneController implements Initializable {
         urlTextField.clear();
         usernameTextField.clear();
         passwordField.clear();
-        setDefaultEnforcementPasswordPolicy();
+        clearPasswordField.clear();
+        enforcePolicyCheckBox.setSelected(false);
+        resetPasswordEnforcementPolicies();
+        resetPasswordGeneratorPolicies();
         passwordExpiresCheckBox.setSelected(false);
         passwordExpirationDatePicker.setValue(null);
     }
@@ -426,7 +500,6 @@ public class PasswordEntityEditorPaneController implements Initializable {
         initializePasswordEnforcementPolicyComboBox();
         initializePasswordGeneratorPolicyComboBox();
         initializeShowPasswordCheckBox();
-        initializePasswordGenerator();
         setTooltips();
         setHideMode();
     }
