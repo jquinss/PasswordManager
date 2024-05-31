@@ -15,6 +15,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuBar;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
@@ -26,6 +27,8 @@ import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class PasswordManagerPaneController implements Initializable {
+    @FXML
+    public MenuBar menuBar;
     @FXML
     private VBox quickViewPane;
     @FXML
@@ -125,10 +128,12 @@ public class PasswordManagerPaneController implements Initializable {
 
     void createPasswordEntityInEditor(Folder folder) {
         passwordEntityEditorPaneController.openPasswordEntityEditorInCreateMode(folder);
+        menuBar.setDisable(true);
     }
 
     void editPasswordEntityInEditor(PasswordEntity passwordEntity) {
         passwordEntityEditorPaneController.openPasswordEntityEditorInEditMode(passwordEntity);
+        menuBar.setDisable(true);
     }
 
     void viewPasswordEntityInEditor(PasswordEntity passwordEntity) {
@@ -141,6 +146,7 @@ public class PasswordManagerPaneController implements Initializable {
 
     void cancelEditMode() {
         treeViewController.setViewMode();
+        menuBar.setDisable(false);
     }
 
     UserSession getUserSession() {
