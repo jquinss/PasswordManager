@@ -144,7 +144,6 @@ public class PasswordEntityEditorPaneController implements Initializable {
     }
 
     private void editPasswordEntity() {
-        // TODO
         editorMode.getDataEntity().ifPresent(entity -> {
             PasswordEntity pwdEntity = (PasswordEntity) entity;
             pwdEntity.setName(nameTextField.getText());
@@ -393,6 +392,8 @@ public class PasswordEntityEditorPaneController implements Initializable {
         resetFields();
         initializePolicies();
         initializePasswordGenerator();
+        validator.clear();
+        initializeValidator();
     }
 
     public void openPasswordEntityEditorInEditMode(PasswordEntity pwdEntity) {
@@ -401,6 +402,8 @@ public class PasswordEntityEditorPaneController implements Initializable {
         initializePolicies();
         loadPasswordEntity(pwdEntity);
         initializePasswordGenerator();
+        validator.clear();
+        initializeValidator();
     }
 
     public void openPasswordEntityEditorInViewMode(PasswordEntity pwdEntity) {
@@ -408,6 +411,7 @@ public class PasswordEntityEditorPaneController implements Initializable {
         resetFields();
         initializePolicies();
         loadPasswordEntity(pwdEntity);
+        validator.clear();
     }
 
     private void setViewMode(PasswordEntity pwdEntity) {
@@ -431,7 +435,7 @@ public class PasswordEntityEditorPaneController implements Initializable {
     private void setHideMode() {
         editorMode = DataEntityEditorMode.HIDE;
         editorMode.setDataEntity(null);
-
+        validator.clear();
         passwordEntityEditorMainPane.setVisible(false);
     }
 
@@ -496,7 +500,6 @@ public class PasswordEntityEditorPaneController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        initializeValidator();
         initializePasswordEnforcementPolicyComboBox();
         initializePasswordGeneratorPolicyComboBox();
         initializeShowPasswordCheckBox();
