@@ -104,6 +104,16 @@
     -fx-background-color: transparent;
 }
 
+#hide-pwd-editor-pane-button {
+    -fx-graphic: url("../images/close_sign.png");
+    -fx-background-color: transparent;
+}
+
+#hide-pwd-editor-pane-button: hover {
+    -fx-graphic: url("../images/close_sign_hover.png");
+    -fx-background-color: transparent;
+}
+
 /* Styles for the treeview */
 
 .tree-view {
