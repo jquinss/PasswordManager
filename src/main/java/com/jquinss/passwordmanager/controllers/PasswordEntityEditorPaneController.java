@@ -30,6 +30,8 @@ import java.util.ResourceBundle;
 
 public class PasswordEntityEditorPaneController implements Initializable {
     @FXML
+    public Button hidePasswordEditorPaneButton;
+    @FXML
     private Button copyUrlButton;
     @FXML
     private Button copyUsernameButton;
@@ -421,6 +423,7 @@ public class PasswordEntityEditorPaneController implements Initializable {
         disableControls(true);
         dialogButtons.setVisible(false);
         passwordEntityEditorMainPane.setVisible(true);
+        hidePasswordEditorPaneButton.setVisible(true);
     }
 
     private void setEditMode(DataEntityEditorMode editorMode, DataEntity dataEntity) {
@@ -430,8 +433,10 @@ public class PasswordEntityEditorPaneController implements Initializable {
         disableControls(false);
         dialogButtons.setVisible(true);
         passwordEntityEditorMainPane.setVisible(true);
+        hidePasswordEditorPaneButton.setVisible(false);
     }
 
+    @FXML
     private void setHideMode() {
         editorMode = DataEntityEditorMode.HIDE;
         editorMode.setDataEntity(null);
