@@ -131,7 +131,7 @@ public class DbPasswordGeneratorPolicyDao implements PasswordGeneratorPolicyDao 
         PreparedStatement ps = buildSetOperationPreparedStatement(conn, pwdGenPolicy, statement);
         ps.setInt(7, pwdGenPolicy.getId());
 
-        return buildSetOperationPreparedStatement(conn, pwdGenPolicy, statement);
+        return ps;
     }
 
     private PreparedStatement buildDeletePasswordGenPolicyPreparedStatement(Connection conn, int id) throws SQLException {
