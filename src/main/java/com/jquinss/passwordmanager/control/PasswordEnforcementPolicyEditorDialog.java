@@ -96,9 +96,10 @@ public class PasswordEnforcementPolicyEditorDialog extends Dialog<PasswordEnforc
     }
 
     private void modifyPasswordEnforcementPolicy() {
-        passwordEnforcementPolicy.setPasswordStrengthCriteria(buildPasswordStrengthCriteria());
-        passwordEnforcementPolicy.setName(policyNameTextField.getText());
+        PasswordEnforcementPolicy passwordEnforcementPolicy = new PasswordEnforcementPolicy(policyNameTextField.getText(), buildPasswordStrengthCriteria());
         passwordEnforcementPolicy.setDefaultPolicy(isDefaultPolicyCheckBox.isSelected());
+        passwordEnforcementPolicy.setId(this.passwordEnforcementPolicy.getId());
+        this.passwordEnforcementPolicy = passwordEnforcementPolicy;
     }
 
     @FXML
