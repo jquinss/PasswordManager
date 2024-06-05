@@ -68,7 +68,7 @@ public class DbPasswordEnforcementPolicyDao implements PasswordEnforcementPolicy
     public void update(PasswordEnforcementPolicy pwdPolicy) throws SQLException {
         try (Connection conn = dataSource.getConnection();
              PreparedStatement ps = buildUpdatePasswordEnforcementPolicyPreparedStatement(conn, pwdPolicy)) {
-            ps.executeUpdate();
+            int i = ps.executeUpdate();
         }
     }
 
@@ -122,13 +122,12 @@ public class DbPasswordEnforcementPolicyDao implements PasswordEnforcementPolicy
     private PreparedStatement buildUpdatePasswordEnforcementPolicyPreparedStatement(Connection conn, PasswordEnforcementPolicy pwdPolicy) throws SQLException {
         String statement = """
                 UPDATE password_enf_policy SET password_enf_policy_name=?, min_length=?, min_lower_case_chars=?, 
-                 min_upper_case_chars=?, min_digits=?, min_symbols=?, max_consec_equal_chars=?, default_policy=? 
-                 WHERE password_enf_policy_id = ?""";
+                 min_upper_case_chars=?, min_digits=?, min_symbols=?, max_consec_equal_chars=?, default_policy=? WHERE password_enf_policy_id=?""";
 
         PreparedStatement ps = buildSetOperationPreparedStatement(conn, pwdPolicy, statement);
         ps.setInt(9, pwdPolicy.getId());
 
-        return buildSetOperationPreparedStatement(conn, pwdPolicy, statement);
+        return ps;
     }
 
     private PreparedStatement buildSetOperationPreparedStatement(Connection conn, PasswordEnforcementPolicy pwdPolicy, String sqlStatement) throws SQLException {
