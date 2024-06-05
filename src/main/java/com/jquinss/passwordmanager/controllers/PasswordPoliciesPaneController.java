@@ -37,14 +37,21 @@ public class PasswordPoliciesPaneController {
 
     private final ObservableList<PasswordEnforcementPolicy> passwordEnforcementPolicyObsList = FXCollections.observableArrayList();
     private final ObservableList<PasswordGeneratorPolicy> passwordGeneratorPolicyObsList = FXCollections.observableArrayList();
+    private PasswordEnforcementPolicy defaultPasswordEnforcementPolicy;
 
     @FXML
     private void addPasswordEnforcementPolicy() {
         PasswordEnforcementPolicyEditorDialog dialog = new PasswordEnforcementPolicyEditorDialog(stage, PasswordPolicyEditorMode.CREATE);
-        dialog.showAndWait().ifPresent(passwordPolicy -> {
+        dialog.showAndWait().ifPresent(passwordEnforcementPolicy -> {
             try {
-                DatabaseManager.getInstance().addPasswordEnforcementPolicy(passwordPolicy);
-                passwordEnforcementPolicyObsList.add(passwordPolicy);
+                DatabaseManager.getInstance().addPasswordEnforcementPolicy(passwordEnforcementPolicy);
+                passwordEnforcementPolicyObsList.add(passwordEnforcementPolicy);
+
+                if (passwordEnforcementPolicy.isDefaultPolicy()) {
+                    swapDefaultPasswordEnforcementPolicy(passwordEnforcementPolicy);
+                }
+
+                passwordEnforcementPoliciesTableView.getSelectionModel().select(passwordEnforcementPolicy);
             }
             catch (SQLException e) {
                 Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Error creating policy",
@@ -70,6 +77,10 @@ public class PasswordPoliciesPaneController {
                 try {
                     DatabaseManager.getInstance().deletePasswordEnforcementPolicy(pwdEnforcementPolicy);
                     passwordEnforcementPolicyObsList.remove(pwdEnforcementPolicy);
+
+                    if (pwdEnforcementPolicy.isDefaultPolicy()) {
+                        defaultPasswordEnforcementPolicy = null;
+                    }
                 }
                 catch (SQLException e) {
                     Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Error removing policy",
@@ -84,7 +95,31 @@ public class PasswordPoliciesPaneController {
 
     @FXML
     private void editPasswordEnforcementPolicy() {
-        // TODO
+        PasswordEnforcementPolicy origPasswordEnforcementPolicy = passwordEnforcementPoliciesTableView.getSelectionModel().getSelectedItem();
+
+        if (origPasswordEnforcementPolicy != null) {
+            PasswordEnforcementPolicyEditorDialog dialog = new PasswordEnforcementPolicyEditorDialog(stage,
+                    PasswordPolicyEditorMode.EDIT, origPasswordEnforcementPolicy);
+
+            dialog.showAndWait().ifPresent(newPasswordEnforcementPolicy -> {
+                try {
+                    DatabaseManager.getInstance().updatePasswordEnforcementPolicy(newPasswordEnforcementPolicy);
+
+                    if (newPasswordEnforcementPolicy.isDefaultPolicy()) {
+                        swapDefaultPasswordEnforcementPolicy(newPasswordEnforcementPolicy);
+                    }
+
+                    replacePasswordEnforcementPolicy(origPasswordEnforcementPolicy, newPasswordEnforcementPolicy);
+                    passwordEnforcementPoliciesTableView.getSelectionModel().select(newPasswordEnforcementPolicy);
+                }
+                catch (SQLException e) {
+                    Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Error editing policy",
+                            "A database error has occurred during the operation", Alert.AlertType.ERROR);
+                    alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
+                    alertDialog.showAndWait();
+                }
+            });
+        }
     }
 
     @FXML
@@ -109,6 +144,22 @@ public class PasswordPoliciesPaneController {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void swapDefaultPasswordEnforcementPolicy(PasswordEnforcementPolicy newPasswordEnforcementPolicy) throws SQLException {
+        if (defaultPasswordEnforcementPolicy != null) {
+            defaultPasswordEnforcementPolicy.setDefaultPolicy(false);
+            DatabaseManager.getInstance().updatePasswordEnforcementPolicy(defaultPasswordEnforcementPolicy);
+        }
+        defaultPasswordEnforcementPolicy = newPasswordEnforcementPolicy;
+        passwordEnforcementPoliciesTableView.refresh();
+    }
+
+    private void replacePasswordEnforcementPolicy(PasswordEnforcementPolicy oldPasswordEnforcementPolicy,
+                                                  PasswordEnforcementPolicy newPasswordEnforcementPolicy) {
+        int index = passwordEnforcementPolicyObsList.indexOf(oldPasswordEnforcementPolicy);
+        passwordEnforcementPolicyObsList.remove(oldPasswordEnforcementPolicy);
+        passwordEnforcementPolicyObsList.add(index, newPasswordEnforcementPolicy);
     }
 
     @FXML
@@ -149,7 +200,12 @@ public class PasswordPoliciesPaneController {
     private void loadPasswordEnforcementPolicies() {
         try {
             List<PasswordEnforcementPolicy> passwordEnforcementPolicies = DatabaseManager.getInstance().getAllPasswordEnforcementPolicies();
-            passwordEnforcementPolicyObsList.setAll(passwordEnforcementPolicies);
+            for (PasswordEnforcementPolicy pwdEnforcementPolicy : passwordEnforcementPolicies) {
+                passwordEnforcementPolicyObsList.add(pwdEnforcementPolicy);
+                if (pwdEnforcementPolicy.isDefaultPolicy()) {
+                    defaultPasswordEnforcementPolicy = pwdEnforcementPolicy;
+                }
+            }
         }
         catch (SQLException e) {
             throw new RuntimeException(e);
