@@ -142,6 +142,7 @@ public class PasswordManagerPaneController implements Initializable {
 
     void savePasswordEntity(PasswordEntity passwordEntity) {
         treeViewController.savePasswordEntity(passwordEntity);
+        menuBar.setDisable(false);
     }
 
     void cancelEditMode() {
