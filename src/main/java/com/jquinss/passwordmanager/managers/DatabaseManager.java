@@ -145,6 +145,10 @@ public class DatabaseManager {
         passwordGeneratorPolicyDao.update(passwordGeneratorPolicy);
     }
 
+    public void deletePasswordGeneratorPolicy(PasswordGeneratorPolicy passwordGeneratorPolicy) throws SQLException {
+        passwordGeneratorPolicyDao.delete(passwordGeneratorPolicy);
+    }
+
     public List<PasswordGeneratorPolicy> getAllPasswordGeneratorPolicies() throws SQLException {
         return passwordGeneratorPolicyDao.getAll();
     }
