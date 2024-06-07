@@ -1,6 +1,7 @@
 package com.jquinss.passwordmanager.controllers;
 
 import com.jquinss.passwordmanager.control.PasswordEnforcementPolicyEditorDialog;
+import com.jquinss.passwordmanager.control.PasswordGeneratorPolicyEditorDialog;
 import com.jquinss.passwordmanager.data.PasswordEntity;
 import com.jquinss.passwordmanager.data.PasswordGeneratorPolicy;
 import com.jquinss.passwordmanager.data.PasswordEnforcementPolicy;
@@ -38,6 +39,7 @@ public class PasswordPoliciesPaneController {
     private final ObservableList<PasswordEnforcementPolicy> passwordEnforcementPolicyObsList = FXCollections.observableArrayList();
     private final ObservableList<PasswordGeneratorPolicy> passwordGeneratorPolicyObsList = FXCollections.observableArrayList();
     private PasswordEnforcementPolicy defaultPasswordEnforcementPolicy;
+    private PasswordGeneratorPolicy defaultPasswordGeneratorPolicy;
 
     @FXML
     private void addPasswordEnforcementPolicy() {
@@ -125,6 +127,25 @@ public class PasswordPoliciesPaneController {
     @FXML
     private void addPasswordGeneratorPolicy() {
         // TODO
+        PasswordGeneratorPolicyEditorDialog dialog = new PasswordGeneratorPolicyEditorDialog(stage, PasswordPolicyEditorMode.CREATE);
+        dialog.showAndWait().ifPresent(passwordGeneratorPolicy -> {
+            try {
+                DatabaseManager.getInstance().addPasswordGeneratorPolicy(passwordGeneratorPolicy);
+                passwordGeneratorPolicyObsList.add(passwordGeneratorPolicy);
+
+                if (passwordGeneratorPolicy.isDefaultPolicy()) {
+                    swapDefaultPasswordGeneratorPolicy(passwordGeneratorPolicy);
+                }
+
+                passwordGeneratorPoliciesTableView.getSelectionModel().select(passwordGeneratorPolicy);
+            }
+            catch (SQLException e) {
+                Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Error creating policy",
+                        "A database error has occurred during the operation", Alert.AlertType.ERROR);
+                alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
+                alertDialog.showAndWait();
+            }
+        });
     }
 
     @FXML
@@ -153,6 +174,15 @@ public class PasswordPoliciesPaneController {
         }
         defaultPasswordEnforcementPolicy = newPasswordEnforcementPolicy;
         passwordEnforcementPoliciesTableView.refresh();
+    }
+
+    private void swapDefaultPasswordGeneratorPolicy(PasswordGeneratorPolicy newPasswordGeneratorPolicy) throws SQLException {
+        if (defaultPasswordGeneratorPolicy != null) {
+            defaultPasswordGeneratorPolicy.setDefaultPolicy(false);
+            DatabaseManager.getInstance().updatePasswordGeneratorPolicy(defaultPasswordGeneratorPolicy);
+        }
+        defaultPasswordGeneratorPolicy = newPasswordGeneratorPolicy;
+        passwordGeneratorPoliciesTableView.refresh();
     }
 
     private void replacePasswordEnforcementPolicy(PasswordEnforcementPolicy oldPasswordEnforcementPolicy,
