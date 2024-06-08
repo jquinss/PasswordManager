@@ -225,6 +225,7 @@ public class PasswordEntityEditorPaneController implements Initializable {
     }
 
     private void initializePasswordGeneratorPolicyComboBox() {
+        setPasswordGeneratorPolicyComboBoxListener();
         setPasswordGeneratorPolicyComboBoxCellFactory();
         passwordGeneratorPolicyComboBox.setItems(passwordGeneratorPolicyObsList);
     }
@@ -245,6 +246,14 @@ public class PasswordEntityEditorPaneController implements Initializable {
                         }
                     }
                 };
+            }
+        });
+    }
+
+    private void setPasswordGeneratorPolicyComboBoxListener() {
+        passwordGeneratorPolicyComboBox.getSelectionModel().selectedItemProperty().addListener((options, oldValue, newValue) -> {
+            if (passwordGenerator != null && newValue != null) {
+                passwordGenerator.setPasswordSpecs(newValue.getPasswordSpecs());
             }
         });
     }
