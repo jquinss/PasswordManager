@@ -61,4 +61,8 @@ public class PasswordGenerator {
         }
         return mergedCharArray;
     }
+
+    public void setPasswordSpecs(PasswordSpecs passwordSpecs) {
+        this.passwordSpecs = passwordSpecs;
+    }
 }
