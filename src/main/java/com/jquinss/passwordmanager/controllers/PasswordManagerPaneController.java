@@ -79,6 +79,7 @@ public class PasswordManagerPaneController implements Initializable {
         Stage stage = new Stage();
 
         final PasswordPoliciesPaneController controller = fxmlLoader.getController();
+        controller.setPasswordManagerPaneController(this);
         controller.setStage(stage);
 
         stage.setResizable(false);
