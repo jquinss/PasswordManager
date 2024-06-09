@@ -2,6 +2,7 @@ package com.jquinss.passwordmanager.data;
 
 public abstract class PasswordPolicy {
     private int id;
+    private int userId;
     private String name;
     private boolean defaultPolicy = false;
 
@@ -19,6 +20,14 @@ public abstract class PasswordPolicy {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
     public boolean isDefaultPolicy() {
