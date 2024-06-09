@@ -150,8 +150,8 @@ public class DatabaseManager {
         passwordGeneratorPolicyDao.delete(passwordGeneratorPolicy);
     }
 
-    public List<PasswordGeneratorPolicy> getAllPasswordGeneratorPolicies() throws SQLException {
-        return passwordGeneratorPolicyDao.getAll();
+    public List<PasswordGeneratorPolicy> getAllPasswordGeneratorPoliciesByUserId(int userId) throws SQLException {
+        return passwordGeneratorPolicyDao.getAllByUserId(userId);
     }
 
     public void initializeDatabase() throws SQLException {
