@@ -31,10 +31,10 @@ public class DbPasswordEnforcementPolicyDao implements PasswordEnforcementPolicy
     }
 
     @Override
-    public List<PasswordEnforcementPolicy> getAll() throws SQLException {
+    public List<PasswordEnforcementPolicy> getAllByUserId(int userId) throws SQLException {
         List<PasswordEnforcementPolicy> pwdEntities = new ArrayList<>();
         try (Connection conn = dataSource.getConnection();
-             PreparedStatement ps = conn.prepareStatement("SELECT * FROM password_enf_policy");
+             PreparedStatement ps = buildGetAllPasswordEnforcementPoliciesByUserIdPreparedStatement(conn, userId);
              ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
@@ -80,6 +80,13 @@ public class DbPasswordEnforcementPolicyDao implements PasswordEnforcementPolicy
         }
     }
 
+    private PreparedStatement buildGetAllPasswordEnforcementPoliciesByUserIdPreparedStatement(Connection conn, int userId) throws SQLException {
+        PreparedStatement ps = conn.prepareStatement("SELECT * FROM password_enf_policy WHERE user_id = ?");
+        ps.setInt(1, userId);
+
+        return ps;
+    }
+
     private PreparedStatement buildGetPasswordEnforcementPolicyByIdPreparedStatement(Connection conn, int id) throws SQLException {
         String statement = """
                 SELECT * FROM password_enf_policy WHERE password_enf_policy_id = ?""";
@@ -100,6 +107,7 @@ public class DbPasswordEnforcementPolicyDao implements PasswordEnforcementPolicy
 
         PasswordEnforcementPolicy pwdPolicy = new PasswordEnforcementPolicy(rs.getInt(1), rs.getString(2), pwdStrengthCriteria);
         pwdPolicy.setDefaultPolicy(rs.getBoolean(9));
+        pwdPolicy.setUserId(rs.getInt(10));
 
         return pwdPolicy;
     }
@@ -114,7 +122,7 @@ public class DbPasswordEnforcementPolicyDao implements PasswordEnforcementPolicy
     private PreparedStatement buildAddPasswordEnforcementPolicyPreparedStatement(Connection conn, PasswordEnforcementPolicy pwdPolicy) throws SQLException {
         String statement = """
         INSERT INTO password_enf_policy (password_enf_policy_name, min_length, min_lower_case_chars, min_upper_case_chars,
-        min_digits, min_symbols, max_consec_equal_chars, default_policy) VALUES (?,?,?,?,?,?,?,?)""";
+        min_digits, min_symbols, max_consec_equal_chars, default_policy, user_id) VALUES (?,?,?,?,?,?,?,?,?)""";
 
         return buildSetOperationPreparedStatement(conn, pwdPolicy, statement);
     }
@@ -141,6 +149,7 @@ public class DbPasswordEnforcementPolicyDao implements PasswordEnforcementPolicy
         ps.setInt(6, pwdStrengthCriteria.getMinSymbols());
         ps.setInt(7, pwdStrengthCriteria.getMaxConsecutiveEqualChars());
         ps.setBoolean(8, pwdPolicy.isDefaultPolicy());
+        ps.setInt(9, pwdPolicy.getUserId());
 
         return ps;
     }
