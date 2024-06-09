@@ -267,7 +267,7 @@ public class PasswordPoliciesPaneController {
 
     private void loadPasswordGeneratorPolicies() {
         try {
-            List<PasswordGeneratorPolicy> passwordGeneratorPolicies = DatabaseManager.getInstance().getAllPasswordGeneratorPolicies();
+            List<PasswordGeneratorPolicy> passwordGeneratorPolicies = DatabaseManager.getInstance().getAllPasswordGeneratorPoliciesByUserId(passwordManagerPaneController.getUserSession().getCurrentUserId());
             for (PasswordGeneratorPolicy pwdGeneratorPolicy : passwordGeneratorPolicies) {
                 passwordGeneratorPolicyObsList.add(pwdGeneratorPolicy);
                 if (pwdGeneratorPolicy.isDefaultPolicy()) {
