@@ -32,15 +32,16 @@ public class DatabaseManager {
     private static final String CREATE_PWD_ENFORCEMENT_POLICY_TABLE_STATEMENT = """
             CREATE TABLE IF NOT EXISTS password_enf_policy (password_enf_policy_id INTEGER PRIMARY KEY, password_enf_policy_name TEXT NOT NULL,
             min_length INTEGER NOT NULL, min_lower_case_chars INT NOT NULL, min_upper_case_chars INT NOT NULL,
-            min_digits INT NOT NULL, min_symbols INT NOT NULL, max_consec_equal_chars INT NOT NULL, default_policy INTEGER NOT NULL DEFAULT 0);""";
+            min_digits INT NOT NULL, min_symbols INT NOT NULL, max_consec_equal_chars INT NOT NULL, default_policy INTEGER NOT NULL DEFAULT 0, 
+            user_id INTEGER NOT NULL, FOREIGN KEY(user_id) REFERENCES user(user_id));""";
 
     private static final String CREATE_PWD_GENERATOR_POLICY_TABLE_STATEMENT = """
             CREATE TABLE IF NOT EXISTS password_gen_policy (password_gen_policy_id INTEGER PRIMARY KEY, password_gen_policy_name TEXT NOT NULL,
             lower_case_chars INT NOT NULL, upper_case_chars INT NOT NULL, digits INT NOT NULL, symbols INT NOT NULL, 
-            default_policy INTEGER NOT NULL DEFAULT 0);
+            default_policy INTEGER NOT NULL DEFAULT 0, user_id INTEGER NOT NULL, FOREIGN KEY(user_id) REFERENCES user(user_id));
             """;
     //private static final String INIT_PWD_ENF_POLICY_TABLE_STATEMENT = "INSERT OR IGNORE INTO password_enf_policy VALUES (0, 'default', 10, 3, 3, 3, 3, 2, 1)";
-    private static final String INIT_PWD_GEN_POLICY_TABLE_STATEMENT = "INSERT OR IGNORE INTO password_gen_policy VALUES (0, 'default', 3, 3, 3, 3, 1)";
+    //private static final String INIT_PWD_GEN_POLICY_TABLE_STATEMENT = "INSERT OR IGNORE INTO password_gen_policy VALUES (0, 'default', 3, 3, 3, 3, 1)";
 
     private static final String databaseURL = "jdbc:sqlite:" + SettingsManager.getInstance().getDatabasePath();
     private final DataSource dataSource = initializeDataSource();
@@ -133,8 +134,8 @@ public class DatabaseManager {
         passwordEnforcementPolicyDao.delete(passwordEnforcementPolicy);
     }
 
-    public List<PasswordEnforcementPolicy> getAllPasswordEnforcementPolicies() throws SQLException {
-        return passwordEnforcementPolicyDao.getAll();
+    public List<PasswordEnforcementPolicy> getAllPasswordEnforcementPoliciesByUserId(int userId) throws SQLException {
+        return passwordEnforcementPolicyDao.getAllByUserId(userId);
     }
 
     public void addPasswordGeneratorPolicy(PasswordGeneratorPolicy passwordGeneratorPolicy) throws SQLException {
@@ -165,7 +166,7 @@ public class DatabaseManager {
                 stmt.execute(CREATE_PWD_ENFORCEMENT_POLICY_TABLE_STATEMENT);
                 stmt.execute(CREATE_PWD_GENERATOR_POLICY_TABLE_STATEMENT);
                 //stmt.execute(INIT_PWD_ENF_POLICY_TABLE_STATEMENT);
-                stmt.execute(INIT_PWD_GEN_POLICY_TABLE_STATEMENT);
+                //stmt.execute(INIT_PWD_GEN_POLICY_TABLE_STATEMENT);
                 conn.commit();
                 conn.setAutoCommit(true);
                 System.out.println("Database has been created");
