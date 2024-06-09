@@ -40,6 +40,7 @@ public class PasswordPoliciesPaneController {
     private final ObservableList<PasswordGeneratorPolicy> passwordGeneratorPolicyObsList = FXCollections.observableArrayList();
     private PasswordEnforcementPolicy defaultPasswordEnforcementPolicy;
     private PasswordGeneratorPolicy defaultPasswordGeneratorPolicy;
+    private PasswordManagerPaneController passwordManagerPaneController;
 
     @FXML
     private void addPasswordEnforcementPolicy() {
@@ -251,7 +252,7 @@ public class PasswordPoliciesPaneController {
 
     private void loadPasswordEnforcementPolicies() {
         try {
-            List<PasswordEnforcementPolicy> passwordEnforcementPolicies = DatabaseManager.getInstance().getAllPasswordEnforcementPolicies();
+            List<PasswordEnforcementPolicy> passwordEnforcementPolicies = DatabaseManager.getInstance().getAllPasswordEnforcementPoliciesByUserId(passwordManagerPaneController.getUserSession().getCurrentUserId());
             for (PasswordEnforcementPolicy pwdEnforcementPolicy : passwordEnforcementPolicies) {
                 passwordEnforcementPolicyObsList.add(pwdEnforcementPolicy);
                 if (pwdEnforcementPolicy.isDefaultPolicy()) {
@@ -281,5 +282,9 @@ public class PasswordPoliciesPaneController {
 
     void setStage(Stage stage) {
         this.stage = stage;
+    }
+
+    void setPasswordManagerPaneController(PasswordManagerPaneController passwordManagerPaneController) {
+        this.passwordManagerPaneController = passwordManagerPaneController;
     }
 }
