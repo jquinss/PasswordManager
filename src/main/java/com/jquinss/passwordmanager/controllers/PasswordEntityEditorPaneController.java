@@ -265,7 +265,7 @@ public class PasswordEntityEditorPaneController implements Initializable {
 
     private void loadPasswordGeneratorPolicies() {
         try {
-            passwordGeneratorPolicyObsList.setAll(DatabaseManager.getInstance().getAllPasswordGeneratorPolicies());
+            passwordGeneratorPolicyObsList.setAll(DatabaseManager.getInstance().getAllPasswordGeneratorPoliciesByUserId(passwordManagerPaneController.getUserSession().getCurrentUserId()));
         }
         catch (SQLException e) {
             throw new RuntimeException(e);
