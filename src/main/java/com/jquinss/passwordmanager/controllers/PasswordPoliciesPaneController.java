@@ -47,6 +47,7 @@ public class PasswordPoliciesPaneController {
         PasswordEnforcementPolicyEditorDialog dialog = new PasswordEnforcementPolicyEditorDialog(stage, PasswordPolicyEditorMode.CREATE);
         dialog.showAndWait().ifPresent(passwordEnforcementPolicy -> {
             try {
+                passwordEnforcementPolicy.setUserId(passwordManagerPaneController.getUserSession().getCurrentUserId());
                 DatabaseManager.getInstance().addPasswordEnforcementPolicy(passwordEnforcementPolicy);
                 passwordEnforcementPolicyObsList.add(passwordEnforcementPolicy);
 
@@ -129,6 +130,7 @@ public class PasswordPoliciesPaneController {
         PasswordGeneratorPolicyEditorDialog dialog = new PasswordGeneratorPolicyEditorDialog(stage, PasswordPolicyEditorMode.CREATE);
         dialog.showAndWait().ifPresent(passwordGeneratorPolicy -> {
             try {
+                passwordGeneratorPolicy.setUserId(passwordManagerPaneController.getUserSession().getCurrentUserId());
                 DatabaseManager.getInstance().addPasswordGeneratorPolicy(passwordGeneratorPolicy);
                 passwordGeneratorPolicyObsList.add(passwordGeneratorPolicy);
 
@@ -220,6 +222,9 @@ public class PasswordPoliciesPaneController {
     private void initialize() {
         initializePasswordEnforcementPoliciesTableView();
         initializePasswordGeneratorPoliciesTableView();
+    }
+
+    void initializePolicies() {
         loadPasswordEnforcementPolicies();
         loadPasswordGeneratorPolicies();
     }
