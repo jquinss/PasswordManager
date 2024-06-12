@@ -3,10 +3,8 @@ package com.jquinss.passwordmanager.controllers;
 import com.jquinss.passwordmanager.data.*;
 import com.jquinss.passwordmanager.enums.DataEntityEditorMode;
 import com.jquinss.passwordmanager.managers.DatabaseManager;
-import com.jquinss.passwordmanager.util.password.Password;
-import com.jquinss.passwordmanager.util.password.PasswordGenerator;
-import com.jquinss.passwordmanager.util.password.PasswordStrengthChecker;
-import com.jquinss.passwordmanager.util.password.PasswordStrengthCriteria;
+import com.jquinss.passwordmanager.util.misc.DialogBuilder;
+import com.jquinss.passwordmanager.util.password.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -85,7 +83,6 @@ public class PasswordEntityEditorPaneController implements Initializable {
 
     @FXML
     private void save() {
-        // TODO
         switch (editorMode) {
             case CREATE -> createPasswordEntity();
             case EDIT -> editPasswordEntity();
@@ -102,7 +99,25 @@ public class PasswordEntityEditorPaneController implements Initializable {
 
     @FXML
     private void generatePassword() {
-        passwordField.setText(passwordGenerator.generatePassword());
+        PasswordGeneratorPolicy passwordGeneratorPolicy = passwordGeneratorPolicyComboBox.getSelectionModel().getSelectedItem();
+        if (passwordGeneratorPolicy != null) {
+            setPasswordGeneratorSpecs(passwordGeneratorPolicy);
+            passwordField.setText(passwordGenerator.generatePassword());
+        }
+        else {
+            DialogBuilder.buildAlertDialog("Error", "Error generator password",
+                    "No password policies have been selected", Alert.AlertType.ERROR).showAndWait();
+        }
+
+    }
+
+    private void setPasswordGeneratorSpecs(PasswordGeneratorPolicy passwordGeneratorPolicy) {
+        if (passwordGenerator == null) {
+            passwordGenerator = new PasswordGenerator(passwordGeneratorPolicy.getPasswordSpecs());
+        }
+        else {
+            passwordGenerator.setPasswordSpecs(passwordGeneratorPolicy.getPasswordSpecs());
+        }
     }
 
     @FXML
@@ -125,7 +140,6 @@ public class PasswordEntityEditorPaneController implements Initializable {
 
     private void createPasswordEntity() {
         editorMode.getDataEntity().ifPresent(entity -> {
-            Folder folder = (Folder) entity;
             PasswordEntity pwdEntity = new PasswordEntity(entity.getId(), nameTextField.getText(), passwordField.getText());
             pwdEntity.setDescription(descriptionTextField.getText());
             pwdEntity.setUsername(usernameTextField.getText());
@@ -225,7 +239,6 @@ public class PasswordEntityEditorPaneController implements Initializable {
     }
 
     private void initializePasswordGeneratorPolicyComboBox() {
-        setPasswordGeneratorPolicyComboBoxListener();
         setPasswordGeneratorPolicyComboBoxCellFactory();
         passwordGeneratorPolicyComboBox.setItems(passwordGeneratorPolicyObsList);
     }
@@ -246,14 +259,6 @@ public class PasswordEntityEditorPaneController implements Initializable {
                         }
                     }
                 };
-            }
-        });
-    }
-
-    private void setPasswordGeneratorPolicyComboBoxListener() {
-        passwordGeneratorPolicyComboBox.getSelectionModel().selectedItemProperty().addListener((options, oldValue, newValue) -> {
-            if (passwordGenerator != null && newValue != null) {
-                passwordGenerator.setPasswordSpecs(newValue.getPasswordSpecs());
             }
         });
     }
@@ -285,7 +290,10 @@ public class PasswordEntityEditorPaneController implements Initializable {
     }
 
     private void initializePasswordGenerator() {
-        passwordGenerator = new PasswordGenerator(passwordGeneratorPolicyComboBox.getValue().getPasswordSpecs());
+        PasswordGeneratorPolicy passwordGeneratorPolicy = passwordGeneratorPolicyComboBox.getSelectionModel().getSelectedItem();
+        if (passwordGeneratorPolicy != null) {
+            passwordGenerator = new PasswordGenerator(passwordGeneratorPolicy.getPasswordSpecs());
+        }
     }
 
     private void setTooltips() {
@@ -301,7 +309,6 @@ public class PasswordEntityEditorPaneController implements Initializable {
         createRequiredTextFieldCheck(passwordField);
         createDateCheck();
         createPasswordEnforcementCheck();
-        //createPolicyEnforcementSelectionCheck();
         saveButton.disableProperty().bind(validator.containsErrorsProperty());
     }
 
@@ -359,20 +366,6 @@ public class PasswordEntityEditorPaneController implements Initializable {
                 .immediate();
     }
 
-    private void createPolicyEnforcementSelectionCheck() {
-        validator.createCheck().withMethod(c -> {
-            if (c.get("enforcementCheck")) {
-                if (passwordEnforcementPolicyObsList.isEmpty()) {
-                    c.error("No password enforcement policies have been created");
-                } else if (passwordEnforcementPolicyComboBox.getSelectionModel().isEmpty()) {
-                    c.error("No password enforcement policies have been selected");
-                }
-            }
-        }).dependsOn("enforcementCheck", enforcePolicyCheckBox.selectedProperty())
-                .decorates(passwordEnforcementPolicyComboBox)
-                .immediate();
-    }
-
     private boolean validateDate(String date, String pattern) {
         try {
             return LocalDate.parse(date, DateTimeFormatter.ofPattern(pattern)).isAfter(LocalDate.now());
@@ -402,7 +395,6 @@ public class PasswordEntityEditorPaneController implements Initializable {
         setEditMode(DataEntityEditorMode.CREATE, folder);
         resetFields();
         initializePolicies();
-        initializePasswordGenerator();
         validator.clear();
         initializeValidator();
     }
