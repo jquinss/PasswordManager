@@ -42,6 +42,7 @@ This a JavaFX desktop application for managing password. The application is inte
 
 * Users can move password entities between folders by drag and drop.
 * Users can use shortcuts in a toolbar to perform operations.
+* Users can use a password generator tool.
 * Users can be informed about the strength of the generated password.
 * Users can create database backups.
 * Users can recover backups.
