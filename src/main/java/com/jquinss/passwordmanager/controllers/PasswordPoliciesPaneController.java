@@ -181,7 +181,31 @@ public class PasswordPoliciesPaneController {
 
     @FXML
     private void editPasswordGeneratorPolicy() {
-        // TODO
+        PasswordGeneratorPolicy origPasswordGeneratorPolicy = passwordGeneratorPoliciesTableView.getSelectionModel().getSelectedItem();
+
+        if (origPasswordGeneratorPolicy != null) {
+            PasswordGeneratorPolicyEditorDialog dialog = new PasswordGeneratorPolicyEditorDialog(stage,
+                    PasswordPolicyEditorMode.EDIT, origPasswordGeneratorPolicy);
+
+            dialog.showAndWait().ifPresent(newPasswordGeneratorPolicy -> {
+                try {
+                    DatabaseManager.getInstance().updatePasswordGeneratorPolicy(newPasswordGeneratorPolicy);
+
+                    if (newPasswordGeneratorPolicy.isDefaultPolicy()) {
+                        swapDefaultPasswordGeneratorPolicy(newPasswordGeneratorPolicy);
+                    }
+
+                    replacePasswordGeneratorPolicy(origPasswordGeneratorPolicy, newPasswordGeneratorPolicy);
+                    passwordGeneratorPoliciesTableView.getSelectionModel().select(newPasswordGeneratorPolicy);
+                }
+                catch (SQLException e) {
+                    Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Error editing policy",
+                            "A database error has occurred during the operation", Alert.AlertType.ERROR);
+                    alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
+                    alertDialog.showAndWait();
+                }
+            });
+        }
     }
 
     private boolean isPasswordEnforcementPolicyInUse(int policyId) {
@@ -216,6 +240,13 @@ public class PasswordPoliciesPaneController {
         int index = passwordEnforcementPolicyObsList.indexOf(oldPasswordEnforcementPolicy);
         passwordEnforcementPolicyObsList.remove(oldPasswordEnforcementPolicy);
         passwordEnforcementPolicyObsList.add(index, newPasswordEnforcementPolicy);
+    }
+
+    private void replacePasswordGeneratorPolicy(PasswordGeneratorPolicy oldPasswordGeneratorPolicy,
+                                                PasswordGeneratorPolicy newPasswordGeneratorPolicy) {
+        int index = passwordGeneratorPolicyObsList.indexOf(oldPasswordGeneratorPolicy);
+        passwordGeneratorPolicyObsList.remove(oldPasswordGeneratorPolicy);
+        passwordGeneratorPolicyObsList.add(index, newPasswordGeneratorPolicy);
     }
 
     @FXML
