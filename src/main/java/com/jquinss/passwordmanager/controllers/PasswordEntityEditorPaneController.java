@@ -450,6 +450,7 @@ public class PasswordEntityEditorPaneController implements Initializable {
         descriptionTextField.setEditable(editable);
         urlTextField.setEditable(editable);
         usernameTextField.setEditable(editable);
+        emailAddressTextField.setEditable(editable);
         passwordField.setEditable(editable);
         clearPasswordField.setEditable(editable);
     }
@@ -491,6 +492,7 @@ public class PasswordEntityEditorPaneController implements Initializable {
         descriptionTextField.clear();
         urlTextField.clear();
         usernameTextField.clear();
+        emailAddressTextField.clear();
         passwordField.clear();
         clearPasswordField.clear();
         enforcePolicyCheckBox.setSelected(false);
