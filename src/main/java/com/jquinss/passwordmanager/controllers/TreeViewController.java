@@ -13,15 +13,17 @@ import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.Clipboard;
-import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.*;
 import javafx.util.Callback;
 import javafx.util.Pair;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.Paths;
 import java.sql.SQLException;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -30,6 +32,8 @@ public class TreeViewController {
     private final TreeView<DataEntity> treeView;
     private final CryptoUtils.AsymmetricCrypto asymmetricCrypto;
     private final ContextMenuBuilder contextMenuBuilder = new ContextMenuBuilder();
+
+    private DataFormat dataFormat = new DataFormat("fileItemDataFormat");
     private TreeViewMode treeViewMode;
     private PasswordManagerPaneController passwordManagerPaneController;
 
@@ -285,6 +289,18 @@ public class TreeViewController {
         });
     }
 
+    private void movePasswordEntity(TreeItem<DataEntity> passwordEntityTreeItem, TreeItem<DataEntity> destFolderTreeItem) throws SQLException {
+        PasswordEntity passwordEntity = (PasswordEntity) passwordEntityTreeItem.getValue();
+        PasswordEntity passwordEntityCopy = (PasswordEntity) passwordEntity.clone();
+        passwordEntityCopy.setFolderId(destFolderTreeItem.getValue().getId());
+        encryptFields(passwordEntityCopy);
+        DatabaseManager.getInstance().updatePasswordEntity(passwordEntityCopy);
+        decryptFields(passwordEntityCopy);
+        passwordEntityTreeItem.setValue(passwordEntityCopy);
+        passwordEntityTreeItem.getParent().getChildren().remove(passwordEntityTreeItem);
+        destFolderTreeItem.getChildren().add(passwordEntityTreeItem);
+    }
+
     void initializeTreeView() {
         setTreeViewCellFactory();
         setSelectedTreeItemListener();
@@ -459,11 +475,13 @@ public class TreeViewController {
         // we set the cell factory for each different element. The context menu and graphic will be different
         // depending on the type of element.
         treeView.setCellFactory(new Callback<TreeView<DataEntity>, TreeCell<DataEntity>>() {
+            private TreeItem<DataEntity> passwordEntityTreeItem;
+            private TreeItem<DataEntity> destFolderTreeItem;
+            private TreeItem<DataEntity> resultPasswordEntityTreeItem;
 
             @Override
-            public TreeCell<DataEntity> call(TreeView<DataEntity> p){
-
-                return new TreeCell<DataEntity>() {
+            public TreeCell<DataEntity> call(TreeView<DataEntity> p) {
+                TreeCell<DataEntity> cell = new TreeCell<DataEntity>() {
                     @Override
                     protected void updateItem(DataEntity dataEntity, boolean empty) {
                         super.updateItem(dataEntity, empty);
@@ -479,6 +497,48 @@ public class TreeViewController {
                         }
                     }
                 };
+
+                cell.setOnDragDetected(e -> {
+                    if (cell.getItem() instanceof PasswordEntity) {
+                        Dragboard dragBoard = cell.startDragAndDrop(TransferMode.MOVE);
+                        ClipboardContent content = new ClipboardContent();
+                        content.put(dataFormat, cell.getItem());
+                        dragBoard.setContent(content);
+                        dragBoard.setDragView(cell.snapshot(null, null));
+                        e.consume();
+                    }
+                });
+
+
+                cell.setOnDragOver(e ->{
+                    Dragboard dragboard = e.getDragboard();
+                    destFolderTreeItem = cell.getTreeItem();
+                    passwordEntityTreeItem = p.getSelectionModel().getSelectedItem();
+
+                    if ((dragboard.hasContent(dataFormat)) &&
+                            (destFolderTreeItem.getValue() instanceof Folder) &&
+                            (destFolderTreeItem != passwordEntityTreeItem.getParent())) {
+                        e.acceptTransferModes(TransferMode.MOVE);
+                    }
+                });
+
+                cell.setOnDragDropped(e -> {
+                    try {
+                        movePasswordEntity(passwordEntityTreeItem, destFolderTreeItem);
+                        resultPasswordEntityTreeItem = passwordEntityTreeItem;
+                        e.setDropCompleted(true);
+                    } catch (SQLException e1) {
+                        System.out.println("An error has occurred which moving the password entity");
+                    }
+                });
+
+                cell.setOnDragDone(e -> {
+                    if (resultPasswordEntityTreeItem != null) {
+                        p.getSelectionModel().select(resultPasswordEntityTreeItem);
+                    }
+                });
+
+                return cell;
             }
         });
     }
