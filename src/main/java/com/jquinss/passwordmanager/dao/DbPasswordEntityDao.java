@@ -136,13 +136,14 @@ public class DbPasswordEntityDao implements PasswordEntityDao {
                  expires=?, expiration_date=?, user_id=?, folder_id=?, password_enf_policy_enabled=?, password_enf_policy_id=? WHERE password_entity_id=?""";
 
         PreparedStatement ps = buildSetOperationPreparedStatement(conn, pwdEntity, statement);
-        ps.setInt(12, pwdEntity.getId());
+        ps.setInt(13, pwdEntity.getId());
 
         return ps;
     }
 
     private PreparedStatement buildSetOperationPreparedStatement(Connection conn, PasswordEntity pwdEntity, String sqlStatement) throws SQLException {
         PreparedStatement ps = conn.prepareStatement(sqlStatement);
+
         ps.setString( 1, pwdEntity.getName());
         ps.setString(2, pwdEntity.getUsername());
         ps.setString(3, pwdEntity.getPassword());
