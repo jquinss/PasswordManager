@@ -1,8 +1,9 @@
 package com.jquinss.passwordmanager.data;
 
+import java.io.Serializable;
 import java.util.Optional;
 
-public abstract class DataEntity implements Cloneable {
+public abstract class DataEntity implements Cloneable, Serializable {
     private int id;
     private String name;
     private String description;
