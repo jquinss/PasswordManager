@@ -36,11 +36,11 @@ This a JavaFX desktop application for managing password. The application is inte
 * Users can view basic information about password entities for quick identification.
 * Users can create policies to enforce the strength of passwords.
 * Users can create policies to generate passwords with particular requirements.
+* Users can move password entities between folders by drag and drop.
 
 
 ### To Do
 
-* Users can move password entities between folders by drag and drop.
 * Users can use shortcuts in a toolbar to perform operations.
 * Users can use a password generator tool.
 * Users can be informed about the strength of the generated password.
