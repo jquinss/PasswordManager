@@ -69,7 +69,7 @@ public class PasswordManagerPaneController implements Initializable {
     }
 
     @FXML
-    public void openPasswordPoliciesPane() throws IOException {
+    private void openPasswordPoliciesPane() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/jquinss/passwordmanager/fxml/PasswordPoliciesPane.fxml"));
         Parent parent = fxmlLoader.load();
 
@@ -91,7 +91,26 @@ public class PasswordManagerPaneController implements Initializable {
     }
 
     @FXML
-    public void showAboutDialog() {
+    private void openPasswordGeneratorPane() throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/jquinss/passwordmanager/fxml/PasswordGeneratorPane.fxml"));
+        Parent parent = fxmlLoader.load();
+
+        Scene scene = new Scene(parent);
+        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
+
+        Stage stage = new Stage();
+
+        final PasswordGeneratorPaneController controller = fxmlLoader.getController();
+
+        stage.setResizable(false);
+        stage.setTitle("Password Generator");
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.setScene(scene);
+        stage.showAndWait();
+    }
+
+    @FXML
+    private void showAboutDialog() {
         Alert aboutDialog = DialogBuilder.buildAlertDialog("About", "", "Password Manager v1.0\n\nCreated by Joaquin Sampedro", Alert.AlertType.INFORMATION);
         aboutDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
         aboutDialog.showAndWait();
