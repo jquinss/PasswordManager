@@ -281,3 +281,24 @@
     -fx-background-color: #4b6eaf;
 }
 
+/* Styles for the Spinner */
+
+.spinner {
+  -fx-background-color: transparent;
+}
+
+.spinner .increment-arrow-button {
+    -fx-background-color: #4b6eaf;
+}
+
+.spinner .decrement-arrow-button {
+    -fx-background-color: #4b6eaf;
+}
+
+.spinner .increment-arrow-button .increment-arrow {
+    -fx-background-color: white;
+}
+
+.spinner .decrement-arrow-button .decrement-arrow {
+    -fx-background-color: white;
+}
