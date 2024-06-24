@@ -2,11 +2,14 @@ package com.jquinss.passwordmanager.controllers;
 
 import com.jquinss.passwordmanager.util.password.PasswordGenerator;
 import com.jquinss.passwordmanager.util.password.PasswordSpecs;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.TextField;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -34,9 +37,16 @@ public class PasswordGeneratorPaneController implements Initializable {
 
     @FXML
     private void generatePassword() {
-        // TODO
         passwordGenerator.setPasswordSpecs(getPasswordSpecs());
         passwordTextField.setText(passwordGenerator.generatePassword());
+    }
+
+    @FXML
+    private void copyToClipboard() {
+        Clipboard clipboard = Clipboard.getSystemClipboard();
+        ClipboardContent content = new ClipboardContent();
+        content.putString(passwordTextField.getText());
+        clipboard.setContent(content);
     }
 
     private void setSpinnersListeners() {
@@ -50,7 +60,6 @@ public class PasswordGeneratorPaneController implements Initializable {
         spinner.valueProperty().addListener((obs, oldValue, newValue) -> setTotalNumberOfCharsTextField());
     }
 
-    @FXML
     private void setTotalNumberOfCharsTextField() {
         int total = numLowerCaseCharsSpinner.getValue() + numUpperCaseCharsSpinner.getValue() +
                 numSymbolsSpinner.getValue() + numDigitsSpinner.getValue();
@@ -83,7 +92,6 @@ public class PasswordGeneratorPaneController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        // TODO
         initializeSpinners();
         setSpinnersListeners();
         setTotalNumberOfCharsTextField();
