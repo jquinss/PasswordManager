@@ -42,7 +42,7 @@ public class TreeViewController {
         this.asymmetricCrypto = asymmetricCrypto;
     }
 
-    private void createFolder() {
+    void createFolder() {
         Dialog<Pair<String, String>> dialog = DialogBuilder.buildTwoTextFieldInputDialog("Create folder",
                 "Create a new folder:", "Folder name", "Description", true, Optional.empty());
         dialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
@@ -74,7 +74,7 @@ public class TreeViewController {
         return folder;
     }
 
-    private void deleteFolder() {
+    void deleteFolder() {
         TreeItem<DataEntity> treeItem = treeView.getSelectionModel().getSelectedItem();
         if (treeItem.getChildren().isEmpty()) {
             deleteFolder(treeItem);
@@ -154,13 +154,13 @@ public class TreeViewController {
         viewDataEntityInQuickViewPane(folderCopy);
     }
 
-    private void createPasswordEntity() {
+    void createPasswordEntity() {
         TreeItem<DataEntity> treeItem = treeView.getSelectionModel().getSelectedItem();
         setEditMode(TreeViewMode.CREATE, treeItem);
         passwordManagerPaneController.createPasswordEntityInEditor((Folder) treeItem.getValue());
     }
 
-    private void deletePasswordEntity() {
+    void deletePasswordEntity() {
         TreeItem<DataEntity> treeItem = treeView.getSelectionModel().getSelectedItem();
         try {
             DatabaseManager.getInstance().deletePasswordEntity((PasswordEntity) treeItem.getValue());
@@ -174,7 +174,7 @@ public class TreeViewController {
         }
     }
 
-    private void editPasswordEntity() {
+    void editPasswordEntity() {
         TreeItem<DataEntity> treeItem = treeView.getSelectionModel().getSelectedItem();
         setEditMode(TreeViewMode.EDIT, treeItem);
         // creates a copy of the PasswordEntity instance in case any exception occurs inserting the the db
@@ -182,7 +182,7 @@ public class TreeViewController {
         passwordManagerPaneController.editPasswordEntityInEditor(pwdEntityCopy);
     }
 
-    private void viewPasswordEntity() {
+    void viewPasswordEntity() {
         setViewMode();
         passwordManagerPaneController.viewPasswordEntityInEditor((PasswordEntity) treeView.
                 getSelectionModel().getSelectedItem().getValue());
@@ -196,7 +196,7 @@ public class TreeViewController {
         passwordManagerPaneController.hideQuickViewPane();
     }
 
-    private void duplicatePasswordEntity() {
+    void duplicatePasswordEntity() {
         TreeItem<DataEntity> selectedTreeItem = treeView.getSelectionModel().getSelectedItem();
         PasswordEntity pwdEntity = (PasswordEntity) selectedTreeItem.getValue();
         try {
@@ -546,10 +546,20 @@ public class TreeViewController {
     private void setSelectedTreeItemListener() {
         treeView.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
             if (newValue != null) {
-                passwordManagerPaneController.viewDataEntityInQuickViewPane(newValue.getValue());
+                DataEntity dataEntity = newValue.getValue();
+                passwordManagerPaneController.viewDataEntityInQuickViewPane(dataEntity);
+
+                if (dataEntity instanceof  RootFolder) {
+                    passwordManagerPaneController.enableRootRelatedToolbarButtons();
+                } else if (dataEntity instanceof Folder) {
+                    passwordManagerPaneController.enableFolderRelatedToolbarButtons();
+                } else {
+                    passwordManagerPaneController.enablePasswordEntityRelatedToolbarButtons();
+                }
             }
             else {
                 passwordManagerPaneController.hideQuickViewPane();
+                passwordManagerPaneController.disableAllToolbarButtons();
             }
         });
     }
