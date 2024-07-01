@@ -302,3 +302,61 @@
 .spinner .decrement-arrow-button .decrement-arrow {
     -fx-background-color: white;
 }
+
+/* Styles for the toolbar */
+
+#create-pwd-entity-toolbar-button {
+    -fx-graphic: url("../images/create_password_entity.png");
+}
+
+#delete-pwd-entity-toolbar-button {
+    -fx-graphic: url("../images/delete_password_entity.png");
+}
+
+#create-folder-toolbar-button {
+    -fx-graphic: url("../images/create_folder.png");
+}
+
+#delete-folder-toolbar-button {
+    -fx-graphic: url("../images/delete_folder.png");
+}
+
+#duplicate-password-entity-toolbar-button {
+    -fx-graphic: url("../images/duplicate_password_entity.png");
+}
+
+#view-password-entity-toolbar-button {
+    -fx-graphic: url("../images/view_password_entity.png");
+}
+
+#edit-password-entity-toolbar-button {
+    -fx-graphic: url("../images/edit_password_entity.png");
+}
+
+#password-policies-toolbar-button {
+    -fx-graphic: url("../images/password_policies.png");
+}
+
+#password-generator-toolbar-button {
+    -fx-graphic: url("../images/password_generator.png");
+}
+
+.tool-bar {
+    -fx-background-color: #414743;
+}
+
+.toolbar-btn {
+    -fx-background-color: transparent;
+}
+
+.toolbar-btn:hover {
+    -fx-background-color: #4b6eaf;
+}
+
+/* Styles for the Separator */
+
+.separator .line {
+
+    -fx-border-color: grey;
+    -fx-border-width: 1, 1;
+}
