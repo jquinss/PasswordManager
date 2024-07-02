@@ -74,7 +74,7 @@ public class PasswordManagerController {
             return null;
         });
         VBox root = (VBox) fxmlLoader.load();
-        Scene scene = new Scene(root, 1058, 590);
+        Scene scene = new Scene(root, 1058, 640);
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
         stage.setScene(scene);
         stage.show();
