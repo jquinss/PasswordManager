@@ -165,11 +165,8 @@ public class DatabaseManager {
                 stmt.execute(CREATE_PWD_ENTITY_TABLE_STATEMENT);
                 stmt.execute(CREATE_PWD_ENFORCEMENT_POLICY_TABLE_STATEMENT);
                 stmt.execute(CREATE_PWD_GENERATOR_POLICY_TABLE_STATEMENT);
-                //stmt.execute(INIT_PWD_ENF_POLICY_TABLE_STATEMENT);
-                //stmt.execute(INIT_PWD_GEN_POLICY_TABLE_STATEMENT);
                 conn.commit();
                 conn.setAutoCommit(true);
-                System.out.println("Database has been created");
             }
         }
     }
