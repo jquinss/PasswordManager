@@ -389,6 +389,9 @@ public class TreeViewController {
     private TreeItem<DataEntity> buildTreeItem(DataEntity dataEntity) {
         DataEntityTreeItem treeItem = new DataEntityTreeItem(dataEntity);
         setContextMenu(treeItem);
+        if (dataEntity instanceof Folder) {
+            treeItem.setExpanded(true);
+        }
         return treeItem;
     }
 
