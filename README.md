@@ -44,9 +44,12 @@ This a JavaFX desktop application for managing password. The application is inte
 ### To Do
 
 * Users can be informed about the strength of the generated password.
+* Users can be informed if the password entity is expired.
 * Users can create database backups.
 * Users can recover backups.
 * Users can generate key pairs (public-private keys).
+* User can customize settings.
+* Add loading splash image.
 
 ## Status
 
