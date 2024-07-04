@@ -186,9 +186,23 @@
 	-fx-background-color: #414743;
 }
 
+/* Styles for the quickview pane */
 
 .quick-view-pane {
     -fx-background-color: #414743;
+}
+
+#quick-view-pane-title {
+    -fx-font-size: 12pt;
+    -fx-font-weight: bold;
+}
+
+.quick-view-pane-attribute-name {
+    -fx-font-weight: bold;
+}
+
+.quick-view-pane-attribute-value {
+    -fx-font-size: 9pt;
 }
 
 /* Styles for the checkbox */
@@ -356,7 +370,6 @@
 /* Styles for the Separator */
 
 .separator .line {
-
     -fx-border-color: grey;
     -fx-border-width: 1, 1;
 }
