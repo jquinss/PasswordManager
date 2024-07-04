@@ -307,6 +307,7 @@ public class PasswordEntityEditorPaneController implements Initializable {
     private void initializeValidator() {
         createRequiredTextFieldCheck(nameTextField);
         createRequiredTextFieldCheck(passwordField);
+        createRequiredTextFieldCheck(clearPasswordField);
         createDateCheck();
         createPasswordEnforcementCheck();
         saveButton.disableProperty().bind(validator.containsErrorsProperty());
