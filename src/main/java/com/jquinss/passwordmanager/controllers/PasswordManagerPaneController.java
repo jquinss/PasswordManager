@@ -234,8 +234,7 @@ public class PasswordManagerPaneController implements Initializable {
     }
 
     void hideQuickViewPane() {
-        // TODO
-
+        quickViewPane.setVisible(false);
     }
 
     void createPasswordEntityInEditor(Folder folder) {
