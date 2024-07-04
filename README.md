@@ -14,6 +14,8 @@ This a JavaFX desktop application for managing password. The application is inte
 * Java version: 17.0.6
 * JavaFX version: 17.0.2
 * SQLite version: 3.43.0.0
+* Validatorfx version: 0.5.1
+* Bouncycastle version: 1.77
 
 ## Setup
 
