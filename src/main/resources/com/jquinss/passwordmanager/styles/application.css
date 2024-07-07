@@ -149,6 +149,10 @@
     -fx-background-color: #414743;
 }
 
+.date-picker .text-field {
+    -fx-text-fill: black;
+}
+
 
 /* Styles for the SplitPane */
 
