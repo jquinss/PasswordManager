@@ -3,10 +3,12 @@ package com.jquinss.passwordmanager.control;
 import com.jquinss.passwordmanager.data.DataEntity;
 import com.jquinss.passwordmanager.data.Folder;
 import com.jquinss.passwordmanager.data.PasswordEntity;
+import com.jquinss.passwordmanager.data.RootFolder;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.TreeItem;
 
 public class DataEntityTreeItem extends TreeItem<DataEntity> {
+    private static final String ROOT_FOLDER_IMG = "/com/jquinss/passwordmanager/images/root_folder.png";
     private static final String FOLDER_IMG = "/com/jquinss/passwordmanager/images/folder.png";
     private static final String PASSWORD_ENTITY_IMG = "/com/jquinss/passwordmanager/images/password_entity.png";
     private ContextMenu contextMenu;
@@ -27,7 +29,10 @@ public class DataEntityTreeItem extends TreeItem<DataEntity> {
         String imgURL = null;
         DataEntity dataEntity = getValue();
 
-        if (dataEntity instanceof Folder) {
+        if (dataEntity instanceof RootFolder) {
+            imgURL = ROOT_FOLDER_IMG;
+        }
+        else if (dataEntity instanceof Folder) {
             imgURL = FOLDER_IMG;
         }
         else if (dataEntity instanceof PasswordEntity) {
