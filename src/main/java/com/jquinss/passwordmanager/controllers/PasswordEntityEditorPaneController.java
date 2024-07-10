@@ -28,7 +28,9 @@ import java.util.ResourceBundle;
 
 public class PasswordEntityEditorPaneController implements Initializable {
     @FXML
-    public Button hidePasswordEditorPaneButton;
+    private ImageView passwordExpirationImageView;
+    @FXML
+    private Button hidePasswordEditorPaneButton;
     @FXML
     private Button copyUrlButton;
     @FXML
@@ -302,6 +304,7 @@ public class PasswordEntityEditorPaneController implements Initializable {
         Tooltip.install(copyUrlButton, new Tooltip("Copy URL to clipboard"));
         Tooltip.install(copyUsernameButton, new Tooltip("Copy username to clipboard"));
         Tooltip.install(copyEmailAddressButton, new Tooltip("Copy email address to clipboard"));
+        Tooltip.install(passwordExpirationImageView, new Tooltip("Password is expired"));
     }
 
     private void initializeValidator() {
@@ -406,6 +409,7 @@ public class PasswordEntityEditorPaneController implements Initializable {
         initializePolicies();
         loadPasswordEntity(pwdEntity);
         initializePasswordGenerator();
+        passwordExpirationImageView.setVisible(isPasswordEntityExpired(pwdEntity));
         validator.clear();
         initializeValidator();
     }
@@ -415,6 +419,7 @@ public class PasswordEntityEditorPaneController implements Initializable {
         resetFields();
         initializePolicies();
         loadPasswordEntity(pwdEntity);
+        passwordExpirationImageView.setVisible(isPasswordEntityExpired(pwdEntity));
         validator.clear();
     }
 
@@ -505,6 +510,10 @@ public class PasswordEntityEditorPaneController implements Initializable {
 
     void setPasswordManagerPaneController(PasswordManagerPaneController passwordManagerPaneController) {
         this.passwordManagerPaneController = passwordManagerPaneController;
+    }
+
+    private boolean isPasswordEntityExpired(PasswordEntity passwordEntity) {
+        return passwordEntity.isPasswordExpires() && !passwordEntity.getExpirationDate().isAfter(LocalDate.now());
     }
 
     @Override
