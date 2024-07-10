@@ -6,11 +6,14 @@ import com.jquinss.passwordmanager.data.PasswordEntity;
 import com.jquinss.passwordmanager.data.RootFolder;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.TreeItem;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class DataEntityTreeItem extends TreeItem<DataEntity> {
     private static final String ROOT_FOLDER_IMG = "/com/jquinss/passwordmanager/images/root_folder.png";
     private static final String FOLDER_IMG = "/com/jquinss/passwordmanager/images/folder.png";
     private static final String PASSWORD_ENTITY_IMG = "/com/jquinss/passwordmanager/images/password_entity.png";
+    private static final String EXPIRED_PASSWORD_ENTITY_IMG = "/com/jquinss/passwordmanager/images/expired_password_entity.png";
     private ContextMenu contextMenu;
 
     public DataEntityTreeItem(DataEntity dataEntity) {
@@ -35,8 +38,13 @@ public class DataEntityTreeItem extends TreeItem<DataEntity> {
         else if (dataEntity instanceof Folder) {
             imgURL = FOLDER_IMG;
         }
-        else if (dataEntity instanceof PasswordEntity) {
-            imgURL = PASSWORD_ENTITY_IMG;
+        else if (dataEntity instanceof PasswordEntity passwordEntity) {
+            if (passwordEntity.isPasswordExpires() && !passwordEntity.getExpirationDate().isAfter(LocalDate.now())) {
+                imgURL = EXPIRED_PASSWORD_ENTITY_IMG;
+            }
+            else {
+                imgURL = PASSWORD_ENTITY_IMG;
+            }
         }
 
         return imgURL;
