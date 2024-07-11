@@ -5,9 +5,7 @@ import com.jquinss.passwordmanager.util.password.PasswordSpecs;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Spinner;
-import javafx.scene.control.SpinnerValueFactory;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 
@@ -15,6 +13,8 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 public class PasswordGeneratorPaneController implements Initializable {
+    @FXML
+    private Button copyToClipboardButton;
     @FXML
     private Spinner<Integer> numLowerCaseCharsSpinner;
 
@@ -77,6 +77,10 @@ public class PasswordGeneratorPaneController implements Initializable {
         initializeSpinner(numSymbolsSpinner);
     }
 
+    private void initializeTooltips() {
+        Tooltip.install(copyToClipboardButton, new Tooltip("Copy to clipboard"));
+    }
+
     private void initializePasswordGenerator() {
         passwordGenerator = new PasswordGenerator(getPasswordSpecs());
     }
@@ -94,6 +98,7 @@ public class PasswordGeneratorPaneController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         initializeSpinners();
         setSpinnersListeners();
+        initializeTooltips();
         setTotalNumberOfCharsTextField();
         initializePasswordGenerator();
     }
