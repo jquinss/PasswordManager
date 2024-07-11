@@ -27,6 +27,7 @@ public class PasswordManagerController {
 
     public PasswordManagerController(Stage stage) {
         this.stage = stage;
+        this.stage.setResizable(false);
         initializeDatabase();
     }
 
