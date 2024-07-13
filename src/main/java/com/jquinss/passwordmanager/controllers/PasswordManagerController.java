@@ -98,7 +98,7 @@ public class PasswordManagerController {
         }
     }
 
-    static void setWindowLogo(Stage stage, Object context, String imageFile) {
-        stage.getIcons().add(new Image(context.getClass().getResource(imageFile).toString()));
+    private void setWindowLogo(Stage stage, Object context, String imageFile) {
+        stage.getIcons().add(new Image(Objects.requireNonNull(context.getClass().getResource(imageFile)).toString()));
     }
 }
