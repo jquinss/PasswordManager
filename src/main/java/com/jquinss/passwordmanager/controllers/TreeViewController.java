@@ -14,15 +14,12 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
+import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.Pair;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.FileAlreadyExistsException;
-import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Objects;
@@ -46,6 +43,7 @@ public class TreeViewController {
         Dialog<Pair<String, String>> dialog = DialogBuilder.buildTwoTextFieldInputDialog("Create folder",
                 "Create a new folder:", "Folder name", "Description", true, Optional.empty());
         dialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
+        setWindowLogo((Stage) dialog.getDialogPane().getScene().getWindow(), this, "/com/jquinss/passwordmanager/images/create_folder.png");
         Optional<Pair<String, String>> optional = dialog.showAndWait();
         optional.ifPresent(pair -> {
             try {
@@ -82,6 +80,8 @@ public class TreeViewController {
         else {
             Alert alertDialog = DialogBuilder.buildAlertDialog("Confirmation", "The folder is not empty", "Are you sure you want to delete all the files?", Alert.AlertType.CONFIRMATION);
             alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
+            setWindowLogo((Stage) alertDialog.getDialogPane().getScene().getWindow(), this, "/com/jquinss/passwordmanager/images/delete_folder.png");
+
 
             alertDialog.showAndWait().ifPresent(response -> {
                 if (response == ButtonType.OK) {
@@ -127,6 +127,7 @@ public class TreeViewController {
                 "Edit folder:", "Folder name", "Description", true,
                 Optional.ofNullable(defaultValues));
         dialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
+        setWindowLogo((Stage) dialog.getDialogPane().getScene().getWindow(), this, "/com/jquinss/passwordmanager/images/edit_folder.png");
 
         Optional<Pair<String, String>> optional = dialog.showAndWait();
         optional.ifPresent(pair -> {
@@ -581,5 +582,9 @@ public class TreeViewController {
         this.treeViewMode = treeViewMode;
         treeViewMode.setTreeItem(treeItem);
         treeView.setDisable(true);
+    }
+
+    private void setWindowLogo(Stage stage, Object context, String imageFile) {
+        stage.getIcons().add(new Image(Objects.requireNonNull(context.getClass().getResource(imageFile)).toString()));
     }
 }
