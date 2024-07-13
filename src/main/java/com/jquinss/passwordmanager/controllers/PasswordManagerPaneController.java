@@ -13,6 +13,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -101,6 +102,7 @@ public class PasswordManagerPaneController implements Initializable {
 
         stage.setResizable(false);
         stage.setTitle("Password Policies");
+        setWindowLogo(stage, this, "/com/jquinss/passwordmanager/images/password_policies.png");
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.setScene(scene);
         stage.showAndWait();
@@ -120,6 +122,7 @@ public class PasswordManagerPaneController implements Initializable {
 
         stage.setResizable(false);
         stage.setTitle("Password Generator");
+        setWindowLogo(stage, this, "/com/jquinss/passwordmanager/images/password_generator.png");
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.setScene(scene);
         stage.showAndWait();
@@ -129,6 +132,7 @@ public class PasswordManagerPaneController implements Initializable {
     private void showAboutDialog() {
         Alert aboutDialog = DialogBuilder.buildAlertDialog("About", "", "Password Manager v1.0\n\nCreated by Joaquin Sampedro", Alert.AlertType.INFORMATION);
         aboutDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
+        setWindowLogo((Stage) aboutDialog.getDialogPane().getScene().getWindow(), this, "/com/jquinss/passwordmanager/images/logo.png");
         aboutDialog.showAndWait();
     }
 
@@ -268,6 +272,10 @@ public class PasswordManagerPaneController implements Initializable {
 
     UserSession getUserSession() {
         return userSession;
+    }
+
+    private void setWindowLogo(Stage stage, Object context, String imageFile) {
+        stage.getIcons().add(new Image(Objects.requireNonNull(context.getClass().getResource(imageFile)).toString()));
     }
 
     @Override
