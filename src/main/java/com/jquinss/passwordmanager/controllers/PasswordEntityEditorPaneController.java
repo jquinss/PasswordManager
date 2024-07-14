@@ -475,6 +475,7 @@ public class PasswordEntityEditorPaneController implements Initializable {
         descriptionTextField.setText(pwdEntity.getDescription());
         urlTextField.setText(pwdEntity.getUrl());
         usernameTextField.setText(pwdEntity.getUsername());
+        emailAddressTextField.setText(pwdEntity.getEmailAddress());
         passwordField.setText(pwdEntity.getPassword());
         enforcePolicyCheckBox.setSelected(pwdEntity.isPasswordEnforcementPolicyEnabled());
         if (pwdEntity.isPasswordEnforcementPolicyEnabled()) {
