@@ -17,6 +17,8 @@ import java.util.Objects;
 
 public class PasswordEnforcementPolicyEditorDialog extends Dialog<PasswordEnforcementPolicy> {
     @FXML
+    private Label passwordEnforcementPolicyEditorTitle;
+    @FXML
     private TextField policyNameTextField;
     @FXML
     private TextField minLengthTextField;
@@ -49,6 +51,7 @@ public class PasswordEnforcementPolicyEditorDialog extends Dialog<PasswordEnforc
             DialogPane dialogPane = loader.load();
             dialogPane.lookupButton(saveButtonType).disableProperty().bind(validator.containsErrorsProperty());
             initOwner(window);
+            setTitle();
             initModality(Modality.APPLICATION_MODAL);
             setResizable(false);
             setDialogPane(dialogPane);
@@ -100,6 +103,19 @@ public class PasswordEnforcementPolicyEditorDialog extends Dialog<PasswordEnforc
         passwordEnforcementPolicy.setDefaultPolicy(isDefaultPolicyCheckBox.isSelected());
         passwordEnforcementPolicy.setId(this.passwordEnforcementPolicy.getId());
         this.passwordEnforcementPolicy = passwordEnforcementPolicy;
+    }
+
+    private void setTitle() {
+        switch (passwordPolicyEditorMode) {
+            case EDIT -> {
+                this.setTitle("Edit password enforcement policy");
+                passwordEnforcementPolicyEditorTitle.setText("Edit password enforcement policy:");
+            }
+            case CREATE -> {
+                this.setTitle("Create a password enforcement policy");
+                passwordEnforcementPolicyEditorTitle.setText("Create password enforcement policy:");
+            }
+        }
     }
 
     @FXML
