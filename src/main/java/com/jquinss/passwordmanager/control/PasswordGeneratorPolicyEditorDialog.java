@@ -17,6 +17,8 @@ import java.util.Objects;
 
 public class PasswordGeneratorPolicyEditorDialog extends Dialog<PasswordGeneratorPolicy> {
     @FXML
+    private Label passwordGeneratorPolicyEditorTitle;
+    @FXML
     private TextField policyNameTextField;
     @FXML
     private TextField numSymbolsTextField;
@@ -45,6 +47,7 @@ public class PasswordGeneratorPolicyEditorDialog extends Dialog<PasswordGenerato
             DialogPane dialogPane = loader.load();
             dialogPane.lookupButton(saveButtonType).disableProperty().bind(validator.containsErrorsProperty());
             initOwner(window);
+            setTitle();
             initModality(Modality.APPLICATION_MODAL);
             setResizable(false);
             setDialogPane(dialogPane);
@@ -94,6 +97,18 @@ public class PasswordGeneratorPolicyEditorDialog extends Dialog<PasswordGenerato
         passwordGeneratorPolicy.setDefaultPolicy(isDefaultPolicyCheckBox.isSelected());
         passwordGeneratorPolicy.setId(this.passwordGeneratorPolicy.getId());
         this.passwordGeneratorPolicy = passwordGeneratorPolicy;
+    }
+
+    private void setTitle() {
+        switch (passwordPolicyEditorMode) {
+            case EDIT ->  {
+                this.setTitle("Edit password generator policy");
+                passwordGeneratorPolicyEditorTitle.setText("Edit password generator policy:");}
+            case CREATE -> {
+                this.setTitle("Create a password generator policy");
+                passwordGeneratorPolicyEditorTitle.setText("Create password generator policy:");
+            }
+        }
     }
 
     @FXML
