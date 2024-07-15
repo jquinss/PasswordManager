@@ -30,13 +30,16 @@ public class TreeViewController {
     private final CryptoUtils.AsymmetricCrypto asymmetricCrypto;
     private final ContextMenuBuilder contextMenuBuilder = new ContextMenuBuilder();
 
-    private DataFormat dataFormat = new DataFormat("fileItemDataFormat");
+    private DataFormat dataFormat = DataFormat.lookupMimeType("fileItemDataFormat");
     private TreeViewMode treeViewMode;
     private PasswordManagerPaneController passwordManagerPaneController;
 
     public TreeViewController(TreeView<DataEntity> treeView, CryptoUtils.AsymmetricCrypto asymmetricCrypto) {
         this.treeView = treeView;
         this.asymmetricCrypto = asymmetricCrypto;
+        if (dataFormat == null) {
+            dataFormat = new DataFormat("fileItemDataFormat");
+        }
     }
 
     void createFolder() {
