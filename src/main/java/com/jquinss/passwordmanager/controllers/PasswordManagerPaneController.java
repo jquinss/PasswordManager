@@ -25,6 +25,8 @@ import java.util.ResourceBundle;
 
 public class PasswordManagerPaneController implements Initializable {
     @FXML
+    private Label statusLabel;
+    @FXML
     private ToolBar toolBar;
     @FXML
     private MenuBar menuBar;
@@ -243,11 +245,13 @@ public class PasswordManagerPaneController implements Initializable {
 
     void createPasswordEntityInEditor(Folder folder) {
         passwordEntityEditorPaneController.openPasswordEntityEditorInCreateMode(folder);
+        statusLabel.setText("Creating password entity");
         disableMenuBarAndToolBar(true);
     }
 
     void editPasswordEntityInEditor(PasswordEntity passwordEntity) {
         passwordEntityEditorPaneController.openPasswordEntityEditorInEditMode(passwordEntity);
+        statusLabel.setText("Editing password entity");
         disableMenuBarAndToolBar(true);
     }
 
@@ -258,11 +262,13 @@ public class PasswordManagerPaneController implements Initializable {
     void savePasswordEntity(PasswordEntity passwordEntity) {
         treeViewController.savePasswordEntity(passwordEntity);
         disableMenuBarAndToolBar(false);
+        statusLabel.setText("");
     }
 
     void cancelEditMode() {
         treeViewController.setViewMode();
         disableMenuBarAndToolBar(false);
+        statusLabel.setText("");
     }
 
     private void disableMenuBarAndToolBar(boolean disable) {
