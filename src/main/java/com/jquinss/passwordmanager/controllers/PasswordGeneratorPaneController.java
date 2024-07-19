@@ -2,7 +2,8 @@ package com.jquinss.passwordmanager.controllers;
 
 import com.jquinss.passwordmanager.util.password.PasswordGenerator;
 import com.jquinss.passwordmanager.util.password.PasswordSpecs;
-import javafx.event.ActionEvent;
+import com.jquinss.passwordmanager.util.password.PasswordStrength;
+import com.jquinss.passwordmanager.util.password.PasswordStrengthChecker;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -13,6 +14,10 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 public class PasswordGeneratorPaneController implements Initializable {
+    @FXML
+    private Label passwordStrengthLabel;
+    @FXML
+    private Label passwordStrengthText;
     @FXML
     private Button copyToClipboardButton;
     @FXML
@@ -34,6 +39,7 @@ public class PasswordGeneratorPaneController implements Initializable {
     private TextField passwordTextField;
 
     private PasswordGenerator passwordGenerator;
+    private final PasswordStrengthChecker passwordStrengthChecker = new PasswordStrengthChecker();
 
     @FXML
     private void generatePassword() {
@@ -67,7 +73,7 @@ public class PasswordGeneratorPaneController implements Initializable {
     }
 
     private void initializeSpinner(Spinner<Integer> spinner) {
-        spinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(2, 20, 2));
+        spinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 20, 2));
     }
 
     private void initializeSpinners() {
@@ -75,6 +81,28 @@ public class PasswordGeneratorPaneController implements Initializable {
         initializeSpinner(numUpperCaseCharsSpinner);
         initializeSpinner(numDigitsSpinner);
         initializeSpinner(numSymbolsSpinner);
+    }
+
+    private void initializePasswordTextFieldListener() {
+        passwordTextField.textProperty().addListener((obs, oldValue, newValue) -> {
+            if (!newValue.isEmpty()) {
+                passwordStrengthLabel.setVisible(true);
+                PasswordStrength passwordStrength = passwordStrengthChecker.checkPasswordStrength(newValue);
+                passwordStrengthText.setText(passwordStrength.toString().toLowerCase());
+                passwordStrengthText.getStyleClass().clear();
+                passwordStrengthText.getStyleClass().add(getPasswordStrengthTextStyle(passwordStrength));
+            }
+        });
+    }
+
+    private String getPasswordStrengthTextStyle(PasswordStrength passwordStrength) {
+        return switch (passwordStrength) {
+            case NONE -> "low-strength-pwd";
+            case LOW -> "low-strength-pwd";
+            case FAIR -> "fair-strength-pwd";
+            case GOOD -> "good-strength-pwd";
+            case EXCELLENT -> "excellent-strength-pwd";
+        };
     }
 
     private void initializeTooltips() {
@@ -98,6 +126,7 @@ public class PasswordGeneratorPaneController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         initializeSpinners();
         setSpinnersListeners();
+        initializePasswordTextFieldListener();
         initializeTooltips();
         setTotalNumberOfCharsTextField();
         initializePasswordGenerator();
