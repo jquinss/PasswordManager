@@ -8,12 +8,10 @@
     <artifactId>PasswordManager</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>PasswordManager</name>
-
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <junit.version>5.9.1</junit.version>
     </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.openjfx</groupId>
@@ -76,7 +74,7 @@
                         <!-- Default configuration for running with: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>com.jquinss.passwordmanager/com.jquinss.passwordmanager.HelloApplication
+                            <mainClass>com.jquinss.passwordmanager/com.jquinss.passwordmanager.Launcher
                             </mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>
