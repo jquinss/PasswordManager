@@ -42,6 +42,7 @@ This a JavaFX desktop application for managing password. The application is inte
 * Users can use a password generator tool.
 * Users can use shortcuts in a toolbar to perform operations.
 * Users are informed if the password entity is expired.
+* Created splash image.
 
 
 ### To Do
@@ -51,7 +52,6 @@ This a JavaFX desktop application for managing password. The application is inte
 * Users can recover backups.
 * Users can generate key pairs (public-private keys).
 * User can customize settings.
-* Add loading splash image.
 
 ## Status
 
