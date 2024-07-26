@@ -502,6 +502,7 @@ public class PasswordEntityEditorPaneController implements Initializable {
         emailAddressTextField.clear();
         passwordField.clear();
         clearPasswordField.clear();
+        showPasswordCheckBox.setSelected(false);
         enforcePolicyCheckBox.setSelected(false);
         resetPasswordEnforcementPolicies();
         resetPasswordGeneratorPolicies();
