@@ -24,6 +24,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class PasswordEntityEditorPaneController implements Initializable {
@@ -107,8 +108,10 @@ public class PasswordEntityEditorPaneController implements Initializable {
             passwordField.setText(passwordGenerator.generatePassword());
         }
         else {
-            DialogBuilder.buildAlertDialog("Error", "Error generator password",
-                    "No password policies have been selected", Alert.AlertType.ERROR).showAndWait();
+            Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Error generator password",
+                    "No password policies have been selected", Alert.AlertType.ERROR);
+            alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
+            alertDialog.showAndWait();
         }
 
     }
