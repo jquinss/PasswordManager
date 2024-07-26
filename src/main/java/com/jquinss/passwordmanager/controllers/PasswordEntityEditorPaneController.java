@@ -399,6 +399,7 @@ public class PasswordEntityEditorPaneController implements Initializable {
         setEditMode(DataEntityEditorMode.CREATE, folder);
         resetFields();
         initializePolicies();
+        passwordExpirationImageView.setVisible(false);
         validator.clear();
         initializeValidator();
     }
