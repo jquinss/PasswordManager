@@ -44,11 +44,11 @@ This a JavaFX desktop application for managing password. The application is inte
 * Users are informed if the password entity is expired.
 * Created splash image.
 * Users are informed about the strength of the generated password.
+* Users can use keyboard shortcuts.
 
 
 ### To Do
 
-* Users cab use keyboard shortcuts.
 * Users can create database backups.
 * Users can recover backups.
 * Users can generate key pairs (public-private keys).
