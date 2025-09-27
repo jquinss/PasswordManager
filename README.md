@@ -48,6 +48,7 @@ This a JavaFX desktop application for managing password. The application is inte
 
 ### To Do
 
+* Users cab use keyboard shortcuts.
 * Users can create database backups.
 * Users can recover backups.
 * Users can generate key pairs (public-private keys).
