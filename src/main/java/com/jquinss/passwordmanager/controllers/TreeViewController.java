@@ -43,18 +43,18 @@ public class TreeViewController {
     }
 
     void createFolder() {
+
         Dialog<Pair<String, String>> dialog = DialogBuilder.buildTwoTextFieldInputDialog("Create folder",
-                "Create a new folder:", "Folder name", "Description", true, Optional.empty());
+                    "Create a new folder:", "Folder name", "Description", true, Optional.empty());
         dialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
         setWindowLogo((Stage) dialog.getDialogPane().getScene().getWindow(), this, "/com/jquinss/passwordmanager/images/create_folder.png");
         Optional<Pair<String, String>> optional = dialog.showAndWait();
         optional.ifPresent(pair -> {
             try {
-                createFolderTreeItem(treeView.getSelectionModel().getSelectedItem(), pair.getKey(), pair.getValue());
-            }
-            catch (SQLException e) {
+                createFolderTreeItem(treeView.getRoot(), pair.getKey(), pair.getValue());
+            } catch (SQLException e) {
                 Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Error creating folder",
-                        "A database error has occurred during the operation", Alert.AlertType.ERROR);
+                            "A database error has occurred during the operation", Alert.AlertType.ERROR);
                 alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
                 alertDialog.showAndWait();
             }
@@ -77,21 +77,24 @@ public class TreeViewController {
 
     void deleteFolder() {
         TreeItem<DataEntity> treeItem = treeView.getSelectionModel().getSelectedItem();
-        if (treeItem.getChildren().isEmpty()) {
-            deleteFolder(treeItem);
-        }
-        else {
-            Alert alertDialog = DialogBuilder.buildAlertDialog("Confirmation", "The folder is not empty", "Are you sure you want to delete all the files?", Alert.AlertType.CONFIRMATION);
-            alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
-            setWindowLogo((Stage) alertDialog.getDialogPane().getScene().getWindow(), this, "/com/jquinss/passwordmanager/images/delete_folder.png");
+        if ((treeItem != null) && (treeItem.getValue() instanceof Folder) &&
+                !(treeItem.getValue() instanceof RootFolder)){
+            if (treeItem.getChildren().isEmpty()) {
+                deleteFolder(treeItem);
+            }
+            else {
+                Alert alertDialog = DialogBuilder.buildAlertDialog("Confirmation", "The folder is not empty", "Are you sure you want to delete all the files?", Alert.AlertType.CONFIRMATION);
+                alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
+                setWindowLogo((Stage) alertDialog.getDialogPane().getScene().getWindow(), this, "/com/jquinss/passwordmanager/images/delete_folder.png");
 
 
-            alertDialog.showAndWait().ifPresent(response -> {
-                if (response == ButtonType.OK) {
-                    deleteAllPasswordEntitiesInFolder(treeItem);
-                    deleteFolder(treeItem);
-                }
-            });;
+                alertDialog.showAndWait().ifPresent(response -> {
+                    if (response == ButtonType.OK) {
+                        deleteAllPasswordEntitiesInFolder(treeItem);
+                        deleteFolder(treeItem);
+                    }
+                });;
+            }
         }
     }
 
@@ -123,27 +126,30 @@ public class TreeViewController {
     }
 
     private void editFolder() {
-        TreeItem<DataEntity> dataEntityTreeItem = treeView.getSelectionModel().getSelectedItem();
-        Folder folder = (Folder) dataEntityTreeItem.getValue();
-        Pair<String, String> defaultValues = new Pair<>(folder.getName(), folder.getDescription());
-        Dialog<Pair<String, String>> dialog = DialogBuilder.buildTwoTextFieldInputDialog("Edit folder",
-                "Edit folder:", "Folder name", "Description", true,
-                Optional.ofNullable(defaultValues));
-        dialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
-        setWindowLogo((Stage) dialog.getDialogPane().getScene().getWindow(), this, "/com/jquinss/passwordmanager/images/edit_folder.png");
+        TreeItem<DataEntity> folderTreeItem = treeView.getSelectionModel().getSelectedItem();
+        if ((folderTreeItem != null) && (folderTreeItem.getValue() instanceof Folder)) {
+            Folder folder = (Folder) folderTreeItem.getValue();
+            Pair<String, String> defaultValues = new Pair<>(folder.getName(), folder.getDescription());
+            Dialog<Pair<String, String>> dialog = DialogBuilder.buildTwoTextFieldInputDialog("Edit folder",
+                    "Edit folder:", "Folder name", "Description", true,
+                    Optional.ofNullable(defaultValues));
+            dialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
+            setWindowLogo((Stage) dialog.getDialogPane().getScene().getWindow(), this, "/com/jquinss/passwordmanager/images/edit_folder.png");
 
-        Optional<Pair<String, String>> optional = dialog.showAndWait();
-        optional.ifPresent(pair -> {
-            try {
-                editFolderTreeItem(dataEntityTreeItem, pair.getKey(), pair.getValue());
-            }
-            catch (SQLException e) {
-                Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Error editing folder",
-                        "A database error has occurred during the operation", Alert.AlertType.ERROR);
-                alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
-                alertDialog.showAndWait();
-            }
-        });
+            Optional<Pair<String, String>> optional = dialog.showAndWait();
+            optional.ifPresent(pair -> {
+                try {
+                    editFolderTreeItem(folderTreeItem, pair.getKey(), pair.getValue());
+                }
+                catch (SQLException e) {
+                    Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Error editing folder",
+                            "A database error has occurred during the operation", Alert.AlertType.ERROR);
+                    alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
+                    alertDialog.showAndWait();
+                }
+            });
+        }
+
     }
 
     private void editFolderTreeItem(TreeItem<DataEntity> treeItem, String name, String description) throws SQLException {
@@ -159,37 +165,44 @@ public class TreeViewController {
     }
 
     void createPasswordEntity() {
-        TreeItem<DataEntity> treeItem = treeView.getSelectionModel().getSelectedItem();
-        setEditMode(TreeViewMode.CREATE, treeItem);
-        passwordManagerPaneController.createPasswordEntityInEditor((Folder) treeItem.getValue());
+        TreeItem<DataEntity> selectedTreeItem = treeView.getSelectionModel().getSelectedItem();
+        if ((selectedTreeItem != null ) && (selectedTreeItem.getValue() instanceof Folder)) {
+            setEditMode(TreeViewMode.CREATE, selectedTreeItem);
+            passwordManagerPaneController.createPasswordEntityInEditor((Folder) selectedTreeItem.getValue());
+        }
     }
 
     void deletePasswordEntity() {
-        TreeItem<DataEntity> treeItem = treeView.getSelectionModel().getSelectedItem();
-        try {
-            DatabaseManager.getInstance().deletePasswordEntity((PasswordEntity) treeItem.getValue());
-            treeItem.getParent().getChildren().remove(treeItem);
-        }
-        catch (SQLException e) {
-            Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Error deleting password entity",
-                    "A database error has occurred during the operation", Alert.AlertType.ERROR);
-            alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
-            alertDialog.showAndWait();
+        TreeItem<DataEntity> selectedTreeItem = treeView.getSelectionModel().getSelectedItem();
+        if ((selectedTreeItem != null ) && (selectedTreeItem.getValue() instanceof Folder)) {
+            try {
+                DatabaseManager.getInstance().deletePasswordEntity((PasswordEntity) selectedTreeItem.getValue());
+                selectedTreeItem.getParent().getChildren().remove(selectedTreeItem);
+            } catch (SQLException e) {
+                Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Error deleting password entity",
+                        "A database error has occurred during the operation", Alert.AlertType.ERROR);
+                alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
+                alertDialog.showAndWait();
+            }
         }
     }
 
     void editPasswordEntity() {
-        TreeItem<DataEntity> treeItem = treeView.getSelectionModel().getSelectedItem();
-        setEditMode(TreeViewMode.EDIT, treeItem);
-        // creates a copy of the PasswordEntity instance in case any exception occurs inserting the the db
-        PasswordEntity pwdEntityCopy = (PasswordEntity) ((PasswordEntity) treeItem.getValue()).clone();
-        passwordManagerPaneController.editPasswordEntityInEditor(pwdEntityCopy);
+        TreeItem<DataEntity> selectedTreeItem = treeView.getSelectionModel().getSelectedItem();
+        if ((selectedTreeItem != null) && selectedTreeItem.getValue() instanceof PasswordEntity) {
+            setEditMode(TreeViewMode.EDIT, selectedTreeItem);
+            // creates a copy of the PasswordEntity instance in case any exception occurs inserting the the db
+            PasswordEntity pwdEntityCopy = (PasswordEntity) ((PasswordEntity) selectedTreeItem.getValue()).clone();
+            passwordManagerPaneController.editPasswordEntityInEditor(pwdEntityCopy);
+        }
     }
 
     void viewPasswordEntity() {
-        setViewMode();
-        passwordManagerPaneController.viewPasswordEntityInEditor((PasswordEntity) treeView.
-                getSelectionModel().getSelectedItem().getValue());
+        TreeItem<DataEntity> selectedTreeItem = treeView.getSelectionModel().getSelectedItem();
+        if ((selectedTreeItem != null) && selectedTreeItem.getValue() instanceof PasswordEntity) {
+            setViewMode();
+            passwordManagerPaneController.viewPasswordEntityInEditor((PasswordEntity) selectedTreeItem.getValue());
+        }
     }
 
     private void viewDataEntityInQuickViewPane(DataEntity dataEntity) {
@@ -202,35 +215,43 @@ public class TreeViewController {
 
     void duplicatePasswordEntity() {
         TreeItem<DataEntity> selectedTreeItem = treeView.getSelectionModel().getSelectedItem();
-        PasswordEntity pwdEntity = (PasswordEntity) selectedTreeItem.getValue();
-        try {
-            PasswordEntity pwdEntityCopy = (PasswordEntity) pwdEntity.clone();
-            pwdEntityCopy.setName("Copy of " + pwdEntity.getName());
-            savePasswordEntityToDatabase(pwdEntityCopy);
-            savePasswordEntityToTreeView(pwdEntityCopy, selectedTreeItem.getParent());
-        }
-        catch (SQLException e) {
-            Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Error creating new password entity",
-                    "A database error has occurred during the operation", Alert.AlertType.ERROR);
-            alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
-            alertDialog.showAndWait();
+
+        if ((selectedTreeItem != null) && selectedTreeItem.getValue() instanceof PasswordEntity) {
+            PasswordEntity pwdEntity = (PasswordEntity) selectedTreeItem.getValue();
+
+            try {
+                PasswordEntity pwdEntityCopy = (PasswordEntity) pwdEntity.clone();
+                pwdEntityCopy.setName("Copy of " + pwdEntity.getName());
+                savePasswordEntityToDatabase(pwdEntityCopy);
+                savePasswordEntityToTreeView(pwdEntityCopy, selectedTreeItem.getParent());
+            }
+            catch (SQLException e) {
+                Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Error creating new password entity",
+                        "A database error has occurred during the operation", Alert.AlertType.ERROR);
+                alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
+                alertDialog.showAndWait();
+            }
         }
     }
 
     private void copyToClipboard(ActionEvent event) {
-        String menuItemId = ((MenuItem) event.getSource()).getId();
-        PasswordEntity pwdEntity = (PasswordEntity) treeView.getSelectionModel().getSelectedItem().getValue();
-        Clipboard clipboard = Clipboard.getSystemClipboard();
-        ClipboardContent content = new ClipboardContent();
+        TreeItem<DataEntity> selectedTreeItem = treeView.getSelectionModel().getSelectedItem();
 
-        switch (menuItemId) {
-            case "copyPasswordToClipboardItem" -> content.putString(pwdEntity.getPassword());
-            case "copyUsernameToClipboardItem" -> content.putString(pwdEntity.getUsername());
-            case "copyEmailAddressToClipboardItem" -> content.putString(pwdEntity.getEmailAddress());
-            case "copyURLToClipboardItem" -> content.putString(pwdEntity.getUrl());
+        if ((selectedTreeItem != null) && (selectedTreeItem.getValue() instanceof PasswordEntity)) {
+            String menuItemId = ((MenuItem) event.getSource()).getId();
+            PasswordEntity pwdEntity = (PasswordEntity) selectedTreeItem.getValue();
+            Clipboard clipboard = Clipboard.getSystemClipboard();
+            ClipboardContent content = new ClipboardContent();
+
+            switch (menuItemId) {
+                case "copyPasswordToClipboardItem" -> content.putString(pwdEntity.getPassword());
+                case "copyUsernameToClipboardItem" -> content.putString(pwdEntity.getUsername());
+                case "copyEmailAddressToClipboardItem" -> content.putString(pwdEntity.getEmailAddress());
+                case "copyURLToClipboardItem" -> content.putString(pwdEntity.getUrl());
+            }
+
+            clipboard.setContent(content);
         }
-
-        clipboard.setContent(content);
     }
 
     void savePasswordEntity(PasswordEntity passwordEntity) {
@@ -427,6 +448,7 @@ public class TreeViewController {
 
         RootFolderContextMenu() {
             addFolder.setOnAction(e -> createFolder());
+            addFolder.setAccelerator(KeyCombination.keyCombination("Shortcut+Shift+F"));
             getItems().addAll(addFolder);
         }
     }
@@ -438,8 +460,11 @@ public class TreeViewController {
 
         FolderContextMenu() {
             createPasswordEntityMenuItem.setOnAction(e -> createPasswordEntity());
-           editFolderMenuItem.setOnAction(e -> editFolder());
+            createPasswordEntityMenuItem.setAccelerator(KeyCombination.keyCombination("Shortcut+Shift+N"));
+            editFolderMenuItem.setOnAction(e -> editFolder());
+            editFolderMenuItem.setAccelerator(KeyCombination.keyCombination("Shortcut+Shift+I"));
             deleteFolderMenuItem.setOnAction(e -> deleteFolder());
+            deleteFolderMenuItem.setAccelerator(KeyCombination.keyCombination("Shortcut+Shift+D"));
 
             getItems().addAll(createPasswordEntityMenuItem,editFolderMenuItem, deleteFolderMenuItem);
         }
@@ -459,16 +484,24 @@ public class TreeViewController {
         PasswordEntityContextMenu() {
             copyPasswordToClipboardItem.setId("copyPasswordToClipboardItem");
             copyPasswordToClipboardItem .setOnAction(TreeViewController.this::copyToClipboard);
+            copyPasswordToClipboardItem.setAccelerator(KeyCombination.keyCombination("Shortcut+P"));
             copyUsernameToClipboardItem.setId("copyUsernameToClipboardItem");
             copyUsernameToClipboardItem.setOnAction(TreeViewController.this::copyToClipboard);
+            copyUsernameToClipboardItem.setAccelerator(KeyCombination.keyCombination("Shortcut+U"));
             copyURLToClipboardItem.setId("copyURLToClipboardItem");
             copyURLToClipboardItem.setOnAction(TreeViewController.this::copyToClipboard);
+            copyURLToClipboardItem.setAccelerator(KeyCombination.keyCombination("Shortcut+R"));
             copyEmailAddressToClipboardItem.setId("copyEmailAddressToClipboardItem");
             copyEmailAddressToClipboardItem.setOnAction(TreeViewController.this::copyToClipboard);
+            copyEmailAddressToClipboardItem.setAccelerator(KeyCombination.keyCombination("Shortcut+E"));
             duplicatePasswordEntityItem.setOnAction(e -> duplicatePasswordEntity());
+            duplicatePasswordEntityItem.setAccelerator(KeyCombination.keyCombination("Shortcut+L"));
             viewPasswordEntityItem.setOnAction(e -> viewPasswordEntity());
+            viewPasswordEntityItem.setAccelerator(KeyCombination.keyCombination("Shortcut+V"));
             editPasswordEntityItem.setOnAction(e -> editPasswordEntity());
+            editPasswordEntityItem.setAccelerator(KeyCombination.keyCombination("Shortcut+I"));
             deletePasswordEntityItem.setOnAction(e -> deletePasswordEntity());
+            deletePasswordEntityItem.setAccelerator(KeyCombination.keyCombination("Shortcut+D"));
 
             copyToClipboardMenu.getItems().addAll(copyPasswordToClipboardItem, copyUsernameToClipboardItem ,
                     copyURLToClipboardItem, copyEmailAddressToClipboardItem);
