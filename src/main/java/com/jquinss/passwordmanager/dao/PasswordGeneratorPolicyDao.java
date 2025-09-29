@@ -9,7 +9,7 @@ import java.util.Optional;
 public interface PasswordGeneratorPolicyDao {
     Optional<PasswordGeneratorPolicy> getById(int id) throws SQLException;
 
-    List<PasswordGeneratorPolicy> getAllByUserId(int usedId) throws SQLException;
+    List<PasswordGeneratorPolicy> getAllByUserProfileId(int userProfileId) throws SQLException;
 
     void add(PasswordGeneratorPolicy pwdGenPolicy) throws SQLException;
 

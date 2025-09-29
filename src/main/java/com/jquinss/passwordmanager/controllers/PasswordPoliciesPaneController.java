@@ -47,7 +47,7 @@ public class PasswordPoliciesPaneController {
         PasswordEnforcementPolicyEditorDialog dialog = new PasswordEnforcementPolicyEditorDialog(stage, PasswordPolicyEditorMode.CREATE);
         dialog.showAndWait().ifPresent(passwordEnforcementPolicy -> {
             try {
-                passwordEnforcementPolicy.setUserId(passwordManagerPaneController.getUserSession().getCurrentUserId());
+                passwordEnforcementPolicy.setUserProfileId(passwordManagerPaneController.getUserProfileSession().getCurrentUserProfileId());
                 DatabaseManager.getInstance().addPasswordEnforcementPolicy(passwordEnforcementPolicy);
                 passwordEnforcementPolicyObsList.add(passwordEnforcementPolicy);
 
@@ -130,7 +130,7 @@ public class PasswordPoliciesPaneController {
         PasswordGeneratorPolicyEditorDialog dialog = new PasswordGeneratorPolicyEditorDialog(stage, PasswordPolicyEditorMode.CREATE);
         dialog.showAndWait().ifPresent(passwordGeneratorPolicy -> {
             try {
-                passwordGeneratorPolicy.setUserId(passwordManagerPaneController.getUserSession().getCurrentUserId());
+                passwordGeneratorPolicy.setUserProfileId(passwordManagerPaneController.getUserProfileSession().getCurrentUserProfileId());
                 DatabaseManager.getInstance().addPasswordGeneratorPolicy(passwordGeneratorPolicy);
                 passwordGeneratorPolicyObsList.add(passwordGeneratorPolicy);
 
@@ -288,7 +288,7 @@ public class PasswordPoliciesPaneController {
 
     private void loadPasswordEnforcementPolicies() {
         try {
-            List<PasswordEnforcementPolicy> passwordEnforcementPolicies = DatabaseManager.getInstance().getAllPasswordEnforcementPoliciesByUserId(passwordManagerPaneController.getUserSession().getCurrentUserId());
+            List<PasswordEnforcementPolicy> passwordEnforcementPolicies = DatabaseManager.getInstance().getAllPasswordEnforcementPoliciesByUserProfileId(passwordManagerPaneController.getUserProfileSession().getCurrentUserProfileId());
             for (PasswordEnforcementPolicy pwdEnforcementPolicy : passwordEnforcementPolicies) {
                 passwordEnforcementPolicyObsList.add(pwdEnforcementPolicy);
                 if (pwdEnforcementPolicy.isDefaultPolicy()) {
@@ -303,7 +303,7 @@ public class PasswordPoliciesPaneController {
 
     private void loadPasswordGeneratorPolicies() {
         try {
-            List<PasswordGeneratorPolicy> passwordGeneratorPolicies = DatabaseManager.getInstance().getAllPasswordGeneratorPoliciesByUserId(passwordManagerPaneController.getUserSession().getCurrentUserId());
+            List<PasswordGeneratorPolicy> passwordGeneratorPolicies = DatabaseManager.getInstance().getAllPasswordGeneratorPoliciesByUserProfileId(passwordManagerPaneController.getUserProfileSession().getCurrentUserProfileId());
             for (PasswordGeneratorPolicy pwdGeneratorPolicy : passwordGeneratorPolicies) {
                 passwordGeneratorPolicyObsList.add(pwdGeneratorPolicy);
                 if (pwdGeneratorPolicy.isDefaultPolicy()) {

@@ -10,9 +10,9 @@ import java.util.Optional;
 public interface FolderDao {
     Optional<Folder> getById(int id) throws SQLException;
 
-    List<Folder> getAllByParentId(int id) throws SQLException;
+    List<Folder> getAllByParentId(int parentId) throws SQLException;
 
-    Optional<RootFolder> getRootByUserId(int id) throws SQLException;
+    Optional<RootFolder> getRootByUserProfileId(int userProfileId) throws SQLException;
 
     void add(Folder folder) throws SQLException;
 

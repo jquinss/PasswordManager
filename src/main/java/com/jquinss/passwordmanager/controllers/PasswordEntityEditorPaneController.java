@@ -224,7 +224,7 @@ public class PasswordEntityEditorPaneController implements Initializable {
 
     private void loadPasswordEnforcementPolicies() {
         try {
-            passwordEnforcementPolicyObsList.setAll(DatabaseManager.getInstance().getAllPasswordEnforcementPoliciesByUserId(passwordManagerPaneController.getUserSession().getCurrentUserId()));
+            passwordEnforcementPolicyObsList.setAll(DatabaseManager.getInstance().getAllPasswordEnforcementPoliciesByUserProfileId(passwordManagerPaneController.getUserProfileSession().getCurrentUserProfileId()));
         }
         catch (SQLException e) {
             throw new RuntimeException(e);
@@ -275,7 +275,7 @@ public class PasswordEntityEditorPaneController implements Initializable {
 
     private void loadPasswordGeneratorPolicies() {
         try {
-            passwordGeneratorPolicyObsList.setAll(DatabaseManager.getInstance().getAllPasswordGeneratorPoliciesByUserId(passwordManagerPaneController.getUserSession().getCurrentUserId()));
+            passwordGeneratorPolicyObsList.setAll(DatabaseManager.getInstance().getAllPasswordGeneratorPoliciesByUserProfileId(passwordManagerPaneController.getUserProfileSession().getCurrentUserProfileId()));
         }
         catch (SQLException e) {
             throw new RuntimeException(e);

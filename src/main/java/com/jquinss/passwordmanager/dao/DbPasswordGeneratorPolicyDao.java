@@ -28,10 +28,10 @@ public class DbPasswordGeneratorPolicyDao implements PasswordGeneratorPolicyDao 
     }
 
     @Override
-    public List<PasswordGeneratorPolicy> getAllByUserId(int userId) throws SQLException {
+    public List<PasswordGeneratorPolicy> getAllByUserProfileId(int userProfileId) throws SQLException {
         List<PasswordGeneratorPolicy> pwdGeneratorPolicies = new ArrayList<>();
         try (Connection conn = dataSource.getConnection();
-             PreparedStatement ps = buildGetAllPasswordGeneratorPoliciesByUserIdPreparedStatement(conn, userId);
+             PreparedStatement ps = buildGetAllPasswordGeneratorPoliciesByUserProfileIdPreparedStatement(conn, userProfileId);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 pwdGeneratorPolicies.add(createPasswordGeneratorPolicy(rs));
@@ -76,9 +76,9 @@ public class DbPasswordGeneratorPolicyDao implements PasswordGeneratorPolicyDao 
         }
     }
 
-    private PreparedStatement buildGetAllPasswordGeneratorPoliciesByUserIdPreparedStatement(Connection conn, int userId) throws SQLException {
-        PreparedStatement ps = conn.prepareStatement("SELECT * FROM password_gen_policy WHERE user_id = ?");
-        ps.setInt(1, userId);
+    private PreparedStatement buildGetAllPasswordGeneratorPoliciesByUserProfileIdPreparedStatement(Connection conn, int userProfileId) throws SQLException {
+        PreparedStatement ps = conn.prepareStatement("SELECT * FROM password_gen_policy WHERE user_profile_id = ?");
+        ps.setInt(1, userProfileId);
 
         return ps;
     }
@@ -94,7 +94,7 @@ public class DbPasswordGeneratorPolicyDao implements PasswordGeneratorPolicyDao 
         PasswordGeneratorPolicy pwdGenPolicy = new PasswordGeneratorPolicy(rs.getString(2), passwordSpecs);
         pwdGenPolicy.setId(rs.getInt(1));
         pwdGenPolicy.setDefaultPolicy(rs.getBoolean(7));
-        pwdGenPolicy.setUserId(rs.getInt(8));
+        pwdGenPolicy.setUserProfileId(rs.getInt(8));
 
         return pwdGenPolicy;
     }
@@ -111,7 +111,7 @@ public class DbPasswordGeneratorPolicyDao implements PasswordGeneratorPolicyDao 
     private PreparedStatement buildAddPasswordGeneratorPolicyPreparedStatement(Connection conn, PasswordGeneratorPolicy pwdGenPolicy) throws SQLException {
         String statement = """
         INSERT INTO password_gen_policy (password_gen_policy_name, lower_case_chars, upper_case_chars, digits, 
-        symbols, default_policy, user_id) VALUES (?,?,?,?,?,?,?)""";
+        symbols, default_policy, user_profile_id) VALUES (?,?,?,?,?,?,?)""";
 
         return buildSetOperationPreparedStatement(conn, pwdGenPolicy, statement);
     }
@@ -126,7 +126,7 @@ public class DbPasswordGeneratorPolicyDao implements PasswordGeneratorPolicyDao 
         ps.setInt(4, pwdSpecs.getNumDigits());
         ps.setInt(5, pwdSpecs.getNumSymbols());
         ps.setBoolean(6, pwdGenPolicy.isDefaultPolicy());
-        ps.setInt(7, pwdGenPolicy.getUserId());
+        ps.setInt(7, pwdGenPolicy.getUserProfileId());
 
         return ps;
     }

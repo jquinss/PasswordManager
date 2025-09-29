@@ -5,7 +5,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 public class PasswordEntity extends DataEntity implements Cloneable {
-    private int userId;
+    private int userProfileId;
     private int folderId;
     private boolean passwordEnforcementPolicyEnabled = false;
     private int passwordEnforcementPolicyId;
@@ -28,12 +28,12 @@ public class PasswordEntity extends DataEntity implements Cloneable {
         this.password = password;
     }
 
-    public int getUserId() {
-        return userId;
+    public int getUserProfileId() {
+        return userProfileId;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public void setUserProfileId(int userProfileId) {
+        this.userProfileId = userProfileId;
     }
 
     public int getFolderId() {
@@ -111,7 +111,7 @@ public class PasswordEntity extends DataEntity implements Cloneable {
     @Override
     public Object clone() {
         PasswordEntity pwdEntity = (PasswordEntity) super.clone();
-        pwdEntity.setUserId(this.userId);
+        pwdEntity.setUserProfileId(this.userProfileId);
         pwdEntity.setFolderId(this.folderId);
         pwdEntity.setPasswordEnforcementPolicyEnabled(this.passwordEnforcementPolicyEnabled);
         pwdEntity.setPasswordEnforcementPolicyId(this.passwordEnforcementPolicyId);

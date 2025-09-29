@@ -1,6 +1,6 @@
 package com.jquinss.passwordmanager.controllers;
 
-import com.jquinss.passwordmanager.data.User;
+import com.jquinss.passwordmanager.data.UserProfile;
 import com.jquinss.passwordmanager.exceptions.LoadKeyPairException;
 import com.jquinss.passwordmanager.managers.DatabaseManager;
 import com.jquinss.passwordmanager.managers.SettingsManager;
@@ -25,7 +25,7 @@ import java.util.Optional;
 public class LoginPaneController {
     public Label message;
     @FXML
-    private TextField usernameTextField;
+    private TextField userProfileNameTextField;
     @FXML
     private PasswordField passwordField;
 
@@ -34,28 +34,28 @@ public class LoginPaneController {
     private final Authenticator authenticator = new Authenticator();
 
     @FXML
-    public void authenticateUser() {
-        String username = usernameTextField.getText();
+    public void authenticateUserProfile() {
+        String userProfileName = userProfileNameTextField.getText();
         String password = passwordField.getText();
 
         try {
-            Optional<User> optional = DatabaseManager.getInstance().getUserByName(username);
+            Optional<UserProfile> optional = DatabaseManager.getInstance().getUserProfileByName(userProfileName);
             if (optional.isPresent()) {
-                User user = optional.get();
-                boolean validCredentials = authenticator.authenticate(user, password);
+                UserProfile userProfile = optional.get();
+                boolean validCredentials = authenticator.authenticate(userProfile, password);
 
                 if (validCredentials) {
                     hideMessage();
-                    KeyPair keyPair = loadKeyPair(user, password);
-                    passwordManagerController.loadPasswordManagerPane(user, keyPair);
+                    KeyPair keyPair = loadKeyPair(userProfile, password);
+                    passwordManagerController.loadPasswordManagerPane(userProfile, keyPair);
                 }
                 else {
-                    showErrorMessage("Error: Invalid username or password");
+                    showErrorMessage("Error: Invalid user profile name or password");
                     clearFields();
                 }
             }
             else {
-                showErrorMessage("Error: Invalid username or password");
+                showErrorMessage("Error: Invalid user profile name or password");
                 clearFields();
             }
         }
@@ -71,8 +71,8 @@ public class LoginPaneController {
     }
     
     @FXML
-    public void signUpUser() throws IOException {
-        passwordManagerController.loadSignUpPane();
+    public void setUpUserProfile() throws IOException {
+        passwordManagerController.loadUserProfileSetUpPane();
     }
 
     void setPasswordManagerController(PasswordManagerController passwordManagerController) {
@@ -100,17 +100,17 @@ public class LoginPaneController {
     }
 
     private void clearFields() {
-        usernameTextField.clear();
+        userProfileNameTextField.clear();
         passwordField.clear();
     }
 
-    private KeyPair loadKeyPair(User user, String password) throws LoadKeyPairException {
+    private KeyPair loadKeyPair(UserProfile userProfile, String password) throws LoadKeyPairException {
         try {
-            byte[] publicKey = user.getPublicKey();
-            byte[] encryptedPrivateKey = user.getPrivateKey();
+            byte[] publicKey = userProfile.getPublicKey();
+            byte[] encryptedPrivateKey = userProfile.getPrivateKey();
 
-            byte[] salt = user.getPasswordSalt();
-            IvParameterSpec ivParameterSpec = new IvParameterSpec(user.getPrivateKeyIV());
+            byte[] salt = userProfile.getPasswordSalt();
+            IvParameterSpec ivParameterSpec = new IvParameterSpec(userProfile.getPrivateKeyIV());
             SecretKey key = CryptoUtils.getSecretKeyFromPassword(password, salt);
             byte[] privateKey = CryptoUtils.decrypt(encryptedPrivateKey, SettingsManager.getInstance().getSymmetricEncryptionAlgorithm(),
                     key, ivParameterSpec);

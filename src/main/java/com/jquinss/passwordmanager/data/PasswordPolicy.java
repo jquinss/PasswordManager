@@ -2,7 +2,7 @@ package com.jquinss.passwordmanager.data;
 
 public abstract class PasswordPolicy {
     private int id;
-    private int userId;
+    private int userProfileId;
     private String name;
     private boolean defaultPolicy = false;
 
@@ -22,12 +22,12 @@ public abstract class PasswordPolicy {
         this.name = name;
     }
 
-    public int getUserId() {
-        return userId;
+    public int getUserProfileId() {
+        return userProfileId;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public void setUserProfileId(int userProfileId) {
+        this.userProfileId = userProfileId;
     }
 
     public boolean isDefaultPolicy() {

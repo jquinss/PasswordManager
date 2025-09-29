@@ -174,7 +174,7 @@ public class TreeViewController {
 
     void deletePasswordEntity() {
         TreeItem<DataEntity> selectedTreeItem = treeView.getSelectionModel().getSelectedItem();
-        if ((selectedTreeItem != null ) && (selectedTreeItem.getValue() instanceof Folder)) {
+        if ((selectedTreeItem != null ) && (selectedTreeItem.getValue() instanceof PasswordEntity)) {
             try {
                 DatabaseManager.getInstance().deletePasswordEntity((PasswordEntity) selectedTreeItem.getValue());
                 selectedTreeItem.getParent().getChildren().remove(selectedTreeItem);
@@ -336,7 +336,7 @@ public class TreeViewController {
 
     private void initializeRootTreeItem() {
         try {
-            Optional<RootFolder> optional = DatabaseManager.getInstance().getRootFolderByUserId(passwordManagerPaneController.getUserSession().getCurrentUserId());
+            Optional<RootFolder> optional = DatabaseManager.getInstance().getRootFolderByUserProfileId(passwordManagerPaneController.getUserProfileSession().getCurrentUserProfileId());
             if (optional.isPresent()) {
                 treeView.setRoot(buildTreeItem(optional.get()));
             }
@@ -406,7 +406,7 @@ public class TreeViewController {
     }
 
     private RootFolder createRootFolder() throws SQLException {
-        RootFolder rootFolder = new RootFolder("root", passwordManagerPaneController.getUserSession().getCurrentUserId());
+        RootFolder rootFolder = new RootFolder("root", passwordManagerPaneController.getUserProfileSession().getCurrentUserProfileId());
         DatabaseManager.getInstance().addRootFolder(rootFolder);
         return rootFolder;
     }

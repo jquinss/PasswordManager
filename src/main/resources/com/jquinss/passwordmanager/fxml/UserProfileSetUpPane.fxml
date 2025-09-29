@@ -16,7 +16,7 @@
 <?import javafx.scene.image.Image?>
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0"
             prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.jquinss.passwordmanager.controllers.SignUpPaneController">
+            fx:controller="com.jquinss.passwordmanager.controllers.UserProfileSetUpPaneController">
     <VBox alignment="CENTER" layoutX="72.0" layoutY="35.0" prefHeight="335.0" prefWidth="455.0" spacing="20.0"
           AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="100.0"
           AnchorPane.topAnchor="40.0">
@@ -37,9 +37,9 @@
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
             </rowConstraints>
-            <Label text="Username:"/>
+            <Label text="Profile name:"/>
             <Label text="Password:" GridPane.rowIndex="1"/>
-            <TextField fx:id="usernameTextField" GridPane.columnIndex="1"/>
+            <TextField fx:id="userProfileNameTextField" GridPane.columnIndex="1"/>
             <PasswordField fx:id="passwordField" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
             <Label text="Confirm Password:" GridPane.rowIndex="2"/>
             <PasswordField fx:id="confirmPasswordField" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
@@ -69,8 +69,8 @@
         <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="50.0">
             <Button mnemonicParsing="false" onAction="#loadLoginMenu" text="Back to Login Menu"
                     styleClass="link-style-button"/>
-            <Button fx:id="createAccountButton" mnemonicParsing="false" onAction="#createAccount"
-                    text="Create Account"/>
+            <Button fx:id="createAccountButton" mnemonicParsing="false" onAction="#createUserProfile"
+                    text="Create Profile"/>
         </HBox>
         <HBox alignment="CENTER_RIGHT">
             <Label fx:id="message" text="Placeholder" visible="false" />

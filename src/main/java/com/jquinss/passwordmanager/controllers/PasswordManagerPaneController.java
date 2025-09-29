@@ -1,10 +1,7 @@
 package com.jquinss.passwordmanager.controllers;
 
-import com.jquinss.passwordmanager.data.DataEntity;
-import com.jquinss.passwordmanager.data.Folder;
-import com.jquinss.passwordmanager.data.PasswordEntity;
-import com.jquinss.passwordmanager.data.User;
-import com.jquinss.passwordmanager.security.UserSession;
+import com.jquinss.passwordmanager.data.*;
+import com.jquinss.passwordmanager.security.UserProfileSession;
 import com.jquinss.passwordmanager.util.misc.CryptoUtils;
 import com.jquinss.passwordmanager.util.misc.DialogBuilder;
 import javafx.fxml.FXML;
@@ -62,13 +59,13 @@ public class PasswordManagerPaneController implements Initializable {
     private TreeView<DataEntity> treeView;
     @FXML
     private PasswordEntityEditorPaneController passwordEntityEditorPaneController;
-    private final UserSession userSession = new UserSession();
+    private final UserProfileSession userProfileSession = new UserProfileSession();
     private final CryptoUtils.AsymmetricCrypto asymmetricCrypto;
     private TreeViewController treeViewController;
     private PasswordManagerController passwordManagerController;
 
-    public PasswordManagerPaneController(User user, CryptoUtils.AsymmetricCrypto asymmetricCrypto) {
-        userSession.initiate(user);
+    public PasswordManagerPaneController(UserProfile userProfile, CryptoUtils.AsymmetricCrypto asymmetricCrypto) {
+        userProfileSession.initiate(userProfile);
         this.asymmetricCrypto = asymmetricCrypto;
     }
 
@@ -214,7 +211,7 @@ public class PasswordManagerPaneController implements Initializable {
     }
 
     private void terminateUserSession() {
-        userSession.terminate();
+        userProfileSession.terminate();
     }
 
     private void initializetreeViewController() {
@@ -276,8 +273,8 @@ public class PasswordManagerPaneController implements Initializable {
         toolBar.setDisable(disable);
     }
 
-    UserSession getUserSession() {
-        return userSession;
+    UserProfileSession getUserProfileSession() {
+        return userProfileSession;
     }
 
     private void setWindowLogo(Stage stage, Object context, String imageFile) {

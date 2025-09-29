@@ -33,10 +33,10 @@ public class DbPasswordEntityDao implements PasswordEntityDao {
     }
 
     @Override
-    public List<PasswordEntity> getAllByUserId(int id) throws SQLException {
+    public List<PasswordEntity> getAllByUserProfileId(int userProfileId) throws SQLException {
         List<PasswordEntity> pwdEntities = new ArrayList<>();
         try (Connection conn = dataSource.getConnection();
-            PreparedStatement ps = buildGetAllPasswordEntitiesByUserIdPreparedStatement(conn, id);
+            PreparedStatement ps = buildGetAllPasswordEntitiesByUserProfileIdPreparedStatement(conn, userProfileId);
             ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
@@ -48,10 +48,10 @@ public class DbPasswordEntityDao implements PasswordEntityDao {
     }
 
     @Override
-    public List<PasswordEntity> getAllByPasswordEnforcementPolicyId(int id) throws SQLException {
+    public List<PasswordEntity> getAllByPasswordEnforcementPolicyId(int passwordEnforcementPolicyId) throws SQLException {
         List<PasswordEntity> pwdEntities = new ArrayList<>();
         try (Connection conn = dataSource.getConnection();
-             PreparedStatement ps = buildGetAllPasswordEntitiesByEnforcementPolicyIdPreparedStatement(conn, id);
+             PreparedStatement ps = buildGetAllPasswordEntitiesByEnforcementPolicyIdPreparedStatement(conn, passwordEnforcementPolicyId);
              ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
@@ -63,10 +63,10 @@ public class DbPasswordEntityDao implements PasswordEntityDao {
     }
 
     @Override
-    public List<PasswordEntity> getAllByFolderId(int id) throws SQLException {
+    public List<PasswordEntity> getAllByFolderId(int folderId) throws SQLException {
         List<PasswordEntity> pwdEntities = new ArrayList<>();
         try (Connection conn = dataSource.getConnection();
-             PreparedStatement ps = buildGetAllPasswordEntitiesByFolderIdPreparedStatement(conn, id);
+             PreparedStatement ps = buildGetAllPasswordEntitiesByFolderIdPreparedStatement(conn, folderId);
              ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
@@ -125,7 +125,7 @@ public class DbPasswordEntityDao implements PasswordEntityDao {
     private PreparedStatement buildAddPasswordEntityPreparedStatement(Connection conn, PasswordEntity pwdEntity) throws SQLException {
         String statement = """
         INSERT INTO password_entity (name, user_name, password, email_address,
-        URL, description, expires, expiration_date, user_id, folder_id, password_enf_policy_enabled, password_enf_policy_id) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)""";
+        URL, description, expires, expiration_date, user_profile_id, folder_id, password_enf_policy_enabled, password_enf_policy_id) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)""";
 
         return buildSetOperationPreparedStatement(conn, pwdEntity, statement);
     }
@@ -133,7 +133,7 @@ public class DbPasswordEntityDao implements PasswordEntityDao {
     private PreparedStatement buildUpdatePasswordEntityPreparedStatement(Connection conn, PasswordEntity pwdEntity) throws SQLException {
         String statement = """
                  UPDATE password_entity SET name=?, user_name=?, password=?, email_address=?, URL=?, description=?, 
-                 expires=?, expiration_date=?, user_id=?, folder_id=?, password_enf_policy_enabled=?, password_enf_policy_id=? WHERE password_entity_id=?""";
+                 expires=?, expiration_date=?, user_profile_id=?, folder_id=?, password_enf_policy_enabled=?, password_enf_policy_id=? WHERE password_entity_id=?""";
 
         PreparedStatement ps = buildSetOperationPreparedStatement(conn, pwdEntity, statement);
         ps.setInt(13, pwdEntity.getId());
@@ -152,7 +152,7 @@ public class DbPasswordEntityDao implements PasswordEntityDao {
         ps.setString(6, pwdEntity.getDescription());
         ps.setBoolean(7, pwdEntity.isPasswordExpires());
         ps.setString(8, pwdEntity.getExpirationDate().format(dateTimeFormatter));
-        ps.setInt(9, pwdEntity.getUserId());
+        ps.setInt(9, pwdEntity.getUserProfileId());
         ps.setInt(10, pwdEntity.getFolderId());
         ps.setBoolean(11, pwdEntity.isPasswordEnforcementPolicyEnabled());
         ps.setInt(12, pwdEntity.getPasswordEnforcementPolicyId());
@@ -169,8 +169,8 @@ public class DbPasswordEntityDao implements PasswordEntityDao {
         return ps;
     }
 
-    private PreparedStatement buildGetAllPasswordEntitiesByUserIdPreparedStatement(Connection conn, int id) throws SQLException {
-        PreparedStatement ps = conn.prepareStatement("SELECT * FROM password_entity WHERE user_id = ?");
+    private PreparedStatement buildGetAllPasswordEntitiesByUserProfileIdPreparedStatement(Connection conn, int id) throws SQLException {
+        PreparedStatement ps = conn.prepareStatement("SELECT * FROM password_entity WHERE user_profile_id = ?");
         ps.setInt(1, id);
 
         return ps;
@@ -199,7 +199,7 @@ public class DbPasswordEntityDao implements PasswordEntityDao {
         pwdEntity.setDescription(rs.getString(7));
         pwdEntity.setPasswordExpires(rs.getBoolean(8));
         pwdEntity.setExpirationDate(LocalDate.parse(rs.getString(9), dateTimeFormatter));
-        pwdEntity.setUserId(rs.getInt(10));
+        pwdEntity.setUserProfileId(rs.getInt(10));
         pwdEntity.setPasswordEnforcementPolicyEnabled(rs.getBoolean(12));
         pwdEntity.setPasswordEnforcementPolicyId(rs.getInt(13));
 

@@ -1,6 +1,6 @@
 package com.jquinss.passwordmanager.controllers;
 
-import com.jquinss.passwordmanager.data.User;
+import com.jquinss.passwordmanager.data.UserProfile;
 import com.jquinss.passwordmanager.managers.DatabaseManager;
 import com.jquinss.passwordmanager.managers.SettingsManager;
 import com.jquinss.passwordmanager.util.misc.CryptoUtils;
@@ -44,11 +44,11 @@ public class PasswordManagerController {
         stage.show();
     }
 
-    void loadSignUpPane() throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/jquinss/passwordmanager/fxml/SignUpPane.fxml"));
+    void loadUserProfileSetUpPane() throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/jquinss/passwordmanager/fxml/UserProfileSetUpPane.fxml"));
         stage.setTitle("Sign Up");
         AnchorPane root = (AnchorPane) fxmlLoader.load();
-        final SignUpPaneController controller = fxmlLoader.getController();
+        final UserProfileSetUpPaneController controller = fxmlLoader.getController();
         controller.setPasswordManagerController(this);
         Scene scene = new Scene(root, 560, 400);
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
@@ -56,12 +56,12 @@ public class PasswordManagerController {
         stage.show();
     }
 
-    void loadPasswordManagerPane(User user, KeyPair keyPair) throws IOException, NoSuchPaddingException,
+    void loadPasswordManagerPane(UserProfile userProfile, KeyPair keyPair) throws IOException, NoSuchPaddingException,
             NoSuchAlgorithmException, InvalidKeyException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/jquinss/passwordmanager/fxml/PasswordManagerPane.fxml"));
         stage.setTitle("Password Manager");
         CryptoUtils.AsymmetricCrypto asymmetricCrypto = new CryptoUtils.AsymmetricCrypto(SettingsManager.getInstance().getKeyPairAlgorithm(), keyPair);
-        PasswordManagerPaneController controller = new PasswordManagerPaneController(user, asymmetricCrypto);
+        PasswordManagerPaneController controller = new PasswordManagerPaneController(userProfile, asymmetricCrypto);
         controller.setPasswordManagerController(this);
         fxmlLoader.setControllerFactory(controllerClass -> {
             if (controllerClass == PasswordManagerPaneController.class) {

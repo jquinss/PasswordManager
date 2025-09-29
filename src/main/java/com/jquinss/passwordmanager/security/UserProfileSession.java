@@ -1,10 +1,10 @@
 package com.jquinss.passwordmanager.security;
 
-import com.jquinss.passwordmanager.data.User;
+import com.jquinss.passwordmanager.data.UserProfile;
 
 import java.util.HashMap;
 
-public class UserSession {
+public class UserProfileSession {
     private final HashMap<String, String> sessionVariables = new HashMap<>();
 
     public void setVariable(String name, String value) {
@@ -15,20 +15,20 @@ public class UserSession {
         return sessionVariables.get(name);
     }
 
-    public void initiate(User user) {
-        sessionVariables.put("currentUser", user.getName());
-        sessionVariables.put("currentUserId", String.valueOf(user.getId()));
+    public void initiate(UserProfile userProfile) {
+        sessionVariables.put("currentUser", userProfile.getName());
+        sessionVariables.put("currentUserProfileId", String.valueOf(userProfile.getId()));
     }
 
     public void terminate() {
         sessionVariables.clear();
     }
 
-    public String getCurrentUser() {
-        return sessionVariables.get("currentUser");
+    public String getCurrentUserProfileName() {
+        return sessionVariables.get("currentUserProfileName");
     }
 
-    public int getCurrentUserId() {
-        return Integer.parseInt(sessionVariables.get("currentUserId"));
+    public int getCurrentUserProfileId() {
+        return Integer.parseInt(sessionVariables.get("currentUserProfileId"));
     }
 }

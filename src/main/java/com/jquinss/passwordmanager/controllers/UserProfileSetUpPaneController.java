@@ -1,6 +1,6 @@
 package com.jquinss.passwordmanager.controllers;
 
-import com.jquinss.passwordmanager.data.User;
+import com.jquinss.passwordmanager.data.UserProfile;
 import com.jquinss.passwordmanager.exceptions.InvalidKeyPairException;
 import com.jquinss.passwordmanager.exceptions.LoadKeyPairException;
 import com.jquinss.passwordmanager.exceptions.UserAlreadyExistsException;
@@ -33,11 +33,11 @@ import java.sql.SQLException;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
-public class SignUpPaneController implements Initializable {
+public class UserProfileSetUpPaneController implements Initializable {
     public ImageView publicKeyQuestionMarkImageView;
     public ImageView privateKeyQuestionMarkImageView;
     @FXML
-    private TextField usernameTextField;
+    private TextField userProfileNameTextField;
     @FXML
     private PasswordField passwordField;
     @FXML
@@ -87,21 +87,21 @@ public class SignUpPaneController implements Initializable {
     }
 
     @FXML
-    public void createAccount() {
+    public void createUserProfile() {
         try {
-            String username = usernameTextField.getText();
+            String userProfileName = userProfileNameTextField.getText();
             String password = passwordField.getText();
 
-            validateUser(username);
+            validateUserProfileName(userProfileName);
 
             KeyPair keyPair = getKeyPair();
             validateKeyPair(keyPair);
 
-            User user = createUser(username, password, keyPair);
+            UserProfile userProfile = createUserProfile(userProfileName, password, keyPair);
 
-            DatabaseManager.getInstance().addUser(user);
+            DatabaseManager.getInstance().addUserProfile(userProfile);
 
-            showSuccessMessage("The account has been created");
+            showSuccessMessage("The profile has been created");
             clearFields();
         }
         catch (UserAlreadyExistsException | LoadKeyPairException | InvalidKeyPairException e) {
@@ -123,10 +123,10 @@ public class SignUpPaneController implements Initializable {
         }
     }
 
-    private void validateUser(String username) throws UserAlreadyExistsException, SQLException {
-        Optional<User> result = DatabaseManager.getInstance().getUserByName(username);
+    private void validateUserProfileName(String userProfileName) throws UserAlreadyExistsException, SQLException {
+        Optional<UserProfile> result = DatabaseManager.getInstance().getUserProfileByName(userProfileName);
         if (result.isPresent()) {
-            throw new UserAlreadyExistsException("User " + result.get().getName() + " already exists");
+            throw new UserAlreadyExistsException("Profile" + result.get().getName() + " already exists");
         }
     }
 
@@ -140,7 +140,7 @@ public class SignUpPaneController implements Initializable {
         }
     }
 
-    private User createUser(String name, String password, KeyPair keyPair) throws NoSuchAlgorithmException, InvalidKeySpecException,
+    private UserProfile createUserProfile(String name, String password, KeyPair keyPair) throws NoSuchAlgorithmException, InvalidKeySpecException,
             InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
         byte[] salt = CryptoUtils.generateSaltBytes(SettingsManager.getInstance().getSaltLengthInBytes());
         byte[] passwordHash = CryptoUtils.getHashFromString(password,
@@ -154,7 +154,7 @@ public class SignUpPaneController implements Initializable {
         byte[] encryptedPrivateKey = CryptoUtils.encrypt(privateKey, SettingsManager.getInstance().getSymmetricEncryptionAlgorithm(),
                 key, ivParameterSpec);
 
-        User user = new User(name, passwordHash);
+        UserProfile user = new UserProfile(name, passwordHash);
         user.setPublicKey(publicKey);
         user.setPrivateKey(encryptedPrivateKey);
         user.setPasswordSalt(salt);
@@ -182,7 +182,7 @@ public class SignUpPaneController implements Initializable {
     }
 
     private void createRequiredTextFieldsCheck() {
-        createRequiredTextFieldCheck(usernameTextField);
+        createRequiredTextFieldCheck(userProfileNameTextField);
         createRequiredTextFieldCheck(passwordField);
         createRequiredTextFieldCheck(confirmPasswordField);
     }
@@ -272,7 +272,7 @@ public class SignUpPaneController implements Initializable {
     }
 
     private void clearFields() {
-        usernameTextField.clear();
+        userProfileNameTextField.clear();
         passwordField.clear();
         confirmPasswordField.clear();
         publicKeyTextField.clear();

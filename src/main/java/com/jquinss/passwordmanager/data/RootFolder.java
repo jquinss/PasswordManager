@@ -1,22 +1,22 @@
 package com.jquinss.passwordmanager.data;
 
 public class RootFolder extends Folder {
-    private int userId;
+    private int userProfileId;
 
-    public RootFolder(String name, int userId) {
+    public RootFolder(String name, int userProfileId) {
         super(name);
-        this.userId = userId;
+        this.userProfileId = userProfileId;
     }
-    public RootFolder(int id, String name, int userId) {
+    public RootFolder(int id, String name, int userProfileId) {
         super(id, name);
-        this.userId = userId;
+        this.userProfileId = userProfileId;
     }
 
-    public int getUserId() {
-        return userId;
+    public int getUserProfileId() {
+        return userProfileId;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public void setUserProfileId(int userProfileId) {
+        this.userProfileId = userProfileId;
     }
 }

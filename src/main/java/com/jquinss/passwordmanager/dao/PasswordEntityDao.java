@@ -9,11 +9,11 @@ import java.util.Optional;
 public interface PasswordEntityDao {
     Optional<PasswordEntity> getById(int id) throws SQLException;
 
-    List<PasswordEntity> getAllByUserId(int id) throws SQLException;
+    List<PasswordEntity> getAllByUserProfileId(int userProfileId) throws SQLException;
 
-    List<PasswordEntity> getAllByFolderId(int id) throws SQLException;
+    List<PasswordEntity> getAllByFolderId(int folderId) throws SQLException;
 
-    List<PasswordEntity> getAllByPasswordEnforcementPolicyId(int id) throws SQLException;
+    List<PasswordEntity> getAllByPasswordEnforcementPolicyId(int passwordEnforcementPolicyId) throws SQLException;
 
     void add(PasswordEntity pwdEntity) throws SQLException;
 

@@ -9,7 +9,7 @@ import java.util.Optional;
 public interface PasswordEnforcementPolicyDao {
     Optional<PasswordEnforcementPolicy> getById(int id) throws SQLException;
 
-    List<PasswordEnforcementPolicy> getAllByUserId(int usedId) throws SQLException;
+    List<PasswordEnforcementPolicy> getAllByUserProfileId(int userProfileId) throws SQLException;
 
     void add(PasswordEnforcementPolicy pwdPolicy) throws SQLException;
 
