@@ -46,7 +46,7 @@ public class PasswordManagerController {
 
     void loadUserProfileSetUpPane() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/jquinss/passwordmanager/fxml/UserProfileSetUpPane.fxml"));
-        stage.setTitle("Sign Up");
+        stage.setTitle("Create Profile");
         AnchorPane root = (AnchorPane) fxmlLoader.load();
         final UserProfileSetUpPaneController controller = fxmlLoader.getController();
         controller.setPasswordManagerController(this);
