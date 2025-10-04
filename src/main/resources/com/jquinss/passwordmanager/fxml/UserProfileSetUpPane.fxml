@@ -21,7 +21,7 @@
           AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="100.0"
           AnchorPane.topAnchor="40.0">
         <HBox prefHeight="27.0" prefWidth="400.0">
-            <Label text="Create an account:" styleClass="title"/>
+            <Label text="Create a profile:" styleClass="title"/>
         </HBox>
         <GridPane hgap="15.0" prefWidth="404.0" vgap="10.0">
             <columnConstraints>
