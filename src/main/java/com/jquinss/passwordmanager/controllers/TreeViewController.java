@@ -46,7 +46,7 @@ public class TreeViewController {
 
         Dialog<Pair<String, String>> dialog = DialogBuilder.buildTwoTextFieldInputDialog("Create folder",
                     "Create a new folder:", "Folder name", "Description", true, Optional.empty());
-        dialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
+        dialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/styles.css")).toString());
         setWindowLogo((Stage) dialog.getDialogPane().getScene().getWindow(), this, "/com/jquinss/passwordmanager/images/create_folder.png");
         Optional<Pair<String, String>> optional = dialog.showAndWait();
         optional.ifPresent(pair -> {
@@ -55,7 +55,7 @@ public class TreeViewController {
             } catch (SQLException e) {
                 Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Error creating folder",
                             "A database error has occurred during the operation", Alert.AlertType.ERROR);
-                alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
+                alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/styles.css")).toString());
                 alertDialog.showAndWait();
             }
         });
@@ -84,7 +84,7 @@ public class TreeViewController {
             }
             else {
                 Alert alertDialog = DialogBuilder.buildAlertDialog("Confirmation", "The folder is not empty", "Are you sure you want to delete all the files?", Alert.AlertType.CONFIRMATION);
-                alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
+                alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/styles.css")).toString());
                 setWindowLogo((Stage) alertDialog.getDialogPane().getScene().getWindow(), this, "/com/jquinss/passwordmanager/images/delete_folder.png");
 
 
@@ -107,7 +107,7 @@ public class TreeViewController {
         catch (SQLException e) {
             Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Error deleting folder",
                     "A database error has occurred during the operation", Alert.AlertType.ERROR);
-            alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
+            alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/styles.css")).toString());
             alertDialog.showAndWait();
         }
     }
@@ -120,7 +120,7 @@ public class TreeViewController {
         catch (SQLException e) {
             Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Error deleting password entities",
                     "A database error has occurred during the operation", Alert.AlertType.ERROR);
-            alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
+            alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/styles.css")).toString());
             alertDialog.showAndWait();
         }
     }
@@ -133,7 +133,7 @@ public class TreeViewController {
             Dialog<Pair<String, String>> dialog = DialogBuilder.buildTwoTextFieldInputDialog("Edit folder",
                     "Edit folder:", "Folder name", "Description", true,
                     Optional.ofNullable(defaultValues));
-            dialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
+            dialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/styles.css")).toString());
             setWindowLogo((Stage) dialog.getDialogPane().getScene().getWindow(), this, "/com/jquinss/passwordmanager/images/edit_folder.png");
 
             Optional<Pair<String, String>> optional = dialog.showAndWait();
@@ -144,7 +144,7 @@ public class TreeViewController {
                 catch (SQLException e) {
                     Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Error editing folder",
                             "A database error has occurred during the operation", Alert.AlertType.ERROR);
-                    alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
+                    alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/styles.css")).toString());
                     alertDialog.showAndWait();
                 }
             });
@@ -181,7 +181,7 @@ public class TreeViewController {
             } catch (SQLException e) {
                 Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Error deleting password entity",
                         "A database error has occurred during the operation", Alert.AlertType.ERROR);
-                alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
+                alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/styles.css")).toString());
                 alertDialog.showAndWait();
             }
         }
@@ -228,7 +228,7 @@ public class TreeViewController {
             catch (SQLException e) {
                 Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Error creating new password entity",
                         "A database error has occurred during the operation", Alert.AlertType.ERROR);
-                alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
+                alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/styles.css")).toString());
                 alertDialog.showAndWait();
             }
         }
@@ -272,7 +272,7 @@ public class TreeViewController {
         catch (SQLException e) {
             Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Error creating password entity",
                     "A database error has occurred during the operation", Alert.AlertType.ERROR);
-            alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
+            alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/styles.css")).toString());
             alertDialog.showAndWait();
         }
         finally {
@@ -305,7 +305,7 @@ public class TreeViewController {
             catch (SQLException e) {
                 Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Error modifying password entity",
                         "A database error has occurred during the operation", Alert.AlertType.ERROR);
-                alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
+                alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/styles.css")).toString());
                 alertDialog.showAndWait();
             }
             finally {
