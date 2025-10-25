@@ -60,7 +60,7 @@ public class PasswordPoliciesPaneController {
             catch (SQLException e) {
                 Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Error creating policy",
                         "A database error has occurred during the operation", Alert.AlertType.ERROR);
-                alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
+                alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/styles.css")).toString());
                 alertDialog.showAndWait();
             }
         });
@@ -74,7 +74,7 @@ public class PasswordPoliciesPaneController {
             if (isPasswordEnforcementPolicyInUse(pwdEnforcementPolicy.getId())) {
                 Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Cannot remove policy",
                         "The policy is in use", Alert.AlertType.ERROR);
-                alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
+                alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/styles.css")).toString());
                 alertDialog.showAndWait();
             }
             else {
@@ -89,7 +89,7 @@ public class PasswordPoliciesPaneController {
                 catch (SQLException e) {
                     Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Error removing policy",
                             "A database error has occurred during the operation", Alert.AlertType.ERROR);
-                    alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
+                    alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/styles.css")).toString());
                     alertDialog.showAndWait();
                 }
             }
@@ -118,7 +118,7 @@ public class PasswordPoliciesPaneController {
                 catch (SQLException e) {
                     Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Error editing policy",
                             "A database error has occurred during the operation", Alert.AlertType.ERROR);
-                    alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
+                    alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/styles.css")).toString());
                     alertDialog.showAndWait();
                 }
             });
@@ -143,7 +143,7 @@ public class PasswordPoliciesPaneController {
             catch (SQLException e) {
                 Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Error creating policy",
                         "A database error has occurred during the operation", Alert.AlertType.ERROR);
-                alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
+                alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/syles4.css")).toString());
                 alertDialog.showAndWait();
             }
         });
@@ -157,7 +157,7 @@ public class PasswordPoliciesPaneController {
             if (pwdGeneratorPolicy.isDefaultPolicy()) {
                 Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Error removing policy",
                         "Cannot remove the default policy", Alert.AlertType.ERROR);
-                alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
+                alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/styles.css")).toString());
                 alertDialog.showAndWait();
             }
             else {
@@ -172,7 +172,7 @@ public class PasswordPoliciesPaneController {
                 catch (SQLException e) {
                     Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Error removing policy",
                             "A database error has occurred during the operation", Alert.AlertType.ERROR);
-                    alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
+                    alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/styles.css")).toString());
                     alertDialog.showAndWait();
                 }
             }
@@ -201,7 +201,7 @@ public class PasswordPoliciesPaneController {
                 catch (SQLException e) {
                     Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Error editing policy",
                             "A database error has occurred during the operation", Alert.AlertType.ERROR);
-                    alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
+                    alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/styles.css")).toString());
                     alertDialog.showAndWait();
                 }
             });
