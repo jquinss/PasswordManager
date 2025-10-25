@@ -7,7 +7,7 @@
 <?import javafx.geometry.Insets?>
 
 <BorderPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1"
-            prefHeight="600.0" prefWidth="800.0" stylesheets="@../styles/styles4.css" fx:controller="com.jquinss.passwordmanager.controllers.MainMenuPaneController">
+            prefHeight="600.0" prefWidth="800.0" stylesheets="@../styles/styles.css" fx:controller="com.jquinss.passwordmanager.controllers.MainMenuPaneController">
     
     <!-- Left Side: Vertical Tab Navigation -->
     <left>
@@ -17,7 +17,7 @@
                 <graphic>
                     <ImageView fitHeight="30" fitWidth="30" preserveRatio="true">
                         <image>
-                            <Image url="@../images/login2.png"/>
+                            <Image url="@../images/login.png"/>
                         </image>
                     </ImageView>
                 </graphic>
@@ -28,7 +28,7 @@
                 <graphic>
                     <ImageView fitHeight="30" fitWidth="30" preserveRatio="true">
                         <image>
-                            <Image url="@../images/profile2.png"/>
+                            <Image url="@../images/profile.png"/>
                         </image>
                     </ImageView>
                 </graphic>
@@ -38,7 +38,7 @@
                 <graphic>
                     <ImageView fitHeight="30" fitWidth="30" preserveRatio="true">
                         <image>
-                            <Image url="@../images/backup2.png"/>
+                            <Image url="@../images/backup.png"/>
                         </image>
                     </ImageView>
                 </graphic>
@@ -55,7 +55,7 @@
             <VBox fx:id="loginPane" alignment="CENTER" spacing="20" styleClass="login-pane"
                   xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
                 <ImageView fitHeight="170.0" fitWidth="170.0" pickOnBounds="true" preserveRatio="true">
-                    <Image url="@../images/logo2.png" />
+                    <Image url="@../images/logo.png" />
                 </ImageView>
                 <VBox spacing="10" maxWidth="400">
                     <Label text="Profile Name:" styleClass="form-label"/>
