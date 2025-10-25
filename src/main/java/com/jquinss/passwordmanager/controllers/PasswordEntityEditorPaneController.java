@@ -110,7 +110,7 @@ public class PasswordEntityEditorPaneController implements Initializable {
         else {
             Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Error generator password",
                     "No password policies have been selected", Alert.AlertType.ERROR);
-            alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
+            alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/styles.css")).toString());
             alertDialog.showAndWait();
         }
 
