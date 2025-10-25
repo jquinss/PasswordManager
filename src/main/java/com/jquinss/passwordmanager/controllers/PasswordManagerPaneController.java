@@ -81,7 +81,7 @@ public class PasswordManagerPaneController implements Initializable {
     @FXML
     private void logOut() throws IOException {
         terminateUserSession();
-        passwordManagerController.loadLoginPane();
+        passwordManagerController.loadMainMenuPane();
     }
 
     @FXML
@@ -90,7 +90,7 @@ public class PasswordManagerPaneController implements Initializable {
         Parent parent = fxmlLoader.load();
 
         Scene scene = new Scene(parent, 400, 380);
-        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
+        //scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/styles.css")).toString());
 
         Stage stage = new Stage();
 
@@ -113,7 +113,7 @@ public class PasswordManagerPaneController implements Initializable {
         Parent parent = fxmlLoader.load();
 
         Scene scene = new Scene(parent);
-        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
+        //scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/styles.css")).toString());
 
         Stage stage = new Stage();
 
@@ -130,7 +130,7 @@ public class PasswordManagerPaneController implements Initializable {
     @FXML
     private void showAboutDialog() {
         Alert aboutDialog = DialogBuilder.buildAlertDialog("About", "", "Password Manager v1.0\n\nCreated by Joaquin Sampedro", Alert.AlertType.INFORMATION);
-        aboutDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
+        aboutDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/styles.css")).toString());
         setWindowLogo((Stage) aboutDialog.getDialogPane().getScene().getWindow(), this, "/com/jquinss/passwordmanager/images/logo.png");
         aboutDialog.showAndWait();
     }
