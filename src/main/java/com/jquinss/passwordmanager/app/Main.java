@@ -9,7 +9,7 @@ public class Main extends Application{
     public void start(Stage primaryStage) {
         try {
             PasswordManagerController controller = new PasswordManagerController(primaryStage);
-            controller.loadLoginPane();
+            controller.loadMainMenuPane();
         }
         catch(Exception e) {
             e.printStackTrace();
