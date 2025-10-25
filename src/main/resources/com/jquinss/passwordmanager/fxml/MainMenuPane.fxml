@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1"
+            prefHeight="600.0" prefWidth="800.0" stylesheets="@../styles/styles4.css" fx:controller="com.jquinss.passwordmanager.controllers.MainMenuPaneController">
+    
+    <!-- Left Side: Vertical Tab Navigation -->
+    <left>
+        <VBox spacing="10" id="side-bar">
+            <Button fx:id="loginTabButton" text="Login" prefWidth="150" prefHeight="50"
+                    styleClass="side_bar_btn, side_bar_btn_active" onAction="#showLoginTab">
+                <graphic>
+                    <ImageView fitHeight="30" fitWidth="30" preserveRatio="true">
+                        <image>
+                            <Image url="@../images/login2.png"/>
+                        </image>
+                    </ImageView>
+                </graphic>
+
+            </Button>
+            <Button fx:id="profilesTabButton" text="Profiles" prefWidth="150" prefHeight="50"
+                    styleClass="side_bar_btn, side_bar_btn_inactive"  onAction="#showProfilesTab">
+                <graphic>
+                    <ImageView fitHeight="30" fitWidth="30" preserveRatio="true">
+                        <image>
+                            <Image url="@../images/profile2.png"/>
+                        </image>
+                    </ImageView>
+                </graphic>
+            </Button>
+            <Button fx:id="backupsTabButton" text="Backups" prefWidth="150" prefHeight="50"
+                    styleClass="side_bar_btn, side_bar_btn_inactive" onAction="#showBackupsTab">
+                <graphic>
+                    <ImageView fitHeight="30" fitWidth="30" preserveRatio="true">
+                        <image>
+                            <Image url="@../images/backup2.png"/>
+                        </image>
+                    </ImageView>
+                </graphic>
+            </Button>
+        </VBox>
+    </left>
+    
+    <!-- Center: Content Area with StackPane for switching views -->
+    <center>
+        <StackPane fx:id="contentPane" id="main-menu-content-pane">
+            
+            <!-- Login Tab Content -->
+
+            <VBox fx:id="loginPane" alignment="CENTER" spacing="20" styleClass="login-pane"
+                  xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+                <ImageView fitHeight="170.0" fitWidth="170.0" pickOnBounds="true" preserveRatio="true">
+                    <Image url="@../images/logo2.png" />
+                </ImageView>
+                <VBox spacing="10" maxWidth="400">
+                    <Label text="Profile Name:" styleClass="form-label"/>
+                    <TextField fx:id="loginProfileField" promptText="Enter profile name"
+                               styleClass="login-form-textfield"/>
+
+                    <Label text="Password:" styleClass="form-label">
+                        <VBox.margin>
+                            <Insets top="10"/>
+                        </VBox.margin>
+                    </Label>
+                    <PasswordField fx:id="loginPasswordField" promptText="Enter password"
+                                   styleClass="login-form-textfield"/>
+
+                    <Button text="Login" prefWidth="400" prefHeight="40" id="login-btn" onAction="#handleLogin">
+                        <VBox.margin>
+                            <Insets top="20"/>
+                        </VBox.margin>
+                    </Button>
+                    <HBox alignment="BOTTOM_RIGHT">
+                        <Label fx:id="message" text="Placeholder" visible="false" />
+                    </HBox>
+                </VBox>
+            </VBox>
+
+            <!-- Manage Profiles Tab Content -->
+            <fx:include fx:id="profilesPane" source="UserProfilesPane.fxml"/>
+            
+            <!-- Manage Backups Tab Content -->
+            <fx:include fx:id="backupsPane" source="BackupsPane.fxml"/>
+            
+        </StackPane>
+    </center>
+</BorderPane>
