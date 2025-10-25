@@ -7,7 +7,6 @@ import com.jquinss.passwordmanager.data.RootFolder;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.TreeItem;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 public class DataEntityTreeItem extends TreeItem<DataEntity> {
     private static final String ROOT_FOLDER_IMG = "/com/jquinss/passwordmanager/images/root_folder.png";
