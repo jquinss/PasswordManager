@@ -7,7 +7,7 @@ import com.jquinss.passwordmanager.util.misc.CryptoUtils;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -27,37 +27,32 @@ public class PasswordManagerController {
 
     public PasswordManagerController(Stage stage) {
         this.stage = stage;
-        this.stage.setResizable(false);
         initializeDatabase();
     }
 
-    public void loadLoginPane() throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/jquinss/passwordmanager/fxml/LoginPane.fxml"));
-        stage.setTitle("Log on");
-        AnchorPane root = (AnchorPane) fxmlLoader.load();
-        final LoginPaneController controller = fxmlLoader.getController();
+    public void loadMainMenuPane() throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/jquinss/passwordmanager/fxml/MainMenuPane.fxml"));
+        stage.setTitle("Password Manager");
+        BorderPane root = (BorderPane) fxmlLoader.load();
+        final MainMenuPaneController controller = fxmlLoader.getController();
         controller.setPasswordManagerController(this);
-        Scene scene = new Scene(root, 560, 400);
-        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
+        Scene scene = new Scene(root, 800, 600);
         setWindowLogo(stage, this, "/com/jquinss/passwordmanager/images/logo.png");
-        stage.setScene(scene);
-        stage.show();
-    }
-
-    void loadUserProfileSetUpPane() throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/jquinss/passwordmanager/fxml/UserProfileSetUpPane.fxml"));
-        stage.setTitle("Create Profile");
-        AnchorPane root = (AnchorPane) fxmlLoader.load();
-        final UserProfileSetUpPaneController controller = fxmlLoader.getController();
-        controller.setPasswordManagerController(this);
-        Scene scene = new Scene(root, 560, 400);
-        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
         stage.setScene(scene);
         stage.show();
     }
 
     void loadPasswordManagerPane(UserProfile userProfile, KeyPair keyPair) throws IOException, NoSuchPaddingException,
             NoSuchAlgorithmException, InvalidKeyException {
+        /*
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/jquinss/passwordmanager/fxml/PasswordManagerPaneTest.fxml"));
+        BorderPane root = (BorderPane) fxmlLoader.load();
+        Scene scene = new Scene(root, 1058, 640);
+        stage.setScene(scene);
+        stage.show();
+        */
+
+
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/jquinss/passwordmanager/fxml/PasswordManagerPane.fxml"));
         stage.setTitle("Password Manager");
         CryptoUtils.AsymmetricCrypto asymmetricCrypto = new CryptoUtils.AsymmetricCrypto(SettingsManager.getInstance().getKeyPairAlgorithm(), keyPair);
@@ -75,10 +70,12 @@ public class PasswordManagerController {
             return null;
         });
         VBox root = (VBox) fxmlLoader.load();
-        Scene scene = new Scene(root, 1058, 640);
-        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/application.css")).toString());
+        Scene scene = new Scene(root, 950, 640);
+        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/styles.css")).toString());
         stage.setScene(scene);
         stage.show();
+
+
     }
 
     Stage getStage() {
