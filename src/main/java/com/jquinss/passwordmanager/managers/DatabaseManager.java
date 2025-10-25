@@ -66,6 +66,10 @@ public class DatabaseManager {
         userProfileDao.add(userProfile);
     }
 
+    public List<String> getAllUserProfileNames() throws SQLException {
+        return userProfileDao.getAllUserProfileNames();
+    }
+
     public Optional<Folder> getFolderById(int id) throws SQLException {
         return folderDao.getById(id);
     }
