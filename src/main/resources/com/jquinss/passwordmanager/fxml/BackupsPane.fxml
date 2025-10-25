@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.Button?>
+<?import javafx.geometry.Insets?>
+
+<?import javafx.scene.layout.VBox?>
+<BorderPane visible="false" style="-fx-padding: 40;" fx:controller="com.jquinss.passwordmanager.controllers.BackupsPaneController"
+            xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+    <top>
+        <Label text="Manage Backups" styleClass="main-menu-content-title">
+            <BorderPane.margin>
+                <Insets bottom="20"/>
+            </BorderPane.margin>
+        </Label>
+    </top>
+
+    <center>
+        <ListView fx:id="backupsListView" styleClass="list-view">
+            <BorderPane.margin>
+                <Insets bottom="20"/>
+            </BorderPane.margin>
+        </ListView>
+    </center>
+
+    <bottom>
+        <VBox>
+        <HBox spacing="15" alignment="CENTER">
+            <Button text="Create Backup" prefWidth="150" prefHeight="40" styleClass="btn" onAction="#createBackup"/>
+            <Button text="Delete Backup" prefWidth="150" prefHeight="40" styleClass="btn" onAction="#deleteBackup"/>
+        </HBox>
+        <HBox alignment="BOTTOM_RIGHT">
+            <Label fx:id="message" text="Placeholder" visible="false" />
+        </HBox>
+        </VBox>
+    </bottom>
+</BorderPane>
