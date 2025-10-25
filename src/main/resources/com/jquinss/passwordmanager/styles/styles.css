@@ -1,0 +1,581 @@
+.root {
+    -fx-font-family: "Segoe UI", "Roboto", "Open Sans", sans-serif;
+    -fx-base: #0b1f3a;
+    -fx-background-color: #112135;
+    -fx-text-fill: #dce3f0;
+}
+
+/*  ===== Side bar buttons  ===== */
+
+.side_bar_btn {
+    -fx-alignment: CENTER_LEFT;
+    -fx-font-size: 18px;
+    -fx-background-radius: 5;
+    -fx-pref-height: 60px;
+    -fx-pref-width: 200px;
+}
+
+.side_bar_btn_active {
+    -fx-background-color: #1a314e;
+    -fx-text-fill: white;
+}
+
+.side_bar_btn_inactive {
+    -fx-background-color: none;
+    -fx-text-fill: #afc6d6;
+}
+
+
+/* ===== Login pane ===== */
+
+#login-pane {
+    -fx-padding: 40;
+}
+
+
+/* ===== Login button ===== */
+
+#login-btn {
+    -fx-background-color: #1a314e;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-background-radius: 5;
+    -fx-padding: 15 0 15 0
+}
+
+#login-btn:hover {
+    -fx-background-color: #30486b;
+}
+
+
+/* ===== Side bar ===== */
+
+#side-bar {
+    -fx-background-color: #112135;
+    -fx-padding: 20 15 15 15;
+    -fx-border-color: #30486b;
+    -fx-border-width: 0 1 0 0;
+}
+
+
+/* ===== Login form labels ===== */
+
+.form-label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #afc6d6;
+}
+
+/* ===== Textfield ====== */
+
+.text-field {
+    -fx-background-color: #112135;
+    -fx-border-color: #30486b;
+    -fx-text-fill: #6486a4;
+    -fx-border-radius: 3;
+    -fx-prompt-text-fill: rgba(100, 134, 164, 0.5);
+}
+
+.text-field:focused {
+    -fx-border-color: #afc6d6;
+}
+
+/* ===== Login form textfield ===== */
+
+.login-form-textfield {
+    -fx-font-size: 14px;
+    -fx-padding: 10;
+}
+
+
+/* ===== Listview ===== */
+
+.list-view {
+    -fx-font-size: 14px;
+    -fx-background-color: #112135;
+    -fx-border-color: #30486b;
+    -fx-border-radius: 3;
+}
+
+.list-cell {
+    -fx-background-color: #112135;
+    -fx-text-fill:  #afc6d6;
+}
+
+.list-cell:selected {
+    -fx-background-color: #1a314e;
+    -fx-text-fill: white;
+}
+
+
+/* ===== Main menu content ===== */
+
+#main-menu-content-pane {
+    -fx-background-color: #112135;
+}
+
+.main-menu-content-title {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+/* ===== Dialog ===== */
+
+.dialog-title {
+    -fx-font-size: 14px;
+}
+
+.dialog-label {
+    -fx-font-size: 13px;
+}
+
+/* ===== Profile dialog content ===== */
+
+.profile-dialog {
+    -fx-background-color: #112135;
+}
+
+.profile-dialog-title {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.profile-dialog-textfield {
+    -fx-font-size: 14px;
+    -fx-padding: 3;
+}
+
+
+/* ===== Informative messages  ===== */
+
+.error-message {
+    -fx-font-size: 9pt;
+    -fx-text-fill: #f7c3c3;
+}
+
+.success-message {
+    -fx-font-size: 9pt;
+    -fx-text-fill: yellow;
+}
+
+
+/* ===== Button ===== */
+
+.btn {
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-background-radius: 5;
+    -fx-background-color: #1a314e;
+    -fx-border-color: #0f1e2e;
+}
+
+.btn:hover {
+    -fx-background-color: #30486b;
+}
+
+.dialog-btn {
+    -fx-pref-width: 100;
+}
+
+/* ===== Checkbox ===== */
+
+.check-box {
+	-fx-text-fill: white;
+}
+
+.check-box .box {
+	-fx-background-color: #112135;
+	-fx-border-color: #30486b;
+	-fx-border-radius:3px;
+}
+
+.check-box:selected .mark {
+	-fx-background-color: white;
+}
+
+.check-box:selected .box {
+	-fx-background-color: #1a314e;
+}
+
+
+/* ===== Menu Bar ===== */
+
+.menu-bar {
+    -fx-background-color: #112135;
+    -fx-text-fill: #dce3f0;
+    -fx-padding: 6 10 6 10;
+    -fx-font-size: 14px;
+}
+
+.menu .context-menu {
+	-fx-background-color: #112135;
+}
+
+.menu-bar .label {
+    -fx-text-fill: #dce3f0;
+}
+
+.menu:hover, .menu:showing {
+    -fx-background-color: #112135;
+}
+
+.menu-item:focused {
+	-fx-background-color: #1a314e;
+}
+
+
+/* ===== Toolbar ===== */
+
+.tool-bar {
+    -fx-background-color: #112135;
+    -fx-border-color: #30486b;
+    -fx-border-width: 1 0 1 0;
+    -fx-padding: 6;
+}
+
+.tool-bar .button {
+    -fx-background-color: transparent;
+}
+
+.tool-bar .button:hover {
+    -fx-background-color: #1a314e;
+}
+
+#create-pwd-entity-toolbar-button {
+    -fx-graphic: url("../images/create_password_entity.png");
+}
+
+#delete-pwd-entity-toolbar-button {
+    -fx-graphic: url("../images/delete_password_entity.png");
+}
+
+#create-folder-toolbar-button {
+    -fx-graphic: url("../images/create_folder.png");
+}
+
+#delete-folder-toolbar-button {
+    -fx-graphic: url("../images/delete_folder.png");
+}
+
+#duplicate-password-entity-toolbar-button {
+    -fx-graphic: url("../images/duplicate_password_entity.png");
+}
+
+#view-password-entity-toolbar-button {
+    -fx-graphic: url("../images/view_password_entity.png");
+}
+
+#edit-password-entity-toolbar-button {
+    -fx-graphic: url("../images/edit_password_entity.png");
+}
+
+#password-policies-toolbar-button {
+    -fx-graphic: url("../images/password_policies.png");
+}
+
+#password-generator-toolbar-button {
+    -fx-graphic: url("../images/password_generator.png");
+}
+
+/* ===== Separator ===== */
+
+.separator .line {
+    -fx-border-color: #30486b;
+    -fx-border-width: 1, 1;
+}
+
+
+/* ===== SplitPane Layout (Main Area) ===== */
+
+.split-pane {
+    -fx-background-color: transparent;
+}
+
+.split-pane-divider {
+    -fx-padding: 0.1;
+    -fx-background-color: #30486b;
+    -fx-background-insets: 0;
+}
+
+
+/* ===== TreeView ===== */
+
+.tree-view {
+    -fx-background-color: #112135;
+    -fx-border-color: #1e3e70;
+    -fx-border-width: 0 1 0 0;
+    -fx-cell-hover-color: #1a3b73;
+    -fx-cell-focus-inner-border: transparent;
+    -fx-control-inner-background: #112135;
+}
+
+.tree-cell {
+    -fx-text-fill: #afc6d6;
+    -fx-padding: 4 6;
+    -fx-font-size: 14px;
+}
+
+.tree-cell:selected {
+    -fx-background-color: #1a314e;
+    -fx-text-fill: #ffffff;
+}
+
+.tree-cell .tree-disclosure-node .arrow {
+    -fx-background-image: url("../images/custom_arrow_closed.png");
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-shape: null;
+    -fx-background-color: null;
+
+}
+
+/* ===== Context Menu ===== */
+
+.context-menu {
+    -fx-background-color: #112135;
+    -fx-font-size: 10pt;
+}
+
+
+/* ===== Password Entity Editor Pane ===== */
+
+#pwd-editor-pane {
+    -fx-background-color: #112135;
+}
+
+.editor-textfield {
+    -fx-padding: 3;
+    -fx-pref-width: 250;
+    -fx-max-width: 250;
+}
+
+.editor-label {
+    -fx-text-fill: #afc6d6;
+    -fx-font-size: 10pt;
+}
+
+.check-box {
+    -fx-text-fill: #afc6d6;
+}
+
+.copy-clipboard-button {
+    -fx-graphic: url("../images/copy_clipboard.png");
+    -fx-background-color: transparent;
+}
+
+.copy-clipboard-button:hover {
+    -fx-graphic: url("../images/copy_clipboard_hover.png");
+    -fx-background-color: transparent;
+}
+
+#generate-pwd-button {
+    -fx-graphic: url("../images/generate_pwd.png");
+    -fx-background-color: transparent;
+}
+
+#generate-pwd-button: hover {
+    -fx-graphic: url("../images/generate_pwd_hover.png");
+    -fx-background-color: transparent;
+}
+
+#generate-pwd-button: pressed {
+    -fx-graphic: url("../images/generate_pwd_click.png");
+    -fx-background-color: transparent;
+}
+
+#hide-pwd-editor-pane-button {
+    -fx-graphic: url("../images/close_sign.png");
+    -fx-background-color: transparent;
+ }
+
+#hide-pwd-editor-pane-button: hover {
+    -fx-graphic: url("../images/close_sign_hover.png");
+    -fx-background-color: transparent;
+ }
+
+ /* ===== Quickview pane ===== */
+
+ .quick-view-pane {
+     -fx-background-color: #112135;
+     -fx-border-color: #1e3e70;
+     -fx-border-width: 0 0 0 1;
+     -fx-padding: 20;
+ }
+
+ #quick-view-pane-title {
+     -fx-font-size: 15px;
+     -fx-font-weight: bold;
+     -fx-text-fill: #e2e8f0;
+ }
+
+ .quick-view-text {
+     -fx-text-fill: #c9d3e6;
+     -fx-font-size: 13px;
+ }
+
+
+/* ===== Scrollbars ===== */
+
+.scroll-bar:horizontal, .scroll-bar:vertical {
+    -fx-background-color: transparent;
+}
+
+.thumb {
+    -fx-background-color: #295092;
+    -fx-background-radius: 5;
+}
+
+.thumb:hover {
+    -fx-background-color: #3b6ed4;
+}
+
+
+/* ===== Tooltips ===== */
+
+.tooltip {
+    -fx-background-color: #1c3b70;
+    -fx-text-fill: #e2e8f0;
+    -fx-background-radius: 6;
+    -fx-padding: 8;
+    -fx-font-size: 12px;
+}
+
+
+/* ===== Status bar ===== */
+
+#status-bar {
+    -fx-border-color: #30486b;
+    -fx-border-width: 1 0 0 0;
+
+}
+
+
+/* ===== DialogPane ===== */
+
+.dialog-pane .button {
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-background-radius: 5;
+    -fx-background-color: #1a314e;
+    -fx-border-color: #0f1e2e;
+}
+
+.dialog-pane .button:hover {
+    -fx-background-color: #30486b;
+}
+
+.dialog-pane:header .header-panel {
+  -fx-background-color: #112135;
+}
+
+/* ===== Tableview ===== */
+
+.table-view {
+    -fx-font-size: 14px;
+	-fx-background-color: #112135;
+	-fx-border-color: #30486b;
+    -fx-border-radius: 3;
+}
+
+.table-cell {
+    -fx-background-color: #112135;
+    -fx-text-fill: #afc6d6;
+}
+
+.table-row-cell:selected .table-cell {
+    -fx-background-color: #1a314e;
+    -fx-text-fill: white;
+}
+
+.table-view .placeholder .label {
+    -fx-font-size: 7.5pt;
+}
+
+
+/* ===== Tab ===== */
+
+.tab {
+    -fx-background-color: #112135;
+}
+
+.tab:selected {
+    -fx-border-color: white;
+    -fx-border-width: 1 1 0 1;
+}
+
+
+/* ===== Scrollbar ===== */
+
+.scroll-bar {
+    -fx-background-color: #112135;
+}
+
+.scroll-bar .track {
+    -fx-background-color: #112135;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: #1a314e;
+}
+
+
+/* ===== Spinner ===== */
+
+.spinner .increment-arrow-button,
+.spinner .decrement-arrow-button {
+    fx-border-color: transparent;
+    fx-border-width: 0;
+    -fx-background-insets: 0;
+
+}
+
+.spinner .text-field: focused {
+    -fx-border-color: white;
+}
+
+
+/* ===== Combobox ===== */
+
+.combo-box {
+    -fx-background-color: #112135;
+    -fx-border-color: #30486b;
+}
+
+.combo-box:focused {
+    -fx-border-color: white;
+}
+
+.combo-box .list-cell {
+    -fx-background-color: #112135;
+}
+
+.combo-box-popup .list-cell:hover {
+    -fx-background-color: #1a314e;
+}
+
+
+/* ===== Date Picker ===== */
+/*
+.date-picker {
+    -fx-background-color: #112135;
+}
+
+
+.date-picker .button {
+	-fx-background-color: #112135;
+}
+
+.date-picker .arrow-button {
+    -fx-background-color: white;
+}
+
+.date-picker-popup > .month-year-pane {
+    -fx-background-color: #112135;
+}
+
+.date-picker .text-field {
+    -fx-text-fill: white;
+}
+
+*/
