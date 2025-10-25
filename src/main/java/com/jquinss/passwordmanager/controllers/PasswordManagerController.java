@@ -44,14 +44,6 @@ public class PasswordManagerController {
 
     void loadPasswordManagerPane(UserProfile userProfile, KeyPair keyPair) throws IOException, NoSuchPaddingException,
             NoSuchAlgorithmException, InvalidKeyException {
-        /*
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/jquinss/passwordmanager/fxml/PasswordManagerPaneTest.fxml"));
-        BorderPane root = (BorderPane) fxmlLoader.load();
-        Scene scene = new Scene(root, 1058, 640);
-        stage.setScene(scene);
-        stage.show();
-        */
-
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/jquinss/passwordmanager/fxml/PasswordManagerPane.fxml"));
         stage.setTitle("Password Manager");
