@@ -16,6 +16,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import net.synedra.validatorfx.Check;
 import net.synedra.validatorfx.Validator;
 
@@ -25,7 +26,6 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
@@ -63,6 +63,8 @@ public class UserProfileSetUpPaneController implements Initializable {
 
     private PasswordManagerController passwordManagerController;
 
+    private Stage stage;
+
     @FXML
     private void selectPublicKey() {
         selectFile("Select the public key", publicKeyTextField);
@@ -75,15 +77,15 @@ public class UserProfileSetUpPaneController implements Initializable {
 
     private void selectFile(String dialogTitle, TextField textField) {
         FileChooser fileChooser = DialogBuilder.buildFileChooser(dialogTitle);
-        File file = fileChooser.showOpenDialog(passwordManagerController.getStage());
+        File file = fileChooser.showOpenDialog(stage);
         if (file != null) {
             textField.setText(file.toString());
         }
     }
 
     @FXML
-    public void loadLoginMenu() throws IOException {
-        passwordManagerController.loadLoginPane();
+    public void cancelMenu() {
+        stage.close();
     }
 
     @FXML
@@ -286,6 +288,10 @@ public class UserProfileSetUpPaneController implements Initializable {
 
     private void setToolTipOnImageView(ImageView imageView, String text) {
         Tooltip.install(imageView, new Tooltip(text));
+    }
+
+    void setStage(Stage stage) {
+        this.stage = stage;
     }
 
     @Override
