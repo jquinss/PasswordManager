@@ -4,6 +4,8 @@ import com.jquinss.passwordmanager.data.UserProfile;
 
 import javax.sql.DataSource;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class DbUserProfileDao implements UserProfileDao {
@@ -34,14 +36,6 @@ public class DbUserProfileDao implements UserProfileDao {
 
             Statement statement = conn.createStatement();
 
-
-            /*
-            int rows = ps.executeUpdate();
-            if (rows == 0) {
-                throw new SQLException("Creating user failed");
-            }
-            */
-
             try (ResultSet resultSet = statement.executeQuery("SELECT last_insert_rowid()")) {
                 //ResultSetMetaData metaData = resultSet.getMetaData();
                 if (resultSet.next()) {
@@ -50,6 +44,20 @@ public class DbUserProfileDao implements UserProfileDao {
                 conn.commit();
             }
         }
+    }
+
+    @Override
+    public List<String> getAllUserProfileNames() throws SQLException {
+        List<String> profileNames = new ArrayList<>();
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement ps = buildGetAllUserProfileNamesPreparedStatement(conn);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                profileNames.add(rs.getString(2));
+            }
+        }
+
+        return profileNames;
     }
 
     private UserProfile createUserProfile(ResultSet resultSet) throws SQLException {
@@ -83,5 +91,10 @@ public class DbUserProfileDao implements UserProfileDao {
         ps.setBytes(5, userProfile.getPrivateKey());
         ps.setBytes(6, userProfile.getPrivateKeyIV());
         return ps;
+    }
+
+    private PreparedStatement buildGetAllUserProfileNamesPreparedStatement(Connection conn) throws SQLException {
+        String statement = "SELECT * FROM user_profile";
+        return conn.prepareStatement(statement);
     }
 }
