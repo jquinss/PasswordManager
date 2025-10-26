@@ -80,6 +80,16 @@ public class DbPasswordEnforcementPolicyDao implements PasswordEnforcementPolicy
         }
     }
 
+    @Override
+    public void delete(List<PasswordEnforcementPolicy> pwdPolicies) throws SQLException {
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement ps = buildDeleteAllPasswordEnforcementPoliciesPreparedStatement(conn, pwdPolicies)) {
+            conn.setAutoCommit(false);
+            ps.executeBatch();
+            conn.setAutoCommit(true);
+        }
+    }
+
     private PreparedStatement buildGetAllPasswordEnforcementPoliciesByUserProfileIdPreparedStatement(Connection conn, int userProfileId) throws SQLException {
         PreparedStatement ps = conn.prepareStatement("SELECT * FROM password_enf_policy WHERE user_profile_id = ?");
         ps.setInt(1, userProfileId);
@@ -125,6 +135,15 @@ public class DbPasswordEnforcementPolicyDao implements PasswordEnforcementPolicy
         min_digits, min_symbols, max_consec_equal_chars, default_policy, user_profile_id) VALUES (?,?,?,?,?,?,?,?,?)""";
 
         return buildSetOperationPreparedStatement(conn, pwdPolicy, statement);
+    }
+
+    private PreparedStatement buildDeleteAllPasswordEnforcementPoliciesPreparedStatement(Connection conn, List<PasswordEnforcementPolicy> pwdPolicies) throws SQLException {
+        PreparedStatement ps = conn.prepareStatement("DELETE FROM password_enf_policy WHERE password_enf_policy_id = ?");
+        for (PasswordEnforcementPolicy pwdPolicy : pwdPolicies) {
+            ps.setInt(1, pwdPolicy.getId());
+            ps.addBatch();
+        }
+        return ps;
     }
 
     private PreparedStatement buildUpdatePasswordEnforcementPolicyPreparedStatement(Connection conn, PasswordEnforcementPolicy pwdPolicy) throws SQLException {
