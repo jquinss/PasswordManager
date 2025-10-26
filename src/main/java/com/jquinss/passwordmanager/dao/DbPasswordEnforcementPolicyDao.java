@@ -83,7 +83,7 @@ public class DbPasswordEnforcementPolicyDao implements PasswordEnforcementPolicy
     @Override
     public void delete(List<PasswordEnforcementPolicy> pwdPolicies) throws SQLException {
         try (Connection conn = dataSource.getConnection();
-             PreparedStatement ps = buildDeleteAllPasswordEnforcementPoliciesPreparedStatement(conn, pwdPolicies)) {
+             PreparedStatement ps = buildDeletePasswordEnforcementPoliciesPreparedStatement(conn, pwdPolicies)) {
             conn.setAutoCommit(false);
             ps.executeBatch();
             conn.setAutoCommit(true);
@@ -137,7 +137,7 @@ public class DbPasswordEnforcementPolicyDao implements PasswordEnforcementPolicy
         return buildSetOperationPreparedStatement(conn, pwdPolicy, statement);
     }
 
-    private PreparedStatement buildDeleteAllPasswordEnforcementPoliciesPreparedStatement(Connection conn, List<PasswordEnforcementPolicy> pwdPolicies) throws SQLException {
+    private PreparedStatement buildDeletePasswordEnforcementPoliciesPreparedStatement(Connection conn, List<PasswordEnforcementPolicy> pwdPolicies) throws SQLException {
         PreparedStatement ps = conn.prepareStatement("DELETE FROM password_enf_policy WHERE password_enf_policy_id = ?");
         for (PasswordEnforcementPolicy pwdPolicy : pwdPolicies) {
             ps.setInt(1, pwdPolicy.getId());
