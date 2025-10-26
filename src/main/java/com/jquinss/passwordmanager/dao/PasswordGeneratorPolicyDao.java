@@ -16,4 +16,6 @@ public interface PasswordGeneratorPolicyDao {
     void update(PasswordGeneratorPolicy pwdGenPolicy) throws SQLException;
 
     void delete(PasswordGeneratorPolicy pwdGenPolicy) throws SQLException;
+
+    void delete(List<PasswordGeneratorPolicy> pwdGenPolicies) throws SQLException;
 }
