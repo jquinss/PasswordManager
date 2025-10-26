@@ -138,6 +138,10 @@ public class DatabaseManager {
         passwordEnforcementPolicyDao.delete(passwordEnforcementPolicy);
     }
 
+    public void deleteAllPasswordEnforcementPolicies(List<PasswordEnforcementPolicy> passwordEnforcementPolicies) throws SQLException {
+        passwordEnforcementPolicyDao.delete(passwordEnforcementPolicies);
+    }
+
     public List<PasswordEnforcementPolicy> getAllPasswordEnforcementPoliciesByUserProfileId(int userProfileId) throws SQLException {
         return passwordEnforcementPolicyDao.getAllByUserProfileId(userProfileId);
     }
