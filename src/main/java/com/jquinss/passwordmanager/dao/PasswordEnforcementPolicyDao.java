@@ -16,4 +16,6 @@ public interface PasswordEnforcementPolicyDao {
     void update(PasswordEnforcementPolicy pwdPolicy) throws SQLException;
 
     void delete(PasswordEnforcementPolicy pwdPolicy) throws SQLException;
+
+    void delete(List<PasswordEnforcementPolicy> pwdPolicies) throws SQLException;
 }
