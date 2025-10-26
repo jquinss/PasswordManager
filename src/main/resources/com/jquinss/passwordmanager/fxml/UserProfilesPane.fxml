@@ -30,7 +30,7 @@
     <VBox>
         <HBox spacing="15" alignment="CENTER">
             <Button text="Add Profile" prefWidth="150" prefHeight="40" styleClass="btn" onAction="#addUserProfile"/>
-            <Button text="Remove Profile" prefWidth="150" prefHeight="40" styleClass="btn" onAction="#removeUserProfile"/>
+            <Button text="Delete Profile" prefWidth="150" prefHeight="40" styleClass="btn" onAction="#deleteUserProfile"/>
         </HBox>
         <HBox alignment="BOTTOM_RIGHT">
             <Label fx:id="message" text="Placeholder" visible="false" />
