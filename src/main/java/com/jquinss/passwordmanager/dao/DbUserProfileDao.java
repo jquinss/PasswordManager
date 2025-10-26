@@ -47,6 +47,14 @@ public class DbUserProfileDao implements UserProfileDao {
     }
 
     @Override
+    public void delete(UserProfile userProfile) throws SQLException {
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement ps = buildDeleteUserProfilePreparedStatement(conn, userProfile.getId());) {
+            ps.executeUpdate();
+        }
+    }
+
+    @Override
     public List<String> getAllUserProfileNames() throws SQLException {
         List<String> profileNames = new ArrayList<>();
         try (Connection conn = dataSource.getConnection();
@@ -90,6 +98,13 @@ public class DbUserProfileDao implements UserProfileDao {
         ps.setBytes(4, userProfile.getPublicKey());
         ps.setBytes(5, userProfile.getPrivateKey());
         ps.setBytes(6, userProfile.getPrivateKeyIV());
+        return ps;
+    }
+
+    private PreparedStatement buildDeleteUserProfilePreparedStatement(Connection conn, int id) throws SQLException {
+        PreparedStatement ps = conn.prepareStatement("DELETE FROM user_profile WHERE user_profile_id = ?");
+        ps.setInt(1, id);
+
         return ps;
     }
 
