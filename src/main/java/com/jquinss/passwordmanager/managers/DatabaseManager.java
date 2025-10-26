@@ -138,7 +138,7 @@ public class DatabaseManager {
         passwordEnforcementPolicyDao.delete(passwordEnforcementPolicy);
     }
 
-    public void deleteAllPasswordEnforcementPolicies(List<PasswordEnforcementPolicy> passwordEnforcementPolicies) throws SQLException {
+    public void deletePasswordEnforcementPolicies(List<PasswordEnforcementPolicy> passwordEnforcementPolicies) throws SQLException {
         passwordEnforcementPolicyDao.delete(passwordEnforcementPolicies);
     }
 
@@ -156,6 +156,10 @@ public class DatabaseManager {
 
     public void deletePasswordGeneratorPolicy(PasswordGeneratorPolicy passwordGeneratorPolicy) throws SQLException {
         passwordGeneratorPolicyDao.delete(passwordGeneratorPolicy);
+    }
+
+    public void deletePasswordGeneratorPolicies(List<PasswordGeneratorPolicy> passwordGeneratorPolicies) throws SQLException {
+        passwordGeneratorPolicyDao.delete(passwordGeneratorPolicies);
     }
 
     public List<PasswordGeneratorPolicy> getAllPasswordGeneratorPoliciesByUserProfileId(int userProfileId) throws SQLException {
