@@ -122,6 +122,10 @@ public class DatabaseManager {
         return passwordEntityDao.getAllByPasswordEnforcementPolicyId(policyId);
     }
 
+    public List<PasswordEntity> getAllPasswordEntitiesByUserProfileId(int userProfileId) throws SQLException {
+        return passwordEntityDao.getAllByUserProfileId(userProfileId);
+    }
+
     public void deletePasswordEntities(List<PasswordEntity> pwdEntities) throws SQLException {
         passwordEntityDao.delete(pwdEntities);
     }
