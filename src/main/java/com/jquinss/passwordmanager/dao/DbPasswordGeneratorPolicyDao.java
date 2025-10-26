@@ -76,6 +76,16 @@ public class DbPasswordGeneratorPolicyDao implements PasswordGeneratorPolicyDao 
         }
     }
 
+    @Override
+    public void delete(List<PasswordGeneratorPolicy> pwdGenPolicies) throws SQLException {
+        try (Connection conn = dataSource.getConnection();
+            PreparedStatement ps = buildDeletePasswordGenPoliciesPreparedStatement(conn, pwdGenPolicies)) {
+            conn.setAutoCommit(false);
+            ps.executeBatch();
+            conn.setAutoCommit(true);
+        }
+    }
+
     private PreparedStatement buildGetAllPasswordGeneratorPoliciesByUserProfileIdPreparedStatement(Connection conn, int userProfileId) throws SQLException {
         PreparedStatement ps = conn.prepareStatement("SELECT * FROM password_gen_policy WHERE user_profile_id = ?");
         ps.setInt(1, userProfileId);
@@ -146,6 +156,15 @@ public class DbPasswordGeneratorPolicyDao implements PasswordGeneratorPolicyDao 
         PreparedStatement ps = conn.prepareStatement("DELETE FROM password_gen_policy WHERE password_gen_policy_id = ?");
         ps.setInt(1, id);
 
+        return ps;
+    }
+
+    private PreparedStatement  buildDeletePasswordGenPoliciesPreparedStatement(Connection conn, List<PasswordGeneratorPolicy> pwdGenPolicies) throws SQLException {
+        PreparedStatement ps = conn.prepareStatement("DELETE FROM password_gen_policy WHERE password_gen_policy_id = ?");
+        for (PasswordGeneratorPolicy pwdGenPolicy : pwdGenPolicies) {
+            ps.setInt(1, pwdGenPolicy.getId());
+            ps.addBatch();
+        }
         return ps;
     }
 }
