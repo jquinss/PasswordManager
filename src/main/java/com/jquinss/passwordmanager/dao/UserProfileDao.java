@@ -11,5 +11,7 @@ public interface UserProfileDao {
 
     void add(UserProfile userProfile) throws SQLException;
 
+    void delete(UserProfile userProfile) throws SQLException;
+
     List<String> getAllUserProfileNames() throws SQLException;
 }
