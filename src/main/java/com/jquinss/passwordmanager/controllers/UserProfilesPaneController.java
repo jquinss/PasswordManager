@@ -1,7 +1,9 @@
 package com.jquinss.passwordmanager.controllers;
 
+import com.jquinss.passwordmanager.data.*;
 import com.jquinss.passwordmanager.managers.DatabaseManager;
 import com.jquinss.passwordmanager.util.misc.DialogBuilder;
+import javafx.animation.PauseTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -14,6 +16,7 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.io.IOException;
 import java.net.URL;
@@ -38,7 +41,7 @@ public class UserProfilesPaneController implements Initializable {
         Stage stage = new Stage();
 
         final UserProfileSetUpPaneController controller = fxmlLoader.getController();
-        //controller.setPasswordManagerPaneController(this);
+        controller.setUserProfilesController(this);
         controller.setStage(stage);
 
         stage.setResizable(false);
@@ -50,12 +53,12 @@ public class UserProfilesPaneController implements Initializable {
     }
 
     @FXML
-    private void removeUserProfile() {
+    private void deleteUserProfile() {
         String selectedProfile = profilesListView.getSelectionModel().getSelectedItem();
 
         if (selectedProfile == null) {
             Alert alertDialog = DialogBuilder.buildAlertDialog("No Selection", "",
-                    "Please select a profile to remove.", Alert.AlertType.WARNING);
+                    "Please select a profile to delete.", Alert.AlertType.WARNING);
             alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/styles.css")).toString());
             setProfileLogo(alertDialog.getDialogPane());
             alertDialog.showAndWait();
@@ -63,17 +66,70 @@ public class UserProfilesPaneController implements Initializable {
             return;
         }
 
-        Alert confirmationDialog = DialogBuilder.buildAlertDialog("Confirm Deletion", "Remove Profile",
-                "Are you sure you want to remove the profile '" + selectedProfile + "'?", Alert.AlertType.CONFIRMATION);
+        Alert confirmationDialog = DialogBuilder.buildAlertDialog("Confirm Deletion", "Delete Profile",
+                "Are you sure you want to delete the profile '" + selectedProfile + "'?", Alert.AlertType.CONFIRMATION);
         confirmationDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/styles.css")).toString());
         setProfileLogo(confirmationDialog.getDialogPane());
 
         Optional<ButtonType> result = confirmationDialog.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
-            // TODO remove profile from the database
-            userProfiles.remove(selectedProfile);
-            // TODO Show message that the profile has been removed
+            try {
+                Optional<UserProfile> optional = DatabaseManager.getInstance().getUserProfileByName(selectedProfile);
+                optional.ifPresent(userProfile -> {
+                    try {
+                        deleteUserProfile(userProfile);
+                        userProfiles.remove(selectedProfile);
+
+                        showSuccessMessage("The profile has been removed", 2);
+                    }
+                    catch (SQLException | RuntimeException e) {
+                        showErrorMessage("A problem has occurred while trying to remove the profile", 3);
+                    }
+                });
+            }
+            catch (SQLException e) {
+                showErrorMessage("An error has occurred while trying to retrieve the selected profile from the database.", 3);
+            }
         }
+    }
+
+    void addUserProfileToList(UserProfile userProfile) {
+        this.userProfiles.add(userProfile.getName());
+    }
+
+    private void deleteUserProfile(UserProfile userProfile) throws SQLException {
+        Optional<RootFolder> optional = DatabaseManager.getInstance().getRootFolderByUserProfileId(userProfile.getId());
+        optional.ifPresent(rootFolder -> {
+            try {
+                List<Folder> folders = DatabaseManager.getInstance().getAllFoldersByParentFolderId(rootFolder.getId());
+                DatabaseManager.getInstance().deleteFolders(folders);
+                DatabaseManager.getInstance().deleteFolder(rootFolder);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        deletePasswordEnforcementPolicies(userProfile.getId());
+        deletePasswordGeneratorPolicies(userProfile.getId());
+        deletePasswordEntities(userProfile.getId());
+        DatabaseManager.getInstance().deleteUserProfile(userProfile);
+    }
+
+    private void deletePasswordEntities(int userProfileId) throws SQLException {
+        List<PasswordEntity> passwordEntities = DatabaseManager.getInstance().getAllPasswordEntitiesByUserProfileId(userProfileId);
+        DatabaseManager.getInstance().deletePasswordEntities(passwordEntities);
+    }
+
+    private void deletePasswordEnforcementPolicies(int userProfileId) throws SQLException {
+        List<PasswordEnforcementPolicy> passwordEnforcementPolicies =
+                DatabaseManager.getInstance().getAllPasswordEnforcementPoliciesByUserProfileId(userProfileId);
+        DatabaseManager.getInstance().deletePasswordEnforcementPolicies(passwordEnforcementPolicies);
+    }
+
+    private void deletePasswordGeneratorPolicies(int userProfileId) throws SQLException {
+        List<PasswordGeneratorPolicy> passwordGeneratorPolicies =
+                DatabaseManager.getInstance().getAllPasswordGeneratorPoliciesByUserProfileId(userProfileId);
+        DatabaseManager.getInstance().deletePasswordGeneratorPolicies(passwordGeneratorPolicies);
     }
 
     @Override
@@ -90,8 +146,7 @@ public class UserProfilesPaneController implements Initializable {
             userProfiles.addAll(profiles);
         }
         catch (SQLException e) {
-            message.setText("An error has occurred while trying to retrieve the profiles from the database.");
-            message.setVisible(true);
+            showErrorMessage("An error has occurred while trying to retrieve the profiles from the database.", 3);
         }
     }
 
@@ -101,5 +156,24 @@ public class UserProfilesPaneController implements Initializable {
 
     private void setProfileLogo(Pane pane) {
         setProfileLogo((Stage) pane.getScene().getWindow());
+    }
+
+    private void showTemporaryMessage(String text, String styleClass, int delay) {
+        message.getStyleClass().remove(message.getStyleClass().toString());
+        message.getStyleClass().add(styleClass);
+        message.setText(text);
+        message.setVisible(true);
+
+        PauseTransition pause = new PauseTransition(Duration.seconds(delay));
+        pause.setOnFinished(e -> message.setVisible(false));
+        pause.play();
+    }
+
+    private void showErrorMessage(String text, int delay) {
+        showTemporaryMessage(text, "error-message", delay);
+    }
+
+    private void showSuccessMessage(String text, int delay) {
+        showTemporaryMessage(text, "success-message", delay);
     }
 }
