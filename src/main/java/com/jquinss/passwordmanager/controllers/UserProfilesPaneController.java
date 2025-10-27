@@ -3,6 +3,7 @@ package com.jquinss.passwordmanager.controllers;
 import com.jquinss.passwordmanager.data.*;
 import com.jquinss.passwordmanager.managers.DatabaseManager;
 import com.jquinss.passwordmanager.util.misc.DialogBuilder;
+import com.jquinss.passwordmanager.util.misc.MessageDisplayUtil;
 import javafx.animation.PauseTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -80,15 +81,15 @@ public class UserProfilesPaneController implements Initializable {
                         deleteUserProfile(userProfile);
                         userProfiles.remove(selectedProfile);
 
-                        showSuccessMessage("The profile has been removed", 2);
+                        showSuccessMessage("The profile has been removed");
                     }
                     catch (SQLException | RuntimeException e) {
-                        showErrorMessage("A problem has occurred while trying to remove the profile", 3);
+                        showErrorMessage("A problem has occurred while trying to remove the profile");
                     }
                 });
             }
             catch (SQLException e) {
-                showErrorMessage("An error has occurred while trying to retrieve the selected profile from the database.", 3);
+                showErrorMessage("An error has occurred while trying to retrieve the selected profile from the database.");
             }
         }
     }
@@ -146,7 +147,7 @@ public class UserProfilesPaneController implements Initializable {
             userProfiles.addAll(profiles);
         }
         catch (SQLException e) {
-            showErrorMessage("An error has occurred while trying to retrieve the profiles from the database.", 3);
+            showErrorMessage("An error has occurred while trying to retrieve the profiles from the database.");
         }
     }
 
@@ -158,22 +159,15 @@ public class UserProfilesPaneController implements Initializable {
         setProfileLogo((Stage) pane.getScene().getWindow());
     }
 
-    private void showTemporaryMessage(String text, String styleClass, int delay) {
-        message.getStyleClass().remove(message.getStyleClass().toString());
-        message.getStyleClass().add(styleClass);
-        message.setText(text);
-        message.setVisible(true);
-
-        PauseTransition pause = new PauseTransition(Duration.seconds(delay));
-        pause.setOnFinished(e -> message.setVisible(false));
-        pause.play();
+    private void showTemporaryMessage(String text, String styleClass) {
+        MessageDisplayUtil.showTemporaryMessage(this.message, text, styleClass, 3);
     }
 
-    private void showErrorMessage(String text, int delay) {
-        showTemporaryMessage(text, "error-message", delay);
+    private void showErrorMessage(String text) {
+        showTemporaryMessage(text, "error-message");
     }
 
-    private void showSuccessMessage(String text, int delay) {
-        showTemporaryMessage(text, "success-message", delay);
+    private void showSuccessMessage(String text) {
+        showTemporaryMessage(text, "success-message");
     }
 }
