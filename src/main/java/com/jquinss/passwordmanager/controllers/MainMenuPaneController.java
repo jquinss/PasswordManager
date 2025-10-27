@@ -6,11 +6,13 @@ import com.jquinss.passwordmanager.managers.DatabaseManager;
 import com.jquinss.passwordmanager.managers.SettingsManager;
 import com.jquinss.passwordmanager.security.Authenticator;
 import com.jquinss.passwordmanager.util.misc.CryptoUtils;
+import javafx.animation.PauseTransition;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
@@ -116,20 +118,20 @@ public class MainMenuPaneController {
                     passwordManagerController.loadPasswordManagerPane(userProfile, keyPair);
                 }
                 else {
-                    showErrorMessage("Error: Invalid user profile name or password");
+                    showErrorMessage("Error: Invalid user profile name or password", 3);
                     clearFields();
                 }
             }
             else {
-                showErrorMessage("Error: Invalid user profile name or password");
+                showErrorMessage("Error: Invalid user profile name or password", 3);
                 clearFields();
             }
         }
         catch (SQLException e) {
-            showErrorMessage("Error: Cannot connect to the database");
+            showErrorMessage("Error: Cannot connect to the database", 3);
         }
         catch (LoadKeyPairException e) {
-            showErrorMessage("Error: Error loading key-pair from database");
+            showErrorMessage("Error: Error loading key-pair from database", 3);
         }
         catch (Exception e) {
             throw new RuntimeException(e);
@@ -140,19 +142,24 @@ public class MainMenuPaneController {
         this.passwordManagerController = passwordManagerController;
     }
 
-    private void showMessage(String text, String styleClass) {
+    private void showTemporaryMessage(String text, String styleClass, int delay) {
         message.getStyleClass().remove(message.getStyleClass().toString());
         message.getStyleClass().add(styleClass);
         message.setText(text);
         message.setVisible(true);
+
+        PauseTransition pause = new PauseTransition(Duration.seconds(delay));
+        pause.setOnFinished(e -> message.setVisible(false));
+        pause.play();
     }
 
-    private void showErrorMessage(String text) {
-        showMessage(text, "error-message");
+    private void showErrorMessage(String text, int delay) {
+        showTemporaryMessage(text, "error-message", delay);
     }
 
-    private void showSuccessMessage(String text) {
-        showMessage(text, "success-message");
+    private void showSuccessMessage(String text, int delay) {
+
+        showTemporaryMessage(text, "success-message", delay);
     }
 
     private void hideMessage() {
