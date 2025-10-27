@@ -11,12 +11,14 @@ import com.jquinss.passwordmanager.util.misc.DialogBuilder;
 import com.jquinss.passwordmanager.util.password.PasswordStrength;
 import com.jquinss.passwordmanager.util.password.PasswordStrengthChecker;
 import com.jquinss.passwordmanager.util.password.PasswordStrengthCriteria;
+import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import net.synedra.validatorfx.Check;
 import net.synedra.validatorfx.Validator;
 
@@ -61,7 +63,7 @@ public class UserProfileSetUpPaneController implements Initializable {
 
     private final PasswordStrengthChecker passwordStrengthChecker = new PasswordStrengthChecker();
 
-    private PasswordManagerController passwordManagerController;
+    private UserProfilesPaneController userProfilesPaneController;
 
     private Stage stage;
 
@@ -102,12 +104,13 @@ public class UserProfileSetUpPaneController implements Initializable {
             UserProfile userProfile = createUserProfile(userProfileName, password, keyPair);
 
             DatabaseManager.getInstance().addUserProfile(userProfile);
+            userProfilesPaneController.addUserProfileToList(userProfile);
 
-            showSuccessMessage("The profile has been created");
+            showSuccessMessage("The profile has been created", 3);
             clearFields();
         }
         catch (UserAlreadyExistsException | LoadKeyPairException | InvalidKeyPairException e) {
-            showErrorMessage(e.getMessage());
+            showErrorMessage(e.getMessage(), 4);
         }
         catch (NoSuchAlgorithmException | InvalidKeySpecException | InvalidAlgorithmParameterException | SQLException |
                 NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException | InvalidKeyException e) {
@@ -165,8 +168,8 @@ public class UserProfileSetUpPaneController implements Initializable {
         return user;
     }
 
-    void setPasswordManagerController(PasswordManagerController passwordManagerController) {
-        this.passwordManagerController = passwordManagerController;
+    void setUserProfilesController(UserProfilesPaneController userProfilesPaneController) {
+        this.userProfilesPaneController = userProfilesPaneController;
     }
 
     private void initializeBindings() {
@@ -253,24 +256,23 @@ public class UserProfileSetUpPaneController implements Initializable {
         }
     }
 
-    private void showMessage(String text, String styleClass) {
+    private void showTemporaryMessage(String text, String styleClass, int delay) {
         message.getStyleClass().remove(message.getStyleClass().toString());
         message.getStyleClass().add(styleClass);
         message.setText(text);
         message.setVisible(true);
+
+        PauseTransition pause = new PauseTransition(Duration.seconds(delay));
+        pause.setOnFinished(e -> message.setVisible(false));
+        pause.play();
     }
 
-    private void showErrorMessage(String text) {
-        showMessage(text, "error-message");
+    private void showErrorMessage(String text, int delay) {
+        showTemporaryMessage(text, "error-message", delay);
     }
 
-    private void showSuccessMessage(String text) {
-        showMessage(text, "success-message");
-    }
-
-    private void hideMessage() {
-        message.setText("");
-        message.setVisible(false);
+    private void showSuccessMessage(String text, int delay) {
+        showTemporaryMessage(text, "success-message", delay);
     }
 
     private void clearFields() {
