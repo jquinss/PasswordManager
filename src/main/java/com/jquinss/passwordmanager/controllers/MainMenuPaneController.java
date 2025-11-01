@@ -114,10 +114,6 @@ public class MainMenuPaneController {
 
     private void hidePane(Pane pane) {
         pane.setVisible(false);
-        FadeTransition fadeOut = new FadeTransition(Duration.millis(300), pane);
-        fadeOut.setFromValue(1.0);
-        fadeOut.setToValue(0.0);
-        fadeOut.play();
     }
 
     @FXML
