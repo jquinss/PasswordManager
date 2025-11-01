@@ -7,11 +7,13 @@ import com.jquinss.passwordmanager.managers.SettingsManager;
 import com.jquinss.passwordmanager.security.Authenticator;
 import com.jquinss.passwordmanager.util.misc.CryptoUtils;
 import com.jquinss.passwordmanager.util.misc.MessageDisplayUtil;
+import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
@@ -71,14 +73,14 @@ public class MainMenuPaneController {
         setActiveTab(backupsPane, backupsTabButton);
     }
     
-    private void setActiveTab(javafx.scene.Node contentToShow, Button activeButton) {
+    private void setActiveTab(Pane contentToShow, Button activeButton) {
         // Hide all content panes
-        loginPane.setVisible(false);
-        profilesPane.setVisible(false);
-        backupsPane.setVisible(false);
+        hidePane(loginPane);
+        hidePane(profilesPane);
+        hidePane(backupsPane);
         
         // Show selected content
-        contentToShow.setVisible(true);
+        showPane(contentToShow);
 
         // Update button styles
         String inactiveStyleClass = "side_bar_btn_inactive";
@@ -100,6 +102,22 @@ public class MainMenuPaneController {
                 buttonStyles.remove(activeStyleClass);
             }
         }
+    }
+
+    private void showPane(Pane pane) {
+        pane.setVisible(true);
+        FadeTransition fadeIn = new FadeTransition(Duration.millis(300), pane);
+        fadeIn.setFromValue(0.0);
+        fadeIn.setToValue(1.0);
+        fadeIn.play();
+    }
+
+    private void hidePane(Pane pane) {
+        pane.setVisible(false);
+        FadeTransition fadeOut = new FadeTransition(Duration.millis(300), pane);
+        fadeOut.setFromValue(1.0);
+        fadeOut.setToValue(0.0);
+        fadeOut.play();
     }
 
     @FXML
