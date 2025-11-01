@@ -285,6 +285,12 @@
     -fx-border-width: 1, 1;
 }
 
+/* ===== Separator Quick View Pane ===== */
+
+#quick-view-pane-separator .line {
+    -fx-border-color: #30486b;
+    -fx-border-width: 0 0 1 0;
+}
 
 /* ===== SplitPane Layout (Main Area) ===== */
 
@@ -360,7 +366,6 @@
 }
 
 .copy-clipboard-button {
-    -fx-graphic: url("../images/copy_clipboard.png");
     -fx-background-color: transparent;
 }
 
@@ -370,7 +375,6 @@
 }
 
 #generate-pwd-button {
-    -fx-graphic: url("../images/generate_pwd.png");
     -fx-background-color: transparent;
 }
 
@@ -385,7 +389,6 @@
 }
 
 #hide-pwd-editor-pane-button {
-    -fx-graphic: url("../images/close_sign.png");
     -fx-background-color: transparent;
  }
 
@@ -404,14 +407,20 @@
  }
 
  #quick-view-pane-title {
-     -fx-font-size: 15px;
-     -fx-font-weight: bold;
-     -fx-text-fill: #e2e8f0;
+     -fx-font-size: 16px;
+     -fx-text-fill: white;
  }
 
  .quick-view-text {
-     -fx-text-fill: #c9d3e6;
      -fx-font-size: 13px;
+ }
+
+ .quick-view-pane-attrib-name {
+    -fx-text-fill: white;
+ }
+
+ .quick-view-pane-attrib-value {
+    -fx-text-fill: #c9d3e6;
  }
 
 
@@ -434,11 +443,12 @@
 /* ===== Tooltips ===== */
 
 .tooltip {
-    -fx-background-color: #1c3b70;
-    -fx-text-fill: #e2e8f0;
+    -fx-background-color: #1a314e;
+    -fx-text-fill: white;
     -fx-background-radius: 6;
     -fx-padding: 8;
     -fx-font-size: 12px;
+    -fx-opacity: 0.5;
 }
 
 
