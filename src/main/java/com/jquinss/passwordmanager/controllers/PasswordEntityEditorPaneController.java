@@ -5,17 +5,20 @@ import com.jquinss.passwordmanager.enums.DataEntityEditorMode;
 import com.jquinss.passwordmanager.managers.DatabaseManager;
 import com.jquinss.passwordmanager.util.misc.DialogBuilder;
 import com.jquinss.passwordmanager.util.password.*;
+import javafx.animation.FadeTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.HBox;
 import javafx.util.Callback;
+import javafx.util.Duration;
 import net.synedra.validatorfx.Check;
 import net.synedra.validatorfx.Validator;
 
@@ -81,13 +84,18 @@ public class PasswordEntityEditorPaneController implements Initializable {
             case EDIT -> editPasswordEntity();
         }
 
-        setHideMode();
+        closePasswordEditor();
     }
 
     @FXML
     private void cancel() {
         passwordManagerPaneController.cancelEditMode();
-        setHideMode();
+        closePasswordEditor();
+    }
+
+    @FXML
+    void closePasswordEditor() {
+        setHideMode(true);
     }
 
     @FXML
@@ -414,7 +422,8 @@ public class PasswordEntityEditorPaneController implements Initializable {
         setTextFieldsEditable(false);
         disableControls(true);
         dialogButtons.setVisible(false);
-        passwordEntityEditorMainPane.setVisible(true);
+        //passwordEntityEditorMainPane.setVisible(true);
+        showNode(passwordEntityEditorMainPane);
         hidePasswordEditorPaneButton.setVisible(true);
     }
 
@@ -424,16 +433,42 @@ public class PasswordEntityEditorPaneController implements Initializable {
         setTextFieldsEditable(true);
         disableControls(false);
         dialogButtons.setVisible(true);
-        passwordEntityEditorMainPane.setVisible(true);
+        // passwordEntityEditorMainPane.setVisible(true);
+        showNode(passwordEntityEditorMainPane);
         hidePasswordEditorPaneButton.setVisible(false);
     }
 
     @FXML
-    private void setHideMode() {
+    private void setHideMode(boolean addFadeOutEffect) {
         editorMode = DataEntityEditorMode.HIDE;
         editorMode.setDataEntity(null);
         validator.clear();
-        passwordEntityEditorMainPane.setVisible(false);
+        hideNode(passwordEntityEditorMainPane, addFadeOutEffect);
+    }
+
+    private void showNode(Node node) {
+        node.setVisible(true);
+        FadeTransition fadeIn = new FadeTransition(Duration.millis(300), node);
+        fadeIn.setFromValue(0.0);
+        fadeIn.setToValue(1.0);
+        fadeIn.play();
+    }
+
+    private void hideNode(Node node, boolean addFadeOutEffect) {
+        if (addFadeOutEffect) {
+            hideNodeWithFadeOutEffect(node);
+        }
+        else {
+            node.setVisible(false);
+        }
+    }
+
+    private void hideNodeWithFadeOutEffect(Node node) {
+        FadeTransition fadeOut = new FadeTransition(Duration.millis(300), node);
+        fadeOut.setFromValue(1.0);
+        fadeOut.setToValue(0.0);
+        fadeOut.setOnFinished(e -> node.setVisible(false));
+        fadeOut.play();
     }
 
     private void setTextFieldsEditable(boolean editable) {
@@ -508,6 +543,6 @@ public class PasswordEntityEditorPaneController implements Initializable {
         initializePasswordEnforcementPolicyComboBox();
         initializePasswordGeneratorPolicyComboBox();
         initializeShowPasswordCheckBox();
-        setHideMode();
+        setHideMode(false);
     }
 }
