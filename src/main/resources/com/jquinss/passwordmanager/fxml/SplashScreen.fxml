@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.paint.LinearGradient?>
+<?import javafx.scene.paint.Stop?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.jquinss.testlab.HelloController">
+   <children>
+      <Pane prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #2d3f52;">
+         <children>
+            <Line endX="-100.0" endY="400.0" layoutX="200.0" startX="-100.0" strokeWidth="4.0">
+               <stroke>
+                  <LinearGradient endX="1.0" endY="1.0">
+                     <stops>
+                        <Stop color="#436f90" />
+                        <Stop color="#84c0e8" offset="1.0" />
+                     </stops>
+                  </LinearGradient>
+               </stroke>
+            </Line>
+            <Line endY="336.0" layoutY="-11.0" startX="600.0000610351562" startY="336.0" strokeWidth="4.0">
+               <stroke>
+                  <LinearGradient endX="1.0" endY="1.0">
+                     <stops>
+                        <Stop color="#84c0e8" />
+                        <Stop color="#436f90" offset="1.0" />
+                     </stops>
+                  </LinearGradient>
+               </stroke>
+            </Line>
+            <Label layoutX="144.0" layoutY="57.0" text="Password" textFill="WHITE">
+               <font>
+                  <Font name="Marcellus SC" size="40.0" />
+               </font>
+            </Label>
+            <Label layoutX="335.0" layoutY="82.0" text="Manager" textFill="WHITE">
+               <font>
+                  <Font name="Marcellus SC" size="40.0" />
+               </font>
+            </Label>
+            <Label layoutX="144.0" layoutY="113.0" style="-fx-text-fill: white; -fx-font-size: 15;" text="Version 1.0" />
+            <Label fx:id="loadingState" layoutX="450.0" layoutY="275.0" style="-fx-text-fill: #afc6d6; -fx-font-size: 15;" text="Loading..." />
+            <ProgressIndicator layoutX="530.0" layoutY="265.0" prefHeight="38.0" prefWidth="38.0" style="-fx-opacity: 0.8;" />
+            <ImageView fitHeight="150.0" fitWidth="142.0" layoutX="254.0" layoutY="147.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../IdeaProjects/testlab/src/main/resources/com/jquinss/testlab/password_manager_logo.png" />
+               </image>
+            </ImageView>
+         </children>
+      </Pane>
+   </children>
+</AnchorPane>
