@@ -4,6 +4,7 @@ import com.jquinss.passwordmanager.data.*;
 import com.jquinss.passwordmanager.security.UserProfileSession;
 import com.jquinss.passwordmanager.util.misc.CryptoUtils;
 import com.jquinss.passwordmanager.util.misc.DialogBuilder;
+import javafx.animation.FadeTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -11,9 +12,11 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.io.IOException;
 import java.net.URL;
@@ -225,7 +228,8 @@ public class PasswordManagerPaneController implements Initializable {
     }
 
     void viewDataEntityInQuickViewPane(DataEntity dataEntity) {
-        quickViewPane.setVisible(true);
+        //quickViewPane.setVisible(true);
+        showPane(quickViewPane);
         entityName.setText(dataEntity.getName());
         if (dataEntity.getDescription() != null) {
             entityDescriptionVBox.setVisible(true);
@@ -237,7 +241,24 @@ public class PasswordManagerPaneController implements Initializable {
     }
 
     void hideQuickViewPane() {
-        quickViewPane.setVisible(false);
+        hidePane(quickViewPane);
+        //quickViewPane.setVisible(false);
+    }
+
+    private void showPane(Pane pane) {
+        pane.setVisible(true);
+        FadeTransition fadeIn = new FadeTransition(Duration.millis(300), pane);
+        fadeIn.setFromValue(0.0);
+        fadeIn.setToValue(1.0);
+        fadeIn.play();
+    }
+
+    private void hidePane(Pane pane) {
+        FadeTransition fadeOut = new FadeTransition(Duration.millis(300), pane);
+        fadeOut.setFromValue(1.0);
+        fadeOut.setToValue(0.0);
+        fadeOut.setOnFinished(e -> pane.setVisible(false));
+        fadeOut.play();
     }
 
     void createPasswordEntityInEditor(Folder folder) {
