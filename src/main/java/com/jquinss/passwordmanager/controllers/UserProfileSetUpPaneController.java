@@ -283,15 +283,6 @@ public class UserProfileSetUpPaneController implements Initializable {
         privateKeyTextField.clear();
     }
 
-    private void setToolTips() {
-        setToolTipOnImageView(publicKeyQuestionMarkImageView, "Select a PEM encoded public key");
-        setToolTipOnImageView(privateKeyQuestionMarkImageView, "Select a PEM encoded private key");
-    }
-
-    private void setToolTipOnImageView(ImageView imageView, String text) {
-        Tooltip.install(imageView, new Tooltip(text));
-    }
-
     void setStage(Stage stage) {
         this.stage = stage;
     }
@@ -301,6 +292,5 @@ public class UserProfileSetUpPaneController implements Initializable {
         initializeBindings();
         initializeValidator();
         createAccountButton.disableProperty().bind(validator.containsErrorsProperty());
-        setToolTips();
     }
 }
