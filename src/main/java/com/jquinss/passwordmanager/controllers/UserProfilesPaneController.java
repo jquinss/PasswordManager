@@ -104,7 +104,7 @@ public class UserProfilesPaneController implements Initializable {
             try {
                 List<Folder> folders = DatabaseManager.getInstance().getAllFoldersByParentFolderId(rootFolder.getId());
                 DatabaseManager.getInstance().deleteFolders(folders);
-                DatabaseManager.getInstance().deleteFolder(rootFolder);
+                DatabaseManager.getInstance().deleteRootFolder(rootFolder);
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
