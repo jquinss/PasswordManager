@@ -20,6 +20,9 @@
 
 <center>
     <ListView fx:id="profilesListView" styleClass="list-view">
+        <placeholder>
+            <Label text="No profiles have been created"/>
+        </placeholder>
         <BorderPane.margin>
             <Insets bottom="20"/>
         </BorderPane.margin>
