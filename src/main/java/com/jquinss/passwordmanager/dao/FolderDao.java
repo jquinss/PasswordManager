@@ -18,6 +18,8 @@ public interface FolderDao {
 
     void addRoot(RootFolder folder) throws SQLException;
 
+    void deleteRoot(RootFolder folder) throws SQLException;
+
     void update(Folder folder) throws SQLException;
 
     void delete(Folder folder) throws SQLException;
