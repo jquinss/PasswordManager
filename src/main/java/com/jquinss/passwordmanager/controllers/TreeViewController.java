@@ -401,14 +401,9 @@ public class TreeViewController {
     }
 
     private void createRootTreeItem() throws SQLException {
-        RootFolder rootFolder = createRootFolder();
-        treeView.setRoot(buildTreeItem(rootFolder));
-    }
-
-    private RootFolder createRootFolder() throws SQLException {
-        RootFolder rootFolder = new RootFolder("root", passwordManagerPaneController.getUserProfileSession().getCurrentUserProfileId());
-        DatabaseManager.getInstance().addRootFolder(rootFolder);
-        return rootFolder;
+        Optional<RootFolder> optional = DatabaseManager.getInstance().
+                getRootFolderByUserProfileId(passwordManagerPaneController.getUserProfileSession().getCurrentUserProfileId());
+        optional.ifPresent(rootFolder -> treeView.setRoot(buildTreeItem(rootFolder)));
     }
 
     private TreeItem<DataEntity> buildTreeItem(DataEntity dataEntity) {
