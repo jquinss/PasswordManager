@@ -18,7 +18,7 @@ public class DatabaseManager {
             password BLOB NOT NULL, password_salt BLOB NOT NULL, public_key BLOB NOT NULL, private_key BLOB NOT NULL, 
             private_key_iv BLOB NOT NULL);""";
     private static final String CREATE_ROOT_FOLDER_TABLE_STATEMENT = """
-            CREATE TABLE IF NOT EXISTS root_folder (root_folder_id INTEGER PRIMARY KEY, user_profile_id INTEGER NOT NULL, 
+            CREATE TABLE IF NOT EXISTS root_folder (root_folder_id INTEGER PRIMARY KEY, root_folder_name TEXT NOT NULL, user_profile_id INTEGER NOT NULL, 
             FOREIGN KEY(user_profile_id) REFERENCES user_profile(user_profile_id))""";
     private static final String CREATE_FOLDER_TABLE_STATEMENT = """
             CREATE TABLE IF NOT EXISTS folder (folder_id INTEGER PRIMARY KEY, parent_folder_id INTEGER, 
@@ -104,6 +104,10 @@ public class DatabaseManager {
 
     public void deleteFolders(List<Folder> folders) throws SQLException {
         folderDao.delete(folders);
+    }
+
+    public void deleteRootFolder(RootFolder folder) throws SQLException {
+        folderDao.deleteRoot(folder);
     }
 
     public void addPasswordEntity(PasswordEntity passwordEntity) throws SQLException {
