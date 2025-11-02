@@ -111,6 +111,14 @@ public class DbFolderDao implements FolderDao {
         }
     }
 
+    @Override
+    public void deleteRoot(RootFolder folder) throws SQLException {
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement ps = buildDeleteRootFolderPreparedStatement(conn, folder.getId())) {
+            ps.executeUpdate();
+        }
+    }
+
     private PreparedStatement buildGetFolderByIdPreparedStatement(Connection conn, int id) throws SQLException {
         String statement = "SELECT * FROM folder WHERE folder_id = ?";
         PreparedStatement ps = conn.prepareStatement(statement);
@@ -130,10 +138,18 @@ public class DbFolderDao implements FolderDao {
     }
 
     private PreparedStatement buildAddRootFolderPreparedStatement(Connection conn, RootFolder folder) throws SQLException {
-        String statement = "INSERT INTO root_folder (root_folder_id, user_profile_id) VALUES (?, ?)";
+        String statement = "INSERT INTO root_folder (root_folder_id, root_folder_name, user_profile_id) VALUES (?, ?, ?)";
         PreparedStatement ps = conn.prepareStatement(statement);
         ps.setInt(1, folder.getId());
-        ps.setInt(2, folder.getUserProfileId());
+        ps.setString(2, folder.getName());
+        ps.setInt(3, folder.getUserProfileId());
+
+        return ps;
+    }
+
+    private PreparedStatement buildDeleteRootFolderPreparedStatement(Connection conn, int rootFolderId) throws SQLException {
+        PreparedStatement ps = conn.prepareStatement("DELETE FROM folder WHERE folder_id = ?");
+        ps.setInt(1, rootFolderId);
 
         return ps;
     }
