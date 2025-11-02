@@ -20,6 +20,9 @@
 
     <center>
         <ListView fx:id="backupsListView" styleClass="list-view">
+            <placeholder>
+                <Label text="No backups have been created"/>
+            </placeholder>
             <BorderPane.margin>
                 <Insets bottom="20"/>
             </BorderPane.margin>
