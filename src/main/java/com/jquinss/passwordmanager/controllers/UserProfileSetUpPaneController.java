@@ -1,5 +1,6 @@
 package com.jquinss.passwordmanager.controllers;
 
+import com.jquinss.passwordmanager.data.RootFolder;
 import com.jquinss.passwordmanager.data.UserProfile;
 import com.jquinss.passwordmanager.exceptions.InvalidKeyPairException;
 import com.jquinss.passwordmanager.exceptions.LoadKeyPairException;
@@ -102,12 +103,18 @@ public class UserProfileSetUpPaneController implements Initializable {
             validateKeyPair(keyPair);
 
             UserProfile userProfile = createUserProfile(userProfileName, password, keyPair);
-
             DatabaseManager.getInstance().addUserProfile(userProfile);
-            userProfilesPaneController.addUserProfileToList(userProfile);
-
-            showSuccessMessage("The profile has been created", 3);
-            clearFields();
+            Optional<UserProfile> optional = DatabaseManager.getInstance().getUserProfileByName(userProfile.getName());
+            optional.ifPresent(profile -> {
+                try {
+                    DatabaseManager.getInstance().addRootFolder(new RootFolder("Root", profile.getId()));
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+                userProfilesPaneController.addUserProfileToList(userProfile);
+                showSuccessMessage("The profile has been created", 3);
+                clearFields();
+            });
         }
         catch (UserAlreadyExistsException | LoadKeyPairException | InvalidKeyPairException e) {
             showErrorMessage(e.getMessage(), 4);
