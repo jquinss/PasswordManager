@@ -564,6 +564,10 @@
     -fx-background-color: #1a314e;
 }
 
+.combo-box .placeholder .label {
+    -fx-font-size: 9pt;
+}
+
 
 /* ===== Date Picker ===== */
 /*
