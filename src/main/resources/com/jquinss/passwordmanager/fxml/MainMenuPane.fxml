@@ -59,16 +59,18 @@
                 </ImageView>
                 <VBox spacing="10" maxWidth="400">
                     <Label text="Profile Name:" styleClass="form-label"/>
-                    <TextField fx:id="loginProfileField" promptText="Enter profile name"
-                               styleClass="login-form-textfield"/>
-
+                    <ComboBox fx:id="loginProfileComboBox" id="login-form-combo-box" maxWidth="Infinity">
+                        <placeholder>
+                            <Label text="no profiles have been created"/>
+                        </placeholder>
+                    </ComboBox>
                     <Label text="Password:" styleClass="form-label">
                         <VBox.margin>
                             <Insets top="10"/>
                         </VBox.margin>
                     </Label>
                     <PasswordField fx:id="loginPasswordField" promptText="Enter password"
-                                   styleClass="login-form-textfield"/>
+                                   id="login-form-textfield" />
 
                     <Button text="Login" prefWidth="400" prefHeight="40" id="login-btn" onAction="#handleLogin">
                         <VBox.margin>
