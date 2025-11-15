@@ -9,8 +9,10 @@ import com.jquinss.passwordmanager.util.misc.CryptoUtils;
 import com.jquinss.passwordmanager.util.misc.MessageDisplayUtil;
 import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
@@ -19,12 +21,15 @@ import javafx.util.Duration;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
+import java.net.URL;
 import java.security.KeyPair;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
+import java.util.ResourceBundle;
 
-public class MainMenuPaneController {
+public class MainMenuPaneController implements Initializable {
 
     // Tab buttons
     @FXML
@@ -42,25 +47,22 @@ public class MainMenuPaneController {
     @FXML
     private BorderPane backupsPane;
     @FXML
-    private TextField loginProfileField;
+    private ComboBox<String> loginProfileComboBox;
     @FXML
     private PasswordField loginPasswordField;
     @FXML
     private Label message;
 
+    private ObservableList<String> userProfiles;
+
     private PasswordManagerController passwordManagerController;
 
     private final Authenticator authenticator = new Authenticator();
-
-    @FXML
-    public void initialize() {
-        // Show login tab by default
-        showLoginTab();
-    }
     
     @FXML
     private void showLoginTab() {
         setActiveTab(loginPane, loginTabButton);
+        loadUserProfiles();
     }
     
     @FXML
@@ -118,7 +120,7 @@ public class MainMenuPaneController {
 
     @FXML
     private void handleLogin() {
-        String userProfileName = loginProfileField.getText();
+        String userProfileName = loginProfileComboBox.getSelectionModel().getSelectedItem();
         String password = loginPasswordField.getText();
 
         try {
@@ -175,8 +177,18 @@ public class MainMenuPaneController {
     }
 
     private void clearFields() {
-        loginProfileField.clear();
         loginPasswordField.clear();
+    }
+
+    protected void loadUserProfiles() {
+        try {
+            List<String> profiles = DatabaseManager.getInstance().getAllUserProfileNames();
+            userProfiles.setAll(profiles);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        loginProfileComboBox.setItems(userProfiles);
     }
 
     private KeyPair loadKeyPair(UserProfile userProfile, String password) throws LoadKeyPairException {
@@ -194,5 +206,12 @@ public class MainMenuPaneController {
         catch (Exception e) {
             throw new LoadKeyPairException();
         }
+    }
+
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        userProfiles = FXCollections.observableArrayList();
+        // Show login tab by default
+        showLoginTab();
     }
 }
