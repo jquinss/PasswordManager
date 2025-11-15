@@ -81,11 +81,25 @@
 
 /* ===== Login form textfield ===== */
 
-.login-form-textfield {
+#login-form-textfield {
     -fx-font-size: 14px;
     -fx-padding: 10;
 }
 
+/* ===== Login form textfield ===== */
+
+#login-form-combo-box {
+    -fx-font-size: 14px;
+    -fx-padding: 4;
+}
+
+#login-form-combo-box .list-view .list-cell {
+    -fx-text-fill: #6486a4;
+}
+
+#login-form-combo-box .list-cell {
+    -fx-text-fill: #6486a4;
+}
 
 /* ===== Listview ===== */
 
@@ -566,6 +580,25 @@
 
 .combo-box .placeholder .label {
     -fx-font-size: 9pt;
+}
+
+
+/* ===== Password Generator Pane ===== */
+
+.low-strength-pwd {
+    -fx-text-fill: red;
+}
+
+.fair-strength-pwd {
+    -fx-text-fill: orange;
+}
+
+.good-strength-pwd {
+    -fx-text-fill: yellow;
+}
+
+.excellent-strength-pwd {
+    -fx-text-fill: green;
 }
 
 
