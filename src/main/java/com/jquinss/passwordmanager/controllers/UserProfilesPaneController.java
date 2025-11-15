@@ -143,8 +143,7 @@ public class UserProfilesPaneController implements Initializable {
     private void loadUserProfiles() {
         try {
             List<String> profiles = DatabaseManager.getInstance().getAllUserProfileNames();
-            userProfiles.clear();
-            userProfiles.addAll(profiles);
+            userProfiles.setAll(profiles);
         }
         catch (SQLException e) {
             showErrorMessage("An error has occurred while trying to retrieve the profiles from the database.");
