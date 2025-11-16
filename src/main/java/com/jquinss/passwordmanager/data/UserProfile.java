@@ -11,6 +11,7 @@ public class UserProfile {
     private byte[] publicKey;
     private byte[] privateKey;
     private byte[] privateKeyIV;
+    private boolean defaultProfile = false;
 
     private List<PasswordEntity> passwordEntities = new ArrayList<>();
 
@@ -46,6 +47,14 @@ public class UserProfile {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public boolean isDefaultProfile() {
+        return defaultProfile;
+    }
+
+    public void setDefaultProfile(boolean defaultProfile) {
+        this.defaultProfile = defaultProfile;
     }
 
     public byte[] getPasswordSalt() {
