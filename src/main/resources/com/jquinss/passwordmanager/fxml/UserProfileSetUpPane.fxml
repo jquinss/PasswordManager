@@ -36,21 +36,24 @@
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
             </rowConstraints>
             <Label styleClass="form-label" text="Profile name:" />
-            <Label styleClass="form-label" text="Password:" GridPane.rowIndex="1" />
             <TextField fx:id="userProfileNameTextField" promptText="Enter profile name" GridPane.columnIndex="1"
                        styleClass="profile-dialog-textfield" />
+            <Label styleClass="form-label" text="Default:" GridPane.rowIndex="1" />
+            <CheckBox fx:id="defaultProfileCheckBox" mnemonicParsing="false" GridPane.rowIndex="1" GridPane.columnIndex="1" />
+            <Label styleClass="form-label" text="Password:" GridPane.rowIndex="2" />
             <PasswordField fx:id="passwordField" promptText="Enter password"
-                           GridPane.columnIndex="1" GridPane.rowIndex="1" styleClass="dialog-textfield" />
-            <Label styleClass="form-label" text="Confirm Password:" GridPane.rowIndex="2" />
+                           GridPane.columnIndex="1" GridPane.rowIndex="2" styleClass="dialog-textfield" />
+            <Label styleClass="form-label" text="Confirm Password:" GridPane.rowIndex="3" />
             <PasswordField fx:id="confirmPasswordField" promptText="Confirm password"
-                           GridPane.columnIndex="1" GridPane.rowIndex="2" styleClass="profile-dialog-textfield" />
-            <CheckBox fx:id="generateKeyPairCheckBox" mnemonicParsing="false" selected="true" GridPane.rowIndex="3" />
-            <Label styleClass="form-label" text="Generate public and private key-pair" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                           GridPane.columnIndex="1" GridPane.rowIndex="3" styleClass="profile-dialog-textfield" />
+            <CheckBox fx:id="generateKeyPairCheckBox" mnemonicParsing="false" selected="true" GridPane.rowIndex="4" />
+            <Label styleClass="form-label" text="Generate public and private key-pair" GridPane.columnIndex="1" GridPane.rowIndex="4" />
             <TextField fx:id="publicKeyTextField" promptText="Select a public key" disable="true" editable="false"
-                       GridPane.columnIndex="1" GridPane.rowIndex="4" styleClass="profile-dialog-textfield" />
-            <Label GridPane.columnIndex="2" GridPane.rowIndex="4">
+                       GridPane.columnIndex="1" GridPane.rowIndex="5" styleClass="profile-dialog-textfield" />
+            <Label GridPane.columnIndex="2" GridPane.rowIndex="5">
                 <graphic>
                     <ImageView fitHeight="18.0" fitWidth="18.0" >
                         <image>
@@ -63,13 +66,13 @@
                 </tooltip>
             </Label>
             <Button fx:id="publicKeySelectButton" disable="true" mnemonicParsing="false" onAction="#selectPublicKey"
-                    prefHeight="40" prefWidth="100" styleClass="btn, select-btn" text="Public Key" GridPane.rowIndex="4" />
+                    prefHeight="40" prefWidth="100" styleClass="btn, select-btn" text="Public Key" GridPane.rowIndex="5" />
             <Button fx:id="privateKeySelectButton" disable="true" mnemonicParsing="false" onAction="#selectPrivateKey"
-                    prefHeight="40" prefWidth="100" styleClass="btn, select-btn" text="Private Key" GridPane.rowIndex="5" />
+                    prefHeight="40" prefWidth="100" styleClass="btn, select-btn" text="Private Key" GridPane.rowIndex="6" />
             <HBox prefHeight="100.0" prefWidth="200.0" />
             <TextField fx:id="privateKeyTextField" promptText="Select a private key" disable="true" editable="false"
-                       GridPane.columnIndex="1" GridPane.rowIndex="5" styleClass="profile-dialog-textfield" />
-            <Label GridPane.columnIndex="2" GridPane.rowIndex="5">
+                       GridPane.columnIndex="1" GridPane.rowIndex="6" styleClass="profile-dialog-textfield" />
+            <Label GridPane.columnIndex="2" GridPane.rowIndex="6">
                 <graphic>
                     <ImageView fitHeight="18.0" fitWidth="18.0" >
                         <Image url="@../images/question_mark.png" />
