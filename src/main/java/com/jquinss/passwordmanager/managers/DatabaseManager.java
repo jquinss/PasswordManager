@@ -66,6 +66,10 @@ public class DatabaseManager {
         userProfileDao.add(userProfile);
     }
 
+    public void updateUserProfile(UserProfile userProfile) throws SQLException {
+        userProfileDao.update(userProfile);
+    }
+
     public void deleteUserProfile(UserProfile userProfile) throws SQLException {
         userProfileDao.delete(userProfile);
     }
