@@ -47,6 +47,14 @@ public class DbUserProfileDao implements UserProfileDao {
     }
 
     @Override
+    public void update(UserProfile userProfile) throws SQLException {
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement ps = buildUpdateUserProfilePreparedStatement(conn, userProfile);) {
+            ps.executeUpdate();
+        }
+    }
+
+    @Override
     public void delete(UserProfile userProfile) throws SQLException {
         try (Connection conn = dataSource.getConnection();
              PreparedStatement ps = buildDeleteUserProfilePreparedStatement(conn, userProfile.getId());) {
@@ -100,6 +108,14 @@ public class DbUserProfileDao implements UserProfileDao {
         ps.setBytes(5, userProfile.getPublicKey());
         ps.setBytes(6, userProfile.getPrivateKey());
         ps.setBytes(7, userProfile.getPrivateKeyIV());
+        return ps;
+    }
+
+    private PreparedStatement buildUpdateUserProfilePreparedStatement(Connection conn, UserProfile userProfile) throws SQLException {
+        String statement = "UPDATE user_profile SET default_profile=? WHERE user_profile_id=?";
+        PreparedStatement ps = conn.prepareStatement(statement);
+        ps.setBoolean(1, userProfile.isDefaultProfile());
+        ps.setInt(2, userProfile.getId());
         return ps;
     }
 
