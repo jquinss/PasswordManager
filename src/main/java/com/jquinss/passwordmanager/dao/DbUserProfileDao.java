@@ -72,6 +72,7 @@ public class DbUserProfileDao implements UserProfileDao {
         UserProfile userProfile = new UserProfile(resultSet.getInt("user_profile_id"),
                 resultSet.getString("user_profile_name"),
                 resultSet.getBytes("password"));
+        userProfile.setDefaultProfile(resultSet.getBoolean("default_profile"));
         userProfile.setPasswordSalt(resultSet.getBytes("password_salt"));
         userProfile.setPublicKey(resultSet.getBytes("public_key"));
         userProfile.setPrivateKey(resultSet.getBytes("private_key"));
@@ -89,15 +90,16 @@ public class DbUserProfileDao implements UserProfileDao {
     }
 
     private PreparedStatement buildAddUserProfilePreparedStatement(Connection conn, UserProfile userProfile) throws SQLException {
-        String statement = "INSERT INTO user_profile (user_profile_name, password, password_salt, public_key, private_key, " +
+        String statement = "INSERT INTO user_profile (user_profile_name, default_profile, password, password_salt, public_key, private_key, " +
                 "private_key_iv) VALUES (?,?,?,?,?,?)";
         PreparedStatement ps = conn.prepareStatement(statement);
         ps.setString(1, userProfile.getName());
-        ps.setBytes(2, userProfile.getPasswordHash());
-        ps.setBytes(3, userProfile.getPasswordSalt());
-        ps.setBytes(4, userProfile.getPublicKey());
-        ps.setBytes(5, userProfile.getPrivateKey());
-        ps.setBytes(6, userProfile.getPrivateKeyIV());
+        ps.setBoolean(2, userProfile.isDefaultProfile());
+        ps.setBytes(3, userProfile.getPasswordHash());
+        ps.setBytes(4, userProfile.getPasswordSalt());
+        ps.setBytes(5, userProfile.getPublicKey());
+        ps.setBytes(6, userProfile.getPrivateKey());
+        ps.setBytes(7, userProfile.getPrivateKeyIV());
         return ps;
     }
 
