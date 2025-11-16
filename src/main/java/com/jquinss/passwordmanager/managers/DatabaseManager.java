@@ -40,8 +40,6 @@ public class DatabaseManager {
             lower_case_chars INT NOT NULL, upper_case_chars INT NOT NULL, digits INT NOT NULL, symbols INT NOT NULL, 
             default_policy INTEGER NOT NULL DEFAULT 0, user_profile_id INTEGER NOT NULL, FOREIGN KEY(user_profile_id) REFERENCES user_profile(user_profile_id));
             """;
-    //private static final String INIT_PWD_ENF_POLICY_TABLE_STATEMENT = "INSERT OR IGNORE INTO password_enf_policy VALUES (0, 'default', 10, 3, 3, 3, 3, 2, 1)";
-    //private static final String INIT_PWD_GEN_POLICY_TABLE_STATEMENT = "INSERT OR IGNORE INTO password_gen_policy VALUES (0, 'default', 3, 3, 3, 3, 1)";
 
     private static final String databaseURL = "jdbc:sqlite:" + SettingsManager.getInstance().getDatabasePath();
     private final DataSource dataSource = initializeDataSource();
