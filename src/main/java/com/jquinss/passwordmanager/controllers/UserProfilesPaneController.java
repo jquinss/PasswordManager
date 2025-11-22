@@ -38,7 +38,7 @@ public class UserProfilesPaneController implements Initializable {
     private void addUserProfile() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/jquinss/passwordmanager/fxml/UserProfileSetUpPane.fxml"));
         Parent parent = fxmlLoader.load();
-        Scene scene = new Scene(parent, 580, 420);
+        Scene scene = new Scene(parent, 580, 450);
         Stage stage = new Stage();
 
         final UserProfileSetUpPaneController controller = fxmlLoader.getController();
