@@ -72,8 +72,8 @@ public class DatabaseManager {
         userProfileDao.delete(userProfile);
     }
 
-    public List<String> getAllUserProfileNames() throws SQLException {
-        return userProfileDao.getAllUserProfileNames();
+    public List<UserProfile> getAllUserProfiles() throws SQLException {
+        return userProfileDao.getAllUserProfiles();
     }
 
     public Optional<Folder> getFolderById(int id) throws SQLException {
