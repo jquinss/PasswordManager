@@ -99,7 +99,7 @@ public class DbUserProfileDao implements UserProfileDao {
 
     private PreparedStatement buildAddUserProfilePreparedStatement(Connection conn, UserProfile userProfile) throws SQLException {
         String statement = "INSERT INTO user_profile (user_profile_name, default_profile, password, password_salt, public_key, private_key, " +
-                "private_key_iv) VALUES (?,?,?,?,?,?)";
+                "private_key_iv) VALUES (?,?,?,?,?,?,?)";
         PreparedStatement ps = conn.prepareStatement(statement);
         ps.setString(1, userProfile.getName());
         ps.setBoolean(2, userProfile.isDefaultProfile());
