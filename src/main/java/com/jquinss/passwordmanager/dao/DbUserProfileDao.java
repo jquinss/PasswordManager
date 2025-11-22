@@ -63,17 +63,17 @@ public class DbUserProfileDao implements UserProfileDao {
     }
 
     @Override
-    public List<String> getAllUserProfileNames() throws SQLException {
-        List<String> profileNames = new ArrayList<>();
+    public List<UserProfile> getAllUserProfiles() throws SQLException {
+        List<UserProfile> userProfiles = new ArrayList<>();
         try (Connection conn = dataSource.getConnection();
-             PreparedStatement ps = buildGetAllUserProfileNamesPreparedStatement(conn);
+             PreparedStatement ps = buildGetAllUserProfilesPreparedStatement(conn);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                profileNames.add(rs.getString(2));
+                userProfiles.add(createUserProfile(rs));
             }
         }
 
-        return profileNames;
+        return userProfiles;
     }
 
     private UserProfile createUserProfile(ResultSet resultSet) throws SQLException {
@@ -126,7 +126,7 @@ public class DbUserProfileDao implements UserProfileDao {
         return ps;
     }
 
-    private PreparedStatement buildGetAllUserProfileNamesPreparedStatement(Connection conn) throws SQLException {
+    private PreparedStatement buildGetAllUserProfilesPreparedStatement(Connection conn) throws SQLException {
         String statement = "SELECT * FROM user_profile";
         return conn.prepareStatement(statement);
     }
