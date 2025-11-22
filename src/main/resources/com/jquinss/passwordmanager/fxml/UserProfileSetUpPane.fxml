@@ -16,7 +16,7 @@
 
 <?import javafx.scene.control.Tooltip?>
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-            prefHeight="420.0" prefWidth="580.0" stylesheets="@../styles/styles.css" xmlns="http://javafx.com/javafx/8.0.171"
+            prefHeight="450.0" prefWidth="580.0" stylesheets="@../styles/styles.css" xmlns="http://javafx.com/javafx/8.0.171"
             xmlns:fx="http://javafx.com/fxml/1" styleClass="profile-dialog"
             fx:controller="com.jquinss.passwordmanager.controllers.UserProfileSetUpPaneController">
     <VBox alignment="CENTER" layoutX="75.0" layoutY="48.0" prefHeight="352.0" prefWidth="450.0" spacing="40.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="75.0" AnchorPane.rightAnchor="75.0" AnchorPane.topAnchor="48.0">
