@@ -96,4 +96,9 @@ public class UserProfile {
     public void setPasswordEntities(List<PasswordEntity> passwordEntities) {
         this.passwordEntities = passwordEntities;
     }
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }
