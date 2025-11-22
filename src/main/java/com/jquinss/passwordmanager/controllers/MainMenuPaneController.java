@@ -47,13 +47,13 @@ public class MainMenuPaneController implements Initializable {
     @FXML
     private BorderPane backupsPane;
     @FXML
-    private ComboBox<String> loginProfileComboBox;
+    private ComboBox<UserProfile> loginProfileComboBox;
     @FXML
     private PasswordField loginPasswordField;
     @FXML
     private Label message;
 
-    private ObservableList<String> userProfiles;
+    private ObservableList<UserProfile> userProfiles;
 
     private PasswordManagerController passwordManagerController;
 
@@ -120,19 +120,19 @@ public class MainMenuPaneController implements Initializable {
 
     @FXML
     private void handleLogin() {
-        String userProfileName = loginProfileComboBox.getSelectionModel().getSelectedItem();
+        UserProfile userProfile = loginProfileComboBox.getSelectionModel().getSelectedItem();
         String password = loginPasswordField.getText();
 
         try {
-            Optional<UserProfile> optional = DatabaseManager.getInstance().getUserProfileByName(userProfileName);
+            Optional<UserProfile> optional = DatabaseManager.getInstance().getUserProfileByName(userProfile.getName());
             if (optional.isPresent()) {
-                UserProfile userProfile = optional.get();
-                boolean validCredentials = authenticator.authenticate(userProfile, password);
+                UserProfile profile = optional.get();
+                boolean validCredentials = authenticator.authenticate(profile, password);
 
                 if (validCredentials) {
                     hideMessage();
-                    KeyPair keyPair = loadKeyPair(userProfile, password);
-                    passwordManagerController.loadPasswordManagerPane(userProfile, keyPair);
+                    KeyPair keyPair = loadKeyPair(profile, password);
+                    passwordManagerController.loadPasswordManagerPane(profile, keyPair);
                 }
                 else {
                     showErrorMessage("Error: Invalid user profile name or password");
@@ -182,7 +182,7 @@ public class MainMenuPaneController implements Initializable {
 
     protected void loadUserProfiles() {
         try {
-            List<String> profiles = DatabaseManager.getInstance().getAllUserProfileNames();
+            List<UserProfile> profiles = DatabaseManager.getInstance().getAllUserProfiles();
             userProfiles.setAll(profiles);
         } catch (SQLException e) {
             throw new RuntimeException(e);
