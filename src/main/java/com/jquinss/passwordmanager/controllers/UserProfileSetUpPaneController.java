@@ -42,6 +42,8 @@ public class UserProfileSetUpPaneController implements Initializable {
     @FXML
     private TextField userProfileNameTextField;
     @FXML
+    private CheckBox defaultProfileCheckBox;
+    @FXML
     private PasswordField passwordField;
     @FXML
     private PasswordField confirmPasswordField;
@@ -167,6 +169,7 @@ public class UserProfileSetUpPaneController implements Initializable {
                 key, ivParameterSpec);
 
         UserProfile user = new UserProfile(name, passwordHash);
+        user.setDefaultProfile(defaultProfileCheckBox.isSelected());
         user.setPublicKey(publicKey);
         user.setPrivateKey(encryptedPrivateKey);
         user.setPasswordSalt(salt);
@@ -284,6 +287,7 @@ public class UserProfileSetUpPaneController implements Initializable {
 
     private void clearFields() {
         userProfileNameTextField.clear();
+        defaultProfileCheckBox.setSelected(false);
         passwordField.clear();
         confirmPasswordField.clear();
         publicKeyTextField.clear();
