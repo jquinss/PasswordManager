@@ -29,10 +29,10 @@ import java.util.ResourceBundle;
 
 public class UserProfilesPaneController implements Initializable {
     @FXML
-    private ListView<String> profilesListView;
+    private ListView<UserProfile> profilesListView;
     @FXML
     private Label message;
-    private ObservableList<String> userProfiles;
+    private ObservableList<UserProfile> userProfiles;
 
     @FXML
     private void addUserProfile() throws IOException {
@@ -55,7 +55,7 @@ public class UserProfilesPaneController implements Initializable {
 
     @FXML
     private void deleteUserProfile() {
-        String selectedProfile = profilesListView.getSelectionModel().getSelectedItem();
+        UserProfile selectedProfile = profilesListView.getSelectionModel().getSelectedItem();
 
         if (selectedProfile == null) {
             Alert alertDialog = DialogBuilder.buildAlertDialog("No Selection", "",
@@ -68,14 +68,14 @@ public class UserProfilesPaneController implements Initializable {
         }
 
         Alert confirmationDialog = DialogBuilder.buildAlertDialog("Confirm Deletion", "Delete Profile",
-                "Are you sure you want to delete the profile '" + selectedProfile + "'?", Alert.AlertType.CONFIRMATION);
+                "Are you sure you want to delete the profile '" + selectedProfile.getName() + "'?", Alert.AlertType.CONFIRMATION);
         confirmationDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/styles.css")).toString());
         setProfileLogo(confirmationDialog.getDialogPane());
 
         Optional<ButtonType> result = confirmationDialog.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
             try {
-                Optional<UserProfile> optional = DatabaseManager.getInstance().getUserProfileByName(selectedProfile);
+                Optional<UserProfile> optional = DatabaseManager.getInstance().getUserProfileByName(selectedProfile.getName());
                 optional.ifPresent(userProfile -> {
                     try {
                         deleteUserProfile(userProfile);
@@ -95,7 +95,7 @@ public class UserProfilesPaneController implements Initializable {
     }
 
     void addUserProfileToList(UserProfile userProfile) {
-        this.userProfiles.add(userProfile.getName());
+        this.userProfiles.add(userProfile);
     }
 
     private void deleteUserProfile(UserProfile userProfile) throws SQLException {
@@ -142,7 +142,7 @@ public class UserProfilesPaneController implements Initializable {
 
     private void loadUserProfiles() {
         try {
-            List<String> profiles = DatabaseManager.getInstance().getAllUserProfileNames();
+            List<UserProfile> profiles = DatabaseManager.getInstance().getAllUserProfiles();
             userProfiles.setAll(profiles);
         }
         catch (SQLException e) {
