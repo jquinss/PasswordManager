@@ -25,6 +25,10 @@ public class UserProfile {
         this.passwordHash = password;
     }
 
+    public UserProfile(String name) {
+        this.name = name;
+    }
+
     public int getId() {
         return id;
     }
