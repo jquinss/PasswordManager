@@ -72,6 +72,7 @@ public class DbFolderDao implements FolderDao {
                 }
                 conn.commit();
             }
+            conn.setAutoCommit(true);
         }
     }
 
@@ -107,6 +108,7 @@ public class DbFolderDao implements FolderDao {
             PreparedStatement ps = buildDeleteFoldersPreparedStatement(conn, folders)) {
             conn.setAutoCommit(false);
             ps.executeBatch();
+            conn.commit();
             conn.setAutoCommit(true);
         }
     }
@@ -114,8 +116,13 @@ public class DbFolderDao implements FolderDao {
     @Override
     public void deleteRoot(RootFolder folder) throws SQLException {
         try (Connection conn = dataSource.getConnection();
-             PreparedStatement ps = buildDeleteRootFolderPreparedStatement(conn, folder.getId())) {
-            ps.executeUpdate();
+             PreparedStatement ps1 = buildDeleteRootFolderFromFolderTablePreparedStatement(conn, folder.getId());
+             PreparedStatement ps2 = buildDeleteRootFolderFromRootFolderTablePreparedStatement(conn, folder.getId())) {
+            conn.setAutoCommit(false);
+            ps1.executeUpdate();
+            ps2.executeUpdate();
+            conn.commit();
+            conn.setAutoCommit(true);
         }
     }
 
@@ -147,8 +154,15 @@ public class DbFolderDao implements FolderDao {
         return ps;
     }
 
-    private PreparedStatement buildDeleteRootFolderPreparedStatement(Connection conn, int rootFolderId) throws SQLException {
+    private PreparedStatement buildDeleteRootFolderFromFolderTablePreparedStatement(Connection conn, int rootFolderId) throws SQLException {
         PreparedStatement ps = conn.prepareStatement("DELETE FROM folder WHERE folder_id = ?");
+        ps.setInt(1, rootFolderId);
+
+        return ps;
+    }
+
+    private PreparedStatement buildDeleteRootFolderFromRootFolderTablePreparedStatement(Connection conn, int rootFolderId) throws SQLException {
+        PreparedStatement ps = conn.prepareStatement("DELETE FROM root_folder WHERE root_folder_id = ?");
         ps.setInt(1, rootFolderId);
 
         return ps;
