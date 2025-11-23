@@ -189,6 +189,15 @@ public class MainMenuPaneController implements Initializable {
         }
 
         loginProfileComboBox.setItems(userProfiles);
+        setDefaultProfile();
+    }
+
+    private void setDefaultProfile() {
+        for (UserProfile userProfile : userProfiles) {
+            if (userProfile.isDefaultProfile()) {
+                loginProfileComboBox.getSelectionModel().select(userProfile);
+            }
+        }
     }
 
     private KeyPair loadKeyPair(UserProfile userProfile, String password) throws LoadKeyPairException {
