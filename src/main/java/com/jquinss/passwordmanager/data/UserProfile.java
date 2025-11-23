@@ -25,7 +25,8 @@ public class UserProfile {
         this.passwordHash = password;
     }
 
-    public UserProfile(String name) {
+    public UserProfile(int id, String name) {
+        this.id = id;
         this.name = name;
     }
 
