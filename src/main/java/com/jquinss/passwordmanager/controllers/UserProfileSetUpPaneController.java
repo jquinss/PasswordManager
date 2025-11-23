@@ -15,6 +15,7 @@ import com.jquinss.passwordmanager.util.password.PasswordStrengthCriteria;
 import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.chart.PieChart;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
@@ -155,7 +156,7 @@ public class UserProfileSetUpPaneController implements Initializable {
     }
 
     private UserProfile createUserProfile(String name, String password, KeyPair keyPair) throws NoSuchAlgorithmException, InvalidKeySpecException,
-            InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
+            InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, SQLException {
         byte[] salt = CryptoUtils.generateSaltBytes(SettingsManager.getInstance().getSaltLengthInBytes());
         byte[] passwordHash = CryptoUtils.getHashFromString(password,
                 SettingsManager.getInstance().getPasswordHashLengthInBytes(), salt);
@@ -168,14 +169,26 @@ public class UserProfileSetUpPaneController implements Initializable {
         byte[] encryptedPrivateKey = CryptoUtils.encrypt(privateKey, SettingsManager.getInstance().getSymmetricEncryptionAlgorithm(),
                 key, ivParameterSpec);
 
-        UserProfile user = new UserProfile(name, passwordHash);
-        user.setDefaultProfile(defaultProfileCheckBox.isSelected());
-        user.setPublicKey(publicKey);
-        user.setPrivateKey(encryptedPrivateKey);
-        user.setPasswordSalt(salt);
-        user.setPrivateKeyIV(iv);
+        UserProfile userProfile = new UserProfile(name, passwordHash);
+        if (defaultProfileCheckBox.isSelected()) {
+            Optional<UserProfile> defaultUserProfile = DatabaseManager.getInstance().getDefaultUserProfile();
+            defaultUserProfile.ifPresent(profile -> {
+                System.out.println(profile.isDefaultProfile());
+                profile.setDefaultProfile(false);
+                try {
+                    DatabaseManager.getInstance().updateUserProfile(profile);
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+            userProfile.setDefaultProfile(defaultProfileCheckBox.isSelected());
+        }
+        userProfile.setPublicKey(publicKey);
+        userProfile.setPrivateKey(encryptedPrivateKey);
+        userProfile.setPasswordSalt(salt);
+        userProfile.setPrivateKeyIV(iv);
 
-        return user;
+        return userProfile;
     }
 
     void setUserProfilesController(UserProfilesPaneController userProfilesPaneController) {
