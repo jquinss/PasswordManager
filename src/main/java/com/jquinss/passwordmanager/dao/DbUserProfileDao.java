@@ -37,7 +37,6 @@ public class DbUserProfileDao implements UserProfileDao {
             Statement statement = conn.createStatement();
 
             try (ResultSet resultSet = statement.executeQuery("SELECT last_insert_rowid()")) {
-                //ResultSetMetaData metaData = resultSet.getMetaData();
                 if (resultSet.next()) {
                     userProfile.setId(resultSet.getInt(1));
                 }
@@ -76,6 +75,19 @@ public class DbUserProfileDao implements UserProfileDao {
         return userProfiles;
     }
 
+    @Override
+    public Optional<UserProfile> getDefaultUserProfile() throws SQLException {
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement ps = buildGetDefaultUserProfilePreparedStatement(conn);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return Optional.of(createSimpleUserProfile(rs));
+            }
+        }
+
+        return Optional.empty();
+    }
+
     private UserProfile createUserProfile(ResultSet resultSet) throws SQLException {
         UserProfile userProfile = new UserProfile(resultSet.getInt("user_profile_id"),
                 resultSet.getString("user_profile_name"),
@@ -92,7 +104,8 @@ public class DbUserProfileDao implements UserProfileDao {
     // method used to the situations where we do not need all the user profile attributes. In this case
     // we only load the username and the default attributes
     private UserProfile createSimpleUserProfile(ResultSet resultSet) throws SQLException {
-        UserProfile userProfile = new UserProfile(resultSet.getString("user_profile_name"));
+        UserProfile userProfile = new UserProfile(resultSet.getInt("user_profile_id"),
+                resultSet.getString("user_profile_name"));
         userProfile.setDefaultProfile(resultSet.getBoolean("default_profile"));
 
         return userProfile;
@@ -136,7 +149,12 @@ public class DbUserProfileDao implements UserProfileDao {
     }
 
     private PreparedStatement buildGetAllUserProfilesPreparedStatement(Connection conn) throws SQLException {
-        String statement = "SELECT user_profile_name, default_profile FROM user_profile";
+        String statement = "SELECT user_profile_id, user_profile_name, default_profile FROM user_profile";
+        return conn.prepareStatement(statement);
+    }
+
+    private PreparedStatement buildGetDefaultUserProfilePreparedStatement(Connection conn) throws SQLException {
+        String statement = "SELECT user_profile_id, user_profile_name, default_profile FROM user_profile WHERE default_profile = TRUE";
         return conn.prepareStatement(statement);
     }
 }
