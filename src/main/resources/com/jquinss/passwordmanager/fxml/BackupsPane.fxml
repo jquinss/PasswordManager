@@ -8,7 +8,7 @@
 <?import javafx.geometry.Insets?>
 
 <?import javafx.scene.layout.VBox?>
-<BorderPane visible="false" style="-fx-padding: 40;" fx:controller="com.jquinss.passwordmanager.controllers.BackupsPaneController"
+<BorderPane visible="false" id="backups-pane" fx:controller="com.jquinss.passwordmanager.controllers.BackupsPaneController"
             xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
     <top>
         <Label text="Manage Backups" styleClass="main-menu-content-title">
