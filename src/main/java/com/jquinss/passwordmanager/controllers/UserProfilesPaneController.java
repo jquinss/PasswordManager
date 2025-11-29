@@ -5,6 +5,7 @@ import com.jquinss.passwordmanager.managers.DatabaseManager;
 import com.jquinss.passwordmanager.util.misc.DialogBuilder;
 import com.jquinss.passwordmanager.util.misc.MessageDisplayUtil;
 import javafx.animation.PauseTransition;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -29,7 +30,11 @@ import java.util.ResourceBundle;
 
 public class UserProfilesPaneController implements Initializable {
     @FXML
-    private ListView<UserProfile> profilesListView;
+    private TableView<UserProfile> userProfilesTableView;
+    @FXML
+    private TableColumn<UserProfile, String> userProfileNameTableColumn;
+    @FXML
+    private TableColumn<UserProfile, String> isDefaultUserProfileTableColumn;
     @FXML
     private Label message;
     private ObservableList<UserProfile> userProfiles;
@@ -55,7 +60,7 @@ public class UserProfilesPaneController implements Initializable {
 
     @FXML
     private void deleteUserProfile() {
-        UserProfile selectedProfile = profilesListView.getSelectionModel().getSelectedItem();
+        UserProfile selectedProfile = userProfilesTableView.getSelectionModel().getSelectedItem();
 
         if (selectedProfile == null) {
             Alert alertDialog = DialogBuilder.buildAlertDialog("No Selection", "",
@@ -136,8 +141,20 @@ public class UserProfilesPaneController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         userProfiles = FXCollections.observableArrayList();
-        profilesListView.setItems(userProfiles);
+        userProfilesTableView.setItems(userProfiles);
+        initializeTableViewCellValueFactory();
         loadUserProfiles();
+    }
+
+    private void initializeTableViewCellValueFactory() {
+        userProfileNameTableColumn.setCellValueFactory(cellData -> {
+            return new SimpleStringProperty(cellData.getValue().getName());
+        });
+
+        isDefaultUserProfileTableColumn.setCellValueFactory(cellData -> {
+            boolean state = cellData.getValue().isDefaultProfile();
+            return state ? new SimpleStringProperty("Yes") : new SimpleStringProperty("No");
+        });
     }
 
     private void loadUserProfiles() {
