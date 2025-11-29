@@ -33,6 +33,20 @@
 }
 
 
+/* ===== UserProfiles Pane  ===== */
+
+#user-profiles-pane {
+    -fx-padding: 40;
+}
+
+
+/* ===== Backups Pane  ===== */
+
+#backups-pane {
+    -fx-padding: 40;
+}
+
+
 /* ===== Login button ===== */
 
 #login-btn {
