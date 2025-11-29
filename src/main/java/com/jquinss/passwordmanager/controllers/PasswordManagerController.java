@@ -33,6 +33,7 @@ public class PasswordManagerController {
     public void loadMainMenuPane() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/jquinss/passwordmanager/fxml/MainMenuPane.fxml"));
         stage.setTitle("Password Manager");
+        stage.setResizable(false);
         BorderPane root = (BorderPane) fxmlLoader.load();
         final MainMenuPaneController controller = fxmlLoader.getController();
         controller.setPasswordManagerController(this);
