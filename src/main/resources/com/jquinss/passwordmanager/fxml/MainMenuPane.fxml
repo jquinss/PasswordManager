@@ -52,7 +52,7 @@
             
             <!-- Login Tab Content -->
 
-            <VBox fx:id="loginPane" alignment="CENTER" spacing="20" styleClass="login-pane"
+            <VBox fx:id="loginPane" alignment="CENTER" spacing="20" id="login-pane"
                   xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
                 <ImageView fitHeight="170.0" fitWidth="170.0" pickOnBounds="true" preserveRatio="true">
                     <Image url="@../images/logo.png" />
