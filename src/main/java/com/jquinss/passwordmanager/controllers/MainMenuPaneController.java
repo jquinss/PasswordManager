@@ -6,6 +6,7 @@ import com.jquinss.passwordmanager.managers.DatabaseManager;
 import com.jquinss.passwordmanager.managers.SettingsManager;
 import com.jquinss.passwordmanager.security.Authenticator;
 import com.jquinss.passwordmanager.util.misc.CryptoUtils;
+import com.jquinss.passwordmanager.util.misc.FixedLengthFilter;
 import com.jquinss.passwordmanager.util.misc.MessageDisplayUtil;
 import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
@@ -217,9 +218,14 @@ public class MainMenuPaneController implements Initializable {
         }
     }
 
+    private void initializeTextFormatters() {
+        loginPasswordField.setTextFormatter(new TextFormatter<String>(new FixedLengthFilter(50)));
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         userProfiles = FXCollections.observableArrayList();
+        initializeTextFormatters();
         // Show login tab by default
         showLoginTab();
     }
