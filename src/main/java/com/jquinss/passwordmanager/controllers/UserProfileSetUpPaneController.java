@@ -9,6 +9,7 @@ import com.jquinss.passwordmanager.managers.DatabaseManager;
 import com.jquinss.passwordmanager.managers.SettingsManager;
 import com.jquinss.passwordmanager.util.misc.CryptoUtils;
 import com.jquinss.passwordmanager.util.misc.DialogBuilder;
+import com.jquinss.passwordmanager.util.misc.FixedLengthFilter;
 import com.jquinss.passwordmanager.util.password.PasswordStrength;
 import com.jquinss.passwordmanager.util.password.PasswordStrengthChecker;
 import com.jquinss.passwordmanager.util.password.PasswordStrengthCriteria;
@@ -200,6 +201,7 @@ public class UserProfileSetUpPaneController implements Initializable {
         publicKeyTextField.disableProperty().bind(generateKeyPairCheckBox.selectedProperty());
         privateKeySelectButton.disableProperty().bind(generateKeyPairCheckBox.selectedProperty());
         privateKeyTextField.disableProperty().bind(generateKeyPairCheckBox.selectedProperty());
+        createAccountButton.disableProperty().bind(validator.containsErrorsProperty());
     }
 
     private void initializeValidator() {
@@ -207,6 +209,12 @@ public class UserProfileSetUpPaneController implements Initializable {
         createPasswordsMatchCheck();
         createMinPasswordStrengthCriteriaCheck();
         createKeyPairSelectionCheck();
+    }
+
+    private void initializeTextFormatters() {
+        userProfileNameTextField.setTextFormatter(new TextFormatter<String>(new FixedLengthFilter(30)));
+        passwordField.setTextFormatter(new TextFormatter<String>(new FixedLengthFilter(50)));
+        confirmPasswordField.setTextFormatter(new TextFormatter<String>(new FixedLengthFilter(50)));
     }
 
     private void createRequiredTextFieldsCheck() {
@@ -315,6 +323,6 @@ public class UserProfileSetUpPaneController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         initializeBindings();
         initializeValidator();
-        createAccountButton.disableProperty().bind(validator.containsErrorsProperty());
+        initializeTextFormatters();
     }
 }
