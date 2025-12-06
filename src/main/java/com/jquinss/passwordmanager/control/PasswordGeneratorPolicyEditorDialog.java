@@ -2,6 +2,7 @@ package com.jquinss.passwordmanager.control;
 
 import com.jquinss.passwordmanager.data.PasswordGeneratorPolicy;
 import com.jquinss.passwordmanager.enums.PasswordPolicyEditorMode;
+import com.jquinss.passwordmanager.util.misc.FixedLengthFilter;
 import com.jquinss.passwordmanager.util.misc.IntRangeStringConverter;
 import com.jquinss.passwordmanager.util.password.PasswordSpecs;
 import javafx.fxml.FXML;
@@ -113,11 +114,12 @@ public class PasswordGeneratorPolicyEditorDialog extends Dialog<PasswordGenerato
 
     @FXML
     public void initialize() {
-        setTextFieldsFormatters();
+        setTextFormatters();
         initializeValidator();
     }
 
-    private void setTextFieldsFormatters() {
+    private void setTextFormatters() {
+        policyNameTextField.setTextFormatter(new TextFormatter<String>(new FixedLengthFilter(50)));
         numSymbolsTextField.setTextFormatter(new TextFormatter<>(new IntRangeStringConverter(2, 20), 2));
         numDigitsTextField.setTextFormatter(new TextFormatter<>(new IntRangeStringConverter(2, 20), 2));
         numUpperCaseCharsTextField.setTextFormatter(new TextFormatter<>(new IntRangeStringConverter(2, 20), 2));
