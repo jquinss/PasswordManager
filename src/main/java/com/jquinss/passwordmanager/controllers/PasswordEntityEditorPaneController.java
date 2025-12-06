@@ -4,6 +4,7 @@ import com.jquinss.passwordmanager.data.*;
 import com.jquinss.passwordmanager.enums.DataEntityEditorMode;
 import com.jquinss.passwordmanager.managers.DatabaseManager;
 import com.jquinss.passwordmanager.util.misc.DialogBuilder;
+import com.jquinss.passwordmanager.util.misc.FixedLengthFilter;
 import com.jquinss.passwordmanager.util.password.*;
 import javafx.animation.FadeTransition;
 import javafx.collections.FXCollections;
@@ -387,6 +388,16 @@ public class PasswordEntityEditorPaneController implements Initializable {
         });
     }
 
+    private void initializeTextFormatters() {
+        nameTextField.setTextFormatter(new TextFormatter<String>(new FixedLengthFilter(50)));
+        descriptionTextField.setTextFormatter(new TextFormatter<String>(new FixedLengthFilter(100)));
+        urlTextField.setTextFormatter(new TextFormatter<String>(new FixedLengthFilter(200)));
+        usernameTextField.setTextFormatter(new TextFormatter<String>(new FixedLengthFilter(50)));
+        emailAddressTextField.setTextFormatter(new TextFormatter<String>(new FixedLengthFilter(100)));
+        passwordField.setTextFormatter(new TextFormatter<String>(new FixedLengthFilter(50)));
+        clearPasswordField.setTextFormatter(new TextFormatter<String>(new FixedLengthFilter(50)));
+    }
+
     public void openPasswordEntityEditorInCreateMode(Folder folder) {
         setEditMode(DataEntityEditorMode.CREATE, folder);
         resetFields();
@@ -543,6 +554,7 @@ public class PasswordEntityEditorPaneController implements Initializable {
         initializePasswordEnforcementPolicyComboBox();
         initializePasswordGeneratorPolicyComboBox();
         initializeShowPasswordCheckBox();
+        initializeTextFormatters();
         setHideMode(false);
     }
 }
