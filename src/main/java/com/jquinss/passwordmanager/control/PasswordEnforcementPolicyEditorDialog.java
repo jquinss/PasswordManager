@@ -2,6 +2,7 @@ package com.jquinss.passwordmanager.control;
 
 import com.jquinss.passwordmanager.data.PasswordEnforcementPolicy;
 import com.jquinss.passwordmanager.enums.PasswordPolicyEditorMode;
+import com.jquinss.passwordmanager.util.misc.FixedLengthFilter;
 import com.jquinss.passwordmanager.util.misc.IntRangeStringConverter;
 import com.jquinss.passwordmanager.util.password.PasswordStrengthCriteria;
 import javafx.fxml.FXML;
@@ -120,11 +121,12 @@ public class PasswordEnforcementPolicyEditorDialog extends Dialog<PasswordEnforc
 
     @FXML
     public void initialize() {
-        setTextFieldsFormatters();
+        setTextFormatters();
         initializeValidator();
     }
 
-    private void setTextFieldsFormatters() {
+    private void setTextFormatters() {
+        policyNameTextField.setTextFormatter(new TextFormatter<String>(new FixedLengthFilter(50)));
         minLengthTextField.setTextFormatter(new TextFormatter<>(new IntRangeStringConverter(1, 100), 6));
         maxConsecutiveEqualCharsTextField.setTextFormatter(new TextFormatter<>(new IntRangeStringConverter(2, 50), 20));
         minSymbolsTextField.setTextFormatter(new TextFormatter<>(new IntRangeStringConverter(2, 20), 2));
