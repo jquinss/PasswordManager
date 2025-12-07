@@ -176,7 +176,6 @@ public class TreeViewController {
         DatabaseManager.getInstance().updateFolder(folderCopy);
         treeItem.setValue(folderCopy);
         // refresh quick view
-        hideDataEntityInQuickViewPane();
         viewDataEntityInQuickViewPane(folderCopy);
     }
 
@@ -315,7 +314,6 @@ public class TreeViewController {
                 decryptFields(passwordEntityCopy);
                 treeItem.setValue(passwordEntityCopy);
                 // refresh quick view pane
-                hideDataEntityInQuickViewPane();
                 viewDataEntityInQuickViewPane(passwordEntityCopy);
             }
             catch (SQLException e) {
