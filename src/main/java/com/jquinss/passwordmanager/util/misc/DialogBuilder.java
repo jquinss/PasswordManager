@@ -1,5 +1,6 @@
 package com.jquinss.passwordmanager.util.misc;
 
+import com.jquinss.passwordmanager.data.BiValue;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
@@ -22,11 +23,11 @@ public class DialogBuilder {
         return fileChooser;
     }
 
-    public static Dialog<Pair<String, String>> buildTwoTextFieldInputDialog(String title, String headerText, String firstFieldName,
-                                                                            String secondFieldName, boolean isOptionalSecondField,
-                                                                            Optional<Pair<String, String>> defaultValues) {
+    public static Dialog<BiValue<String, String>> buildTwoTextFieldInputDialog(String title, String headerText, String firstFieldName,
+                                                                            TextField firstTextField, String secondFieldName,
+                                                                            TextField secondTextField, boolean isOptionalSecondField) {
         Validator validator = new Validator();
-        Dialog<Pair<String, String>> dialog = new Dialog<>();
+        Dialog<BiValue<String, String>> dialog = new Dialog<>();
 
         dialog.setTitle(title);
         dialog.setHeaderText(headerText);
@@ -38,25 +39,11 @@ public class DialogBuilder {
         grid.setVgap(10);
         grid.setPadding(new Insets(20, 150, 10, 10));
 
-        TextField firstField = new TextField();
-        firstField.setPromptText(firstFieldName);
-
-
-        TextField secondField = new TextField();
-        secondField.setPromptText(secondFieldName);
-
-        defaultValues.ifPresent(
-                values -> {
-                    firstField.setText(values.getKey());
-                    secondField.setText(values.getValue());
-                }
-        );
-
         grid.add(new Label(firstFieldName), 0, 0);
-        grid.add(firstField, 1, 0);
+        grid.add(firstTextField, 1, 0);
 
         grid.add(new Label(secondFieldName), 0, 1);
-        grid.add(secondField, 1, 1);
+        grid.add(secondTextField, 1, 1);
 
         Button okButton = (Button) dialog.getDialogPane().lookupButton(ButtonType.OK);
 
@@ -64,15 +51,15 @@ public class DialogBuilder {
 
         validator.createCheck()
                 .withMethod(DialogBuilder::required)
-                .dependsOn("text", firstField.textProperty())
-                .decorates(firstField)
+                .dependsOn("text", firstTextField.textProperty())
+                .decorates(firstTextField)
                 .immediate();
 
         if (!isOptionalSecondField) {
             validator.createCheck()
                     .withMethod(DialogBuilder::required)
-                    .dependsOn("text", secondField.textProperty())
-                    .decorates(secondField)
+                    .dependsOn("text", secondTextField.textProperty())
+                    .decorates(secondTextField)
                     .immediate();
         }
 
@@ -82,7 +69,8 @@ public class DialogBuilder {
 
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == ButtonType.OK) {
-                return new Pair<>(firstField.getText().trim(), secondField.getText());
+                return new BiValue<String, String>(firstTextField.getText().trim(), secondTextField.getText());
+                //return new Pair<>(firstTextField.getText().trim(), secondTextField.getText());
             }
 
             return null;
