@@ -394,7 +394,7 @@ public class PasswordEntityEditorPaneController implements Initializable {
         urlTextField.setTextFormatter(new TextFormatter<String>(new FixedLengthFilter(200)));
         usernameTextField.setTextFormatter(new TextFormatter<String>(new FixedLengthFilter(50)));
         emailAddressTextField.setTextFormatter(new TextFormatter<String>(new FixedLengthFilter(100)));
-        passwordField.setTextFormatter(new TextFormatter<String>(new FixedLengthFilter(50)));
+        passwordField.setTextFormatter(new TextFormatter<String>(new FixedLengthFilter(200)));
         clearPasswordField.setTextFormatter(new TextFormatter<String>(new FixedLengthFilter(50)));
     }
 
