@@ -1,14 +1,12 @@
 package com.jquinss.passwordmanager.controllers;
 
 import com.jquinss.passwordmanager.control.DataEntityTreeItem;
-import com.jquinss.passwordmanager.data.DataEntity;
-import com.jquinss.passwordmanager.data.Folder;
-import com.jquinss.passwordmanager.data.PasswordEntity;
-import com.jquinss.passwordmanager.data.RootFolder;
+import com.jquinss.passwordmanager.data.*;
 import com.jquinss.passwordmanager.enums.TreeViewMode;
 import com.jquinss.passwordmanager.managers.DatabaseManager;
 import com.jquinss.passwordmanager.util.misc.CryptoUtils;
 import com.jquinss.passwordmanager.util.misc.DialogBuilder;
+import com.jquinss.passwordmanager.util.misc.FixedLengthFilter;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -43,15 +41,24 @@ public class TreeViewController {
     }
 
     void createFolder() {
+        TextField folderNameTextField = new TextField();
+        folderNameTextField.setPromptText("Enter folder name");
+        folderNameTextField.setTextFormatter(new TextFormatter<String>(new FixedLengthFilter(50)));
 
-        Dialog<Pair<String, String>> dialog = DialogBuilder.buildTwoTextFieldInputDialog("Create folder",
-                    "Create a new folder:", "Folder name", "Description", true, Optional.empty());
+        TextField folderDescriptionTextField = new TextField();
+        folderDescriptionTextField.setPromptText("Enter description");
+        folderDescriptionTextField.setTextFormatter(new TextFormatter<String>(new FixedLengthFilter(100)));
+
+        Dialog<BiValue<String, String>> dialog = DialogBuilder.buildTwoTextFieldInputDialog("Create folder",
+                    "Create a new folder:", "Folder name:", folderNameTextField, "Description:",
+                folderDescriptionTextField, true);
+
         dialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/styles.css")).toString());
         setWindowLogo((Stage) dialog.getDialogPane().getScene().getWindow(), this, "/com/jquinss/passwordmanager/images/create_folder.png");
-        Optional<Pair<String, String>> optional = dialog.showAndWait();
-        optional.ifPresent(pair -> {
+        Optional<BiValue<String, String>> optional = dialog.showAndWait();
+        optional.ifPresent(biValue -> {
             try {
-                createFolderTreeItem(treeView.getRoot(), pair.getKey(), pair.getValue());
+                createFolderTreeItem(treeView.getRoot(), biValue.first(), biValue.second());
             } catch (SQLException e) {
                 Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Error creating folder",
                             "A database error has occurred during the operation", Alert.AlertType.ERROR);
@@ -127,19 +134,28 @@ public class TreeViewController {
 
     private void editFolder() {
         TreeItem<DataEntity> folderTreeItem = treeView.getSelectionModel().getSelectedItem();
-        if ((folderTreeItem != null) && (folderTreeItem.getValue() instanceof Folder)) {
-            Folder folder = (Folder) folderTreeItem.getValue();
-            Pair<String, String> defaultValues = new Pair<>(folder.getName(), folder.getDescription());
-            Dialog<Pair<String, String>> dialog = DialogBuilder.buildTwoTextFieldInputDialog("Edit folder",
-                    "Edit folder:", "Folder name", "Description", true,
-                    Optional.ofNullable(defaultValues));
+        if ((folderTreeItem != null) && (folderTreeItem.getValue() instanceof Folder folder)) {
+
+            TextField folderNameTextField = new TextField(folder.getName());
+            folderNameTextField.setPromptText("Enter folder name");
+            folderNameTextField.setTextFormatter(new TextFormatter<String>(new FixedLengthFilter(50)));
+
+            TextField folderDescriptionTextField = new TextField();
+            folderDescriptionTextField.setPromptText("Enter description");
+            folderDescriptionTextField.setTextFormatter(new TextFormatter<String>(new FixedLengthFilter(100)));
+            if (folder.getDescription() != null) folderDescriptionTextField.setText(folder.getDescription());
+
+            Dialog<BiValue<String, String>> dialog = DialogBuilder.buildTwoTextFieldInputDialog("Edit folder",
+                    "Edit folder:", "Folder name:", folderNameTextField, "Description:",
+                    folderDescriptionTextField, true);
+
             dialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/styles.css")).toString());
             setWindowLogo((Stage) dialog.getDialogPane().getScene().getWindow(), this, "/com/jquinss/passwordmanager/images/edit_folder.png");
 
-            Optional<Pair<String, String>> optional = dialog.showAndWait();
-            optional.ifPresent(pair -> {
+            Optional<BiValue<String, String>> optional = dialog.showAndWait();
+            optional.ifPresent(biValue -> {
                 try {
-                    editFolderTreeItem(folderTreeItem, pair.getKey(), pair.getValue());
+                    editFolderTreeItem(folderTreeItem, biValue.first(), biValue.second());
                 }
                 catch (SQLException e) {
                     Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Error editing folder",
