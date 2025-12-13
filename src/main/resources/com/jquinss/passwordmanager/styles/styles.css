@@ -452,6 +452,45 @@
  }
 
 
+/* ===== Quickview pane TextArea ===== */
+
+#quick-view-text-area {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-background-insets: 0;
+    -fx-border-insets: 0;
+    -fx-padding: 0;
+}
+
+/* Inner content area */
+#quick-view-text-area .content {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+    -fx-background-insets: 0;
+}
+
+/* Viewport (ScrollPane) */
+#quick-view-text-area .viewport {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+    -fx-background-insets: 0;
+}
+
+/* Remove scroll pane background */
+#quick-view-text-area .scroll-pane {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+    -fx-background-insets: 0;
+}
+
+/* Remove focus ring */
+#quick-view-text-area:focused {
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+
 /* ===== Scrollbars ===== */
 
 .scroll-bar:horizontal, .scroll-bar:vertical {
