@@ -57,7 +57,7 @@ public class PasswordManagerPaneController implements Initializable {
     @FXML
     private VBox entityDescriptionVBox;
     @FXML
-    private Label entityDescription;
+    private TextArea entityDescription;
     @FXML
     private TreeView<DataEntity> treeView;
     @FXML
