@@ -128,10 +128,10 @@ public class PasswordEntityEditorPaneController implements Initializable {
     private void copyToClipboard(ActionEvent event) {
         String buttonId = ((Control) event.getSource()).getId();
         switch (buttonId) {
-            case "copyPasswordButton" -> copyTextControlInputToClipboard(passwordField);
-            case "copyUsernameButton" -> copyTextControlInputToClipboard(usernameTextField);
-            case "copyUrlButton" -> copyTextControlInputToClipboard(urlTextField);
-            case "copyEmailAddressButton" -> copyTextControlInputToClipboard(emailAddressTextField);
+            case "copy-pwd-btn" -> copyTextControlInputToClipboard(passwordField);
+            case "copy-username-btn" -> copyTextControlInputToClipboard(usernameTextField);
+            case "copy-url-btn" -> copyTextControlInputToClipboard(urlTextField);
+            case "copy-email-address-btn" -> copyTextControlInputToClipboard(emailAddressTextField);
         }
     }
 
