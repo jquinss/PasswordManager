@@ -13,4 +13,5 @@ module com.jquinss.passwordmanager {
 
     exports com.jquinss.passwordmanager.app;
     exports com.jquinss.passwordmanager.controllers;
+    exports com.jquinss.passwordmanager.dao;
 }
