@@ -1,5 +1,6 @@
 package com.jquinss.passwordmanager.controllers;
 
+import com.jquinss.passwordmanager.dao.BackupsRepository;
 import com.jquinss.passwordmanager.util.misc.DialogBuilder;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -24,7 +25,13 @@ public class BackupsPaneController implements Initializable {
     @FXML
     private ListView<String> backupsListView;
 
+    private final BackupsRepository backupsRepository;
+
     private ObservableList<String> backups;
+
+    public BackupsPaneController(BackupsRepository backupsRepository) {
+        this.backupsRepository = backupsRepository;
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
