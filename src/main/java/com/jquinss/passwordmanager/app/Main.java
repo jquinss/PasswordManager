@@ -17,10 +17,10 @@ public class Main extends Application{
     public void start(Stage primaryStage) {
         try {
             DataSource vaultDataSource = DataSourceFactory.getDataSource(DataSourceType.SQLITE,
-                    Path.of(OSChecker.getOSDataDirectory(), "PasswordManager",
+                    "jdbc:sqlite:" + Path.of(OSChecker.getOSDataDirectory(), "PasswordManager",
                     "data", "vault.db").toString());
             DataSource backupsDataSource = DataSourceFactory.getDataSource(DataSourceType.SQLITE,
-                    Path.of(OSChecker.getOSDataDirectory(), "PasswordManager",
+                    "jdbc:sqlite:" + Path.of(OSChecker.getOSDataDirectory(), "PasswordManager",
                     "data", "backups.db").toString());
 
             VaultRepository vaultRepository = new VaultRepository(vaultDataSource);
