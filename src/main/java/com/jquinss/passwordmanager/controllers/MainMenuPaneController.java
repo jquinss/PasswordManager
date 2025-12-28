@@ -1,5 +1,6 @@
 package com.jquinss.passwordmanager.controllers;
 
+import com.jquinss.passwordmanager.dao.VaultRepository;
 import com.jquinss.passwordmanager.data.UserProfile;
 import com.jquinss.passwordmanager.exceptions.LoadKeyPairException;
 import com.jquinss.passwordmanager.managers.DatabaseManager;
@@ -9,7 +10,6 @@ import com.jquinss.passwordmanager.util.misc.CryptoUtils;
 import com.jquinss.passwordmanager.util.misc.FixedLengthFilter;
 import com.jquinss.passwordmanager.util.misc.MessageDisplayUtil;
 import javafx.animation.FadeTransition;
-import javafx.animation.PauseTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -56,9 +56,15 @@ public class MainMenuPaneController implements Initializable {
 
     private ObservableList<UserProfile> userProfiles;
 
-    private PasswordManagerController passwordManagerController;
+    private final PasswordManagerController passwordManagerController;
+    private final VaultRepository vaultRepository;
 
     private final Authenticator authenticator = new Authenticator();
+
+    public MainMenuPaneController(PasswordManagerController passwordManagerController, VaultRepository vaultRepository) {
+        this.passwordManagerController = passwordManagerController;
+        this.vaultRepository = vaultRepository;
+    }
     
     @FXML
     private void showLoginTab() {
@@ -125,7 +131,7 @@ public class MainMenuPaneController implements Initializable {
         String password = loginPasswordField.getText();
 
         try {
-            Optional<UserProfile> optional = DatabaseManager.getInstance().getUserProfileByName(userProfile.getName());
+            Optional<UserProfile> optional = vaultRepository.getUserProfileByName(userProfile.getName());
             if (optional.isPresent()) {
                 UserProfile profile = optional.get();
                 boolean validCredentials = authenticator.authenticate(profile, password);
@@ -156,10 +162,6 @@ public class MainMenuPaneController implements Initializable {
         }
     }
 
-    void setPasswordManagerController(PasswordManagerController passwordManagerController) {
-        this.passwordManagerController = passwordManagerController;
-    }
-
     private void showTemporaryMessage(String text, String styleClass) {
         MessageDisplayUtil.showTemporaryMessage(this.message, text, styleClass, 3);
     }
@@ -183,7 +185,7 @@ public class MainMenuPaneController implements Initializable {
 
     protected void loadUserProfiles() {
         try {
-            List<UserProfile> profiles = DatabaseManager.getInstance().getAllUserProfiles();
+            List<UserProfile> profiles = vaultRepository.getAllUserProfiles();
             userProfiles.setAll(profiles);
         } catch (SQLException e) {
             throw new RuntimeException(e);
