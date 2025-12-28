@@ -1,5 +1,6 @@
 package com.jquinss.passwordmanager.controllers;
 
+import com.jquinss.passwordmanager.dao.VaultRepository;
 import com.jquinss.passwordmanager.data.*;
 import com.jquinss.passwordmanager.managers.DatabaseManager;
 import com.jquinss.passwordmanager.util.misc.DialogBuilder;
@@ -37,7 +38,12 @@ public class UserProfilesPaneController implements Initializable {
     private TableColumn<UserProfile, String> isDefaultUserProfileTableColumn;
     @FXML
     private Label message;
+    private final VaultRepository vaultRepository;
     private ObservableList<UserProfile> userProfiles;
+
+    public UserProfilesPaneController(VaultRepository vaultRepository) {
+        this.vaultRepository = vaultRepository;
+    }
 
     @FXML
     private void addUserProfile() throws IOException {
@@ -159,7 +165,7 @@ public class UserProfilesPaneController implements Initializable {
 
     private void loadUserProfiles() {
         try {
-            List<UserProfile> profiles = DatabaseManager.getInstance().getAllUserProfiles();
+            List<UserProfile> profiles = vaultRepository.getAllUserProfiles();
             userProfiles.setAll(profiles);
         }
         catch (SQLException e) {
