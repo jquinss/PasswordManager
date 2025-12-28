@@ -1,14 +1,16 @@
 package com.jquinss.passwordmanager.controllers;
 
+import com.jquinss.passwordmanager.app.AppContext;
+import com.jquinss.passwordmanager.dao.BackupsRepository;
+import com.jquinss.passwordmanager.dao.VaultRepository;
 import com.jquinss.passwordmanager.data.UserProfile;
-import com.jquinss.passwordmanager.managers.DatabaseManager;
 import com.jquinss.passwordmanager.managers.SettingsManager;
 import com.jquinss.passwordmanager.util.misc.CryptoUtils;
+import com.jquinss.passwordmanager.util.misc.OSChecker;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import javax.crypto.NoSuchPaddingException;
@@ -24,21 +26,41 @@ import java.util.Objects;
 public class PasswordManagerController {
 
     private final Stage stage;
+    private final VaultRepository vaultRepository;
+    private final BackupsRepository backupsRepository;
 
-    public PasswordManagerController(Stage stage) {
+    public PasswordManagerController(Stage stage, AppContext appContext) {
         this.stage = stage;
-        initializeDatabase();
+        vaultRepository = appContext.vaultRepository();
+        backupsRepository = appContext.backupsRepository();
+        initializeRepositories();
     }
 
     public void loadMainMenuPane() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/jquinss/passwordmanager/fxml/MainMenuPane.fxml"));
-        stage.setTitle("Password Manager");
-        stage.setResizable(false);
-        BorderPane root = (BorderPane) fxmlLoader.load();
-        final MainMenuPaneController controller = fxmlLoader.getController();
-        controller.setPasswordManagerController(this);
+        fxmlLoader.setControllerFactory(controllerClass -> {
+            if (controllerClass == MainMenuPaneController.class) {
+                return new MainMenuPaneController(this, vaultRepository);
+            }
+            if (controllerClass == UserProfilesPaneController.class) {
+                return new UserProfilesPaneController(vaultRepository);
+            }
+            if (controllerClass == BackupsPaneController.class) {
+                return new BackupsPaneController(backupsRepository);
+            }
+
+            try {
+                return controllerClass.getDeclaredConstructor().newInstance();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        Parent root = fxmlLoader.load();
         Scene scene = new Scene(root, 800, 600);
         setWindowLogo(stage, this, "/com/jquinss/passwordmanager/images/logo.png");
+        stage.setTitle("Password Manager");
+        stage.setResizable(false);
         stage.setScene(scene);
         stage.show();
     }
@@ -62,7 +84,7 @@ public class PasswordManagerController {
 
             return null;
         });
-        VBox root = (VBox) fxmlLoader.load();
+        Parent root = fxmlLoader.load();
         Scene scene = new Scene(root, 950, 640);
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/styles.css")).toString());
         stage.setScene(scene);
@@ -79,10 +101,11 @@ public class PasswordManagerController {
         stage.close();
     }
 
-    private void initializeDatabase() {
+    private void initializeRepositories() {
         try {
-            Files.createDirectories(Path.of(SettingsManager.getInstance().getDatabaseDir()));
-            DatabaseManager.getInstance().initializeDatabase();
+            Files.createDirectories(Path.of(OSChecker.getOSDataDirectory(), "PasswordManager", "data"));
+            vaultRepository.initialize();
+            backupsRepository.initialize();
         } catch (SQLException | IOException e) {
             throw new RuntimeException(e);
         }
