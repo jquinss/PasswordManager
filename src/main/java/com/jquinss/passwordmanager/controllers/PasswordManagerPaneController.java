@@ -220,8 +220,8 @@ public class PasswordManagerPaneController implements Initializable {
     }
 
     private void initializetreeViewController() {
-        treeViewController = new TreeViewController(treeView, asymmetricCrypto);
-        treeViewController.setPasswordManagerPaneController(this);
+        treeViewController = new TreeViewController(this, vaultRepository,
+                treeView, asymmetricCrypto);
         treeViewController.initializeTreeView();
     }
 
