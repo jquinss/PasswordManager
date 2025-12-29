@@ -1,11 +1,11 @@
 package com.jquinss.passwordmanager.controllers;
 
+import com.jquinss.passwordmanager.dao.VaultRepository;
 import com.jquinss.passwordmanager.data.RootFolder;
 import com.jquinss.passwordmanager.data.UserProfile;
 import com.jquinss.passwordmanager.exceptions.InvalidKeyPairException;
 import com.jquinss.passwordmanager.exceptions.LoadKeyPairException;
 import com.jquinss.passwordmanager.exceptions.UserAlreadyExistsException;
-import com.jquinss.passwordmanager.managers.DatabaseManager;
 import com.jquinss.passwordmanager.managers.SettingsManager;
 import com.jquinss.passwordmanager.util.misc.CryptoUtils;
 import com.jquinss.passwordmanager.util.misc.DialogBuilder;
@@ -14,11 +14,11 @@ import com.jquinss.passwordmanager.util.password.PasswordStrength;
 import com.jquinss.passwordmanager.util.password.PasswordStrengthChecker;
 import com.jquinss.passwordmanager.util.password.PasswordStrengthCriteria;
 import javafx.animation.PauseTransition;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.chart.PieChart;
+import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -39,8 +39,6 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class UserProfileSetUpPaneController implements Initializable {
-    public ImageView publicKeyQuestionMarkImageView;
-    public ImageView privateKeyQuestionMarkImageView;
     @FXML
     private TextField userProfileNameTextField;
     @FXML
@@ -63,26 +61,32 @@ public class UserProfileSetUpPaneController implements Initializable {
     private TextField privateKeyTextField;
     @FXML
     private Label message;
-
+    private final UserProfilesPaneController userProfilesPaneController;
+    private final VaultRepository vaultRepository;
     private final Validator validator = new Validator();
-
     private final PasswordStrengthChecker passwordStrengthChecker = new PasswordStrengthChecker();
 
-    private UserProfilesPaneController userProfilesPaneController;
-
-    private Stage stage;
-
-    @FXML
-    private void selectPublicKey() {
-        selectFile("Select the public key", publicKeyTextField);
+    public UserProfileSetUpPaneController(UserProfilesPaneController userProfilesPaneController,
+                                          VaultRepository vaultRepository) {
+        this.userProfilesPaneController = userProfilesPaneController;
+        this.vaultRepository = vaultRepository;
     }
 
     @FXML
-    public void selectPrivateKey() {
-        selectFile("Select the private key", privateKeyTextField);
+    private void selectPublicKey(ActionEvent event) {
+        selectFile("Select the public key",
+                publicKeyTextField,
+                getStageFromActionEvent(event));
     }
 
-    private void selectFile(String dialogTitle, TextField textField) {
+    @FXML
+    public void selectPrivateKey(ActionEvent event) {
+        selectFile("Select the private key",
+                privateKeyTextField,
+                getStageFromActionEvent(event));
+    }
+
+    private void selectFile(String dialogTitle, TextField textField, Stage stage) {
         FileChooser fileChooser = DialogBuilder.buildFileChooser(dialogTitle);
         File file = fileChooser.showOpenDialog(stage);
         if (file != null) {
@@ -91,8 +95,13 @@ public class UserProfileSetUpPaneController implements Initializable {
     }
 
     @FXML
-    public void cancelMenu() {
-        stage.close();
+    public void cancelMenu(ActionEvent event) {
+        getStageFromActionEvent(event).close();
+    }
+
+    private Stage getStageFromActionEvent(ActionEvent event) {
+        Node source = (Node) event.getSource();
+        return (Stage) source.getScene().getWindow();
     }
 
     @FXML
@@ -107,11 +116,11 @@ public class UserProfileSetUpPaneController implements Initializable {
             validateKeyPair(keyPair);
 
             UserProfile userProfile = createUserProfile(userProfileName, password, keyPair);
-            DatabaseManager.getInstance().addUserProfile(userProfile);
-            Optional<UserProfile> optional = DatabaseManager.getInstance().getUserProfileByName(userProfile.getName());
+            vaultRepository.addUserProfile(userProfile);
+            Optional<UserProfile> optional = vaultRepository.getUserProfileByName(userProfile.getName());
             optional.ifPresent(profile -> {
                 try {
-                    DatabaseManager.getInstance().addRootFolder(new RootFolder("Root", profile.getId()));
+                    vaultRepository.addRootFolder(new RootFolder("Root", profile.getId()));
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }
@@ -140,7 +149,7 @@ public class UserProfileSetUpPaneController implements Initializable {
     }
 
     private void validateUserProfileName(String userProfileName) throws UserAlreadyExistsException, SQLException {
-        Optional<UserProfile> result = DatabaseManager.getInstance().getUserProfileByName(userProfileName);
+        Optional<UserProfile> result = vaultRepository.getUserProfileByName(userProfileName);
         if (result.isPresent()) {
             throw new UserAlreadyExistsException("Profile" + result.get().getName() + " already exists");
         }
@@ -172,12 +181,12 @@ public class UserProfileSetUpPaneController implements Initializable {
 
         UserProfile userProfile = new UserProfile(name, passwordHash);
         if (defaultProfileCheckBox.isSelected()) {
-            Optional<UserProfile> defaultUserProfile = DatabaseManager.getInstance().getDefaultUserProfile();
+            Optional<UserProfile> defaultUserProfile = vaultRepository.getDefaultUserProfile();
             defaultUserProfile.ifPresent(profile -> {
                 System.out.println(profile.isDefaultProfile());
                 profile.setDefaultProfile(false);
                 try {
-                    DatabaseManager.getInstance().updateUserProfile(profile);
+                    vaultRepository.updateUserProfile(profile);
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }
@@ -190,10 +199,6 @@ public class UserProfileSetUpPaneController implements Initializable {
         userProfile.setPrivateKeyIV(iv);
 
         return userProfile;
-    }
-
-    void setUserProfilesController(UserProfilesPaneController userProfilesPaneController) {
-        this.userProfilesPaneController = userProfilesPaneController;
     }
 
     private void initializeBindings() {
@@ -313,10 +318,6 @@ public class UserProfileSetUpPaneController implements Initializable {
         confirmPasswordField.clear();
         publicKeyTextField.clear();
         privateKeyTextField.clear();
-    }
-
-    void setStage(Stage stage) {
-        this.stage = stage;
     }
 
     @Override
