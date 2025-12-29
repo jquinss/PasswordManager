@@ -46,9 +46,6 @@ public class UserProfilesPaneController implements Initializable {
     @FXML
     private void addUserProfile() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/jquinss/passwordmanager/fxml/UserProfileSetUpPane.fxml"));
-        Parent parent = fxmlLoader.load();
-        Scene scene = new Scene(parent, 580, 450);
-        Stage stage = new Stage();
 
         fxmlLoader.setControllerFactory(controllerClass -> {
             if (controllerClass == UserProfileSetUpPaneController.class) {
@@ -61,6 +58,10 @@ public class UserProfilesPaneController implements Initializable {
                 throw new RuntimeException(e);
             }
         });
+
+        Parent parent = fxmlLoader.load();
+        Scene scene = new Scene(parent, 580, 450);
+        Stage stage = new Stage();
 
         stage.setResizable(false);
         stage.setTitle("Create Profile");
