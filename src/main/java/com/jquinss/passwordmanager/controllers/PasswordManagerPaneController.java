@@ -1,5 +1,6 @@
 package com.jquinss.passwordmanager.controllers;
 
+import com.jquinss.passwordmanager.dao.VaultRepository;
 import com.jquinss.passwordmanager.data.*;
 import com.jquinss.passwordmanager.security.UserProfileSession;
 import com.jquinss.passwordmanager.util.misc.CryptoUtils;
@@ -64,16 +65,17 @@ public class PasswordManagerPaneController implements Initializable {
     private PasswordEntityEditorPaneController passwordEntityEditorPaneController;
     private final UserProfileSession userProfileSession = new UserProfileSession();
     private final CryptoUtils.AsymmetricCrypto asymmetricCrypto;
+    private final PasswordManagerController passwordManagerController;
+    private final VaultRepository vaultRepository;
     private TreeViewController treeViewController;
-    private PasswordManagerController passwordManagerController;
 
-    public PasswordManagerPaneController(UserProfile userProfile, CryptoUtils.AsymmetricCrypto asymmetricCrypto) {
+
+    public PasswordManagerPaneController(PasswordManagerController passwordManagerController, VaultRepository vaultRepository,
+                                         UserProfile userProfile, CryptoUtils.AsymmetricCrypto asymmetricCrypto) {
+        this.passwordManagerController = passwordManagerController;
+        this.vaultRepository = vaultRepository;
         userProfileSession.initiate(userProfile);
         this.asymmetricCrypto = asymmetricCrypto;
-    }
-
-    void setPasswordManagerController(PasswordManagerController passwordManagerController) {
-        this.passwordManagerController = passwordManagerController;
     }
 
     @FXML
