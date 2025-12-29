@@ -69,32 +69,34 @@ public class PasswordManagerController {
             NoSuchAlgorithmException, InvalidKeyException {
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/jquinss/passwordmanager/fxml/PasswordManagerPane.fxml"));
-        stage.setTitle("Password Manager");
+
         CryptoUtils.AsymmetricCrypto asymmetricCrypto = new CryptoUtils.AsymmetricCrypto(SettingsManager.getInstance().getKeyPairAlgorithm(), keyPair);
-        PasswordManagerPaneController controller = new PasswordManagerPaneController(userProfile, asymmetricCrypto);
-        controller.setPasswordManagerController(this);
+
         fxmlLoader.setControllerFactory(controllerClass -> {
             if (controllerClass == PasswordManagerPaneController.class) {
-                return controller;
+                return new PasswordManagerPaneController(this, vaultRepository,
+                                                            userProfile, asymmetricCrypto);
             }
 
             if (controllerClass == PasswordEntityEditorPaneController.class) {
                 return new PasswordEntityEditorPaneController();
             }
 
-            return null;
+            try {
+                return controllerClass.getDeclaredConstructor().newInstance();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         });
+
         Parent root = fxmlLoader.load();
         Scene scene = new Scene(root, 950, 640);
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/styles.css")).toString());
+        stage.setTitle("Password Manager");
         stage.setScene(scene);
         stage.show();
 
 
-    }
-
-    Stage getStage() {
-        return stage;
     }
 
     void exitApplication() {
