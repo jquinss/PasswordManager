@@ -95,8 +95,6 @@ public class PasswordManagerPaneController implements Initializable {
         Parent parent = fxmlLoader.load();
 
         Scene scene = new Scene(parent, 400, 380);
-        //scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/styles.css")).toString());
-
         Stage stage = new Stage();
 
         final PasswordPoliciesPaneController controller = fxmlLoader.getController();
@@ -118,8 +116,6 @@ public class PasswordManagerPaneController implements Initializable {
         Parent parent = fxmlLoader.load();
 
         Scene scene = new Scene(parent);
-        //scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/styles.css")).toString());
-
         Stage stage = new Stage();
 
         final PasswordGeneratorPaneController controller = fxmlLoader.getController();
@@ -224,10 +220,6 @@ public class PasswordManagerPaneController implements Initializable {
                 treeView, asymmetricCrypto);
     }
 
-    private void initializePasswordEntityEditorPaneController() {
-        passwordEntityEditorPaneController.setPasswordManagerPaneController(this);
-    }
-
     void viewDataEntityInQuickViewPane(DataEntity dataEntity) {
         //quickViewPane.setVisible(true);
         showPane(quickViewPane);
@@ -306,6 +298,5 @@ public class PasswordManagerPaneController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         initializetreeViewController();
-        initializePasswordEntityEditorPaneController();
     }
 }
