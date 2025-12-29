@@ -1,8 +1,8 @@
 package com.jquinss.passwordmanager.controllers;
 
+import com.jquinss.passwordmanager.dao.VaultRepository;
 import com.jquinss.passwordmanager.data.*;
 import com.jquinss.passwordmanager.enums.DataEntityEditorMode;
-import com.jquinss.passwordmanager.managers.DatabaseManager;
 import com.jquinss.passwordmanager.util.misc.DialogBuilder;
 import com.jquinss.passwordmanager.util.misc.FixedLengthFilter;
 import com.jquinss.passwordmanager.util.password.*;
@@ -71,12 +71,19 @@ public class PasswordEntityEditorPaneController implements Initializable {
     @FXML
     private CheckBox showPasswordCheckBox;
     private DataEntityEditorMode editorMode;
-    private PasswordManagerPaneController passwordManagerPaneController;
+    private final PasswordManagerPaneController passwordManagerPaneController;
+    private final VaultRepository vaultRepository;
     private final Validator validator = new Validator();
     private final ObservableList<PasswordEnforcementPolicy> passwordEnforcementPolicyObsList = FXCollections.observableArrayList();
     private final ObservableList<PasswordGeneratorPolicy> passwordGeneratorPolicyObsList = FXCollections.observableArrayList();
     private final PasswordStrengthChecker passwordStrengthChecker = new PasswordStrengthChecker();
     private PasswordGenerator passwordGenerator;
+
+    public PasswordEntityEditorPaneController(PasswordManagerPaneController passwordManagerPaneController,
+                                              VaultRepository vaultRepository) {
+        this.passwordManagerPaneController = passwordManagerPaneController;
+        this.vaultRepository = vaultRepository;
+    }
 
     @FXML
     private void save() {
@@ -223,7 +230,7 @@ public class PasswordEntityEditorPaneController implements Initializable {
 
     private void loadPasswordEnforcementPolicies() {
         try {
-            passwordEnforcementPolicyObsList.setAll(DatabaseManager.getInstance().getAllPasswordEnforcementPoliciesByUserProfileId(passwordManagerPaneController.getUserProfileSession().getCurrentUserProfileId()));
+            passwordEnforcementPolicyObsList.setAll(vaultRepository.getAllPasswordEnforcementPoliciesByUserProfileId(passwordManagerPaneController.getUserProfileSession().getCurrentUserProfileId()));
         }
         catch (SQLException e) {
             throw new RuntimeException(e);
@@ -274,7 +281,7 @@ public class PasswordEntityEditorPaneController implements Initializable {
 
     private void loadPasswordGeneratorPolicies() {
         try {
-            passwordGeneratorPolicyObsList.setAll(DatabaseManager.getInstance().getAllPasswordGeneratorPoliciesByUserProfileId(passwordManagerPaneController.getUserProfileSession().getCurrentUserProfileId()));
+            passwordGeneratorPolicyObsList.setAll(vaultRepository.getAllPasswordGeneratorPoliciesByUserProfileId(passwordManagerPaneController.getUserProfileSession().getCurrentUserProfileId()));
         }
         catch (SQLException e) {
             throw new RuntimeException(e);
@@ -539,10 +546,6 @@ public class PasswordEntityEditorPaneController implements Initializable {
         resetPasswordGeneratorPolicies();
         passwordExpiresCheckBox.setSelected(false);
         passwordExpirationDatePicker.setValue(null);
-    }
-
-    void setPasswordManagerPaneController(PasswordManagerPaneController passwordManagerPaneController) {
-        this.passwordManagerPaneController = passwordManagerPaneController;
     }
 
     private boolean isPasswordEntityExpired(PasswordEntity passwordEntity) {
