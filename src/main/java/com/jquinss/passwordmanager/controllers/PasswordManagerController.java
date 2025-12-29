@@ -72,14 +72,16 @@ public class PasswordManagerController {
 
         CryptoUtils.AsymmetricCrypto asymmetricCrypto = new CryptoUtils.AsymmetricCrypto(SettingsManager.getInstance().getKeyPairAlgorithm(), keyPair);
 
+        PasswordManagerPaneController passwordManagerPaneController = new PasswordManagerPaneController(this, vaultRepository,
+                                                                                                userProfile, asymmetricCrypto);
+
         fxmlLoader.setControllerFactory(controllerClass -> {
             if (controllerClass == PasswordManagerPaneController.class) {
-                return new PasswordManagerPaneController(this, vaultRepository,
-                                                            userProfile, asymmetricCrypto);
+                return passwordManagerPaneController;
             }
 
             if (controllerClass == PasswordEntityEditorPaneController.class) {
-                return new PasswordEntityEditorPaneController();
+                return new PasswordEntityEditorPaneController(passwordManagerPaneController, vaultRepository);
             }
 
             try {
