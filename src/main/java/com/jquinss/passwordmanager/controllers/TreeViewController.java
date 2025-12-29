@@ -1,9 +1,9 @@
 package com.jquinss.passwordmanager.controllers;
 
 import com.jquinss.passwordmanager.control.DataEntityTreeItem;
+import com.jquinss.passwordmanager.dao.VaultRepository;
 import com.jquinss.passwordmanager.data.*;
 import com.jquinss.passwordmanager.enums.TreeViewMode;
-import com.jquinss.passwordmanager.managers.DatabaseManager;
 import com.jquinss.passwordmanager.util.misc.CryptoUtils;
 import com.jquinss.passwordmanager.util.misc.DialogBuilder;
 import com.jquinss.passwordmanager.util.misc.FixedLengthFilter;
@@ -14,7 +14,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
 import javafx.stage.Stage;
 import javafx.util.Callback;
-import javafx.util.Pair;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -27,17 +26,22 @@ public class TreeViewController {
     private final TreeView<DataEntity> treeView;
     private final CryptoUtils.AsymmetricCrypto asymmetricCrypto;
     private final ContextMenuBuilder contextMenuBuilder = new ContextMenuBuilder();
-
+    private final PasswordManagerPaneController passwordManagerPaneController;
+    private final VaultRepository vaultRepository;
     private DataFormat dataFormat = DataFormat.lookupMimeType("fileItemDataFormat");
     private TreeViewMode treeViewMode;
-    private PasswordManagerPaneController passwordManagerPaneController;
 
-    public TreeViewController(TreeView<DataEntity> treeView, CryptoUtils.AsymmetricCrypto asymmetricCrypto) {
+
+    public TreeViewController(PasswordManagerPaneController passwordManagerPaneController, VaultRepository vaultRepository,
+                              TreeView<DataEntity> treeView, CryptoUtils.AsymmetricCrypto asymmetricCrypto) {
+        this.passwordManagerPaneController = passwordManagerPaneController;
+        this.vaultRepository = vaultRepository;
         this.treeView = treeView;
         this.asymmetricCrypto = asymmetricCrypto;
         if (dataFormat == null) {
             dataFormat = new DataFormat("fileItemDataFormat");
         }
+        initializeTreeView();
     }
 
     void createFolder() {
@@ -78,7 +82,7 @@ public class TreeViewController {
         Folder folder = new Folder(name);
         folder.setParentFolderId(parentFolderId);
         folder.setDescription(description);
-        DatabaseManager.getInstance().addFolder(folder);
+        vaultRepository.addFolder(folder);
         return folder;
     }
 
@@ -108,7 +112,7 @@ public class TreeViewController {
     private void deleteFolder(TreeItem<DataEntity> folderTreeItem) {
         try {
             Folder folder = (Folder) folderTreeItem.getValue();
-            DatabaseManager.getInstance().deleteFolder(folder);
+            vaultRepository.deleteFolder(folder);
             folderTreeItem.getParent().getChildren().remove(folderTreeItem);
         }
         catch (SQLException e) {
@@ -122,7 +126,7 @@ public class TreeViewController {
     private void deleteAllPasswordEntitiesInFolder(TreeItem<DataEntity> folderTreeItem) {
         List<PasswordEntity> passwordEntities = folderTreeItem.getChildren().stream().map(item -> (PasswordEntity) item.getValue()).toList();
         try {
-            DatabaseManager.getInstance().deletePasswordEntities(passwordEntities);
+            vaultRepository.deletePasswordEntities(passwordEntities);
         }
         catch (SQLException e) {
             Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Error deleting password entities",
@@ -173,7 +177,7 @@ public class TreeViewController {
         Folder folderCopy = folder.clone();
         folderCopy.setName(name);
         folderCopy.setDescription(description);
-        DatabaseManager.getInstance().updateFolder(folderCopy);
+        vaultRepository.updateFolder(folderCopy);
         treeItem.setValue(folderCopy);
         // refresh quick view
         viewDataEntityInQuickViewPane(folderCopy);
@@ -191,7 +195,7 @@ public class TreeViewController {
         TreeItem<DataEntity> selectedTreeItem = treeView.getSelectionModel().getSelectedItem();
         if ((selectedTreeItem != null ) && (selectedTreeItem.getValue() instanceof PasswordEntity)) {
             try {
-                DatabaseManager.getInstance().deletePasswordEntity((PasswordEntity) selectedTreeItem.getValue());
+                vaultRepository.deletePasswordEntity((PasswordEntity) selectedTreeItem.getValue());
                 selectedTreeItem.getParent().getChildren().remove(selectedTreeItem);
             } catch (SQLException e) {
                 Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Error deleting password entity",
@@ -297,7 +301,7 @@ public class TreeViewController {
 
     private void savePasswordEntityToDatabase(PasswordEntity passwordEntity) throws SQLException {
         encryptFields(passwordEntity); // encrypt fields to save to the database
-        DatabaseManager.getInstance().addPasswordEntity(passwordEntity);
+        vaultRepository.addPasswordEntity(passwordEntity);
         decryptFields(passwordEntity);
     }
 
@@ -310,7 +314,7 @@ public class TreeViewController {
         treeViewMode.getTreeItem().ifPresent(treeItem -> {
             try {
                 encryptFields(passwordEntityCopy); // encrypt fields to save to the database
-                DatabaseManager.getInstance().updatePasswordEntity(passwordEntityCopy);
+                vaultRepository.updatePasswordEntity(passwordEntityCopy);
                 decryptFields(passwordEntityCopy);
                 treeItem.setValue(passwordEntityCopy);
                 // refresh quick view pane
@@ -333,7 +337,7 @@ public class TreeViewController {
         PasswordEntity passwordEntityCopy = (PasswordEntity) passwordEntity.clone();
         passwordEntityCopy.setFolderId(destFolderTreeItem.getValue().getId());
         encryptFields(passwordEntityCopy);
-        DatabaseManager.getInstance().updatePasswordEntity(passwordEntityCopy);
+        vaultRepository.updatePasswordEntity(passwordEntityCopy);
         decryptFields(passwordEntityCopy);
         passwordEntityTreeItem.setValue(passwordEntityCopy);
         passwordEntityTreeItem.getParent().getChildren().remove(passwordEntityTreeItem);
@@ -350,7 +354,9 @@ public class TreeViewController {
 
     private void initializeRootTreeItem() {
         try {
-            Optional<RootFolder> optional = DatabaseManager.getInstance().getRootFolderByUserProfileId(passwordManagerPaneController.getUserProfileSession().getCurrentUserProfileId());
+            Optional<RootFolder> optional = vaultRepository.getRootFolderByUserProfileId(passwordManagerPaneController.
+                                                                                        getUserProfileSession().
+                                                                                        getCurrentUserProfileId());
             if (optional.isPresent()) {
                 treeView.setRoot(buildTreeItem(optional.get()));
             }
@@ -366,7 +372,7 @@ public class TreeViewController {
     private void loadTreeItems() {
         try {
             TreeItem<DataEntity> rootTreeItem = treeView.getRoot();
-            List<Folder> folders = DatabaseManager.getInstance().getAllFoldersByParentFolderId(rootTreeItem.getValue().getId());
+            List<Folder> folders = vaultRepository.getAllFoldersByParentFolderId(rootTreeItem.getValue().getId());
             for (Folder folder : folders) {
                 TreeItem<DataEntity> treeItem = buildTreeItem(folder);
                 rootTreeItem.getChildren().add(treeItem);
@@ -379,7 +385,7 @@ public class TreeViewController {
     }
 
     private void loadPasswordEntities(TreeItem<DataEntity> folderTreeItem) throws SQLException {
-        List<PasswordEntity> pwdEntities = DatabaseManager.getInstance().getAllPasswordEntitiesByFolderId(folderTreeItem.getValue().getId());
+        List<PasswordEntity> pwdEntities = vaultRepository.getAllPasswordEntitiesByFolderId(folderTreeItem.getValue().getId());
         for (PasswordEntity pwdEntity : pwdEntities) {
             decryptFields(pwdEntity);
             folderTreeItem.getChildren().add(buildTreeItem(pwdEntity));
@@ -415,8 +421,9 @@ public class TreeViewController {
     }
 
     private void createRootTreeItem() throws SQLException {
-        Optional<RootFolder> optional = DatabaseManager.getInstance().
-                getRootFolderByUserProfileId(passwordManagerPaneController.getUserProfileSession().getCurrentUserProfileId());
+        Optional<RootFolder> optional = vaultRepository.getRootFolderByUserProfileId(passwordManagerPaneController.
+                                                                                    getUserProfileSession().
+                                                                                    getCurrentUserProfileId());
         optional.ifPresent(rootFolder -> treeView.setRoot(buildTreeItem(rootFolder)));
     }
 
@@ -611,10 +618,6 @@ public class TreeViewController {
                 passwordManagerPaneController.disableAllToolbarButtons();
             }
         });
-    }
-
-    void setPasswordManagerPaneController(PasswordManagerPaneController passwordManagerPaneController) {
-        this.passwordManagerPaneController = passwordManagerPaneController;
     }
 
     void setViewMode() {
