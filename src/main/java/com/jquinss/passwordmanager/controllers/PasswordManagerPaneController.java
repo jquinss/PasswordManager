@@ -222,7 +222,6 @@ public class PasswordManagerPaneController implements Initializable {
     private void initializetreeViewController() {
         treeViewController = new TreeViewController(this, vaultRepository,
                 treeView, asymmetricCrypto);
-        treeViewController.initializeTreeView();
     }
 
     private void initializePasswordEntityEditorPaneController() {
