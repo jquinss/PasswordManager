@@ -5,7 +5,6 @@ import com.jquinss.passwordmanager.data.*;
 import com.jquinss.passwordmanager.managers.DatabaseManager;
 import com.jquinss.passwordmanager.util.misc.DialogBuilder;
 import com.jquinss.passwordmanager.util.misc.MessageDisplayUtil;
-import javafx.animation.PauseTransition;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -19,7 +18,6 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 
 import java.io.IOException;
 import java.net.URL;
@@ -52,9 +50,17 @@ public class UserProfilesPaneController implements Initializable {
         Scene scene = new Scene(parent, 580, 450);
         Stage stage = new Stage();
 
-        final UserProfileSetUpPaneController controller = fxmlLoader.getController();
-        controller.setUserProfilesController(this);
-        controller.setStage(stage);
+        fxmlLoader.setControllerFactory(controllerClass -> {
+            if (controllerClass == UserProfileSetUpPaneController.class) {
+                return new UserProfileSetUpPaneController(this, vaultRepository);
+            }
+
+            try {
+                return controllerClass.getDeclaredConstructor().newInstance();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
 
         stage.setResizable(false);
         stage.setTitle("Create Profile");
