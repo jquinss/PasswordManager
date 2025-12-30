@@ -92,15 +92,23 @@ public class PasswordManagerPaneController implements Initializable {
     @FXML
     private void openPasswordPoliciesPane() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/jquinss/passwordmanager/fxml/PasswordPoliciesPane.fxml"));
+
+        fxmlLoader.setControllerFactory(controllerClass -> {
+            if (controllerClass == PasswordPoliciesPaneController.class) {
+                return new PasswordPoliciesPaneController(this, vaultRepository);
+            }
+
+            try {
+                return controllerClass.getDeclaredConstructor().newInstance();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+
         Parent parent = fxmlLoader.load();
 
         Scene scene = new Scene(parent, 400, 380);
         Stage stage = new Stage();
-
-        final PasswordPoliciesPaneController controller = fxmlLoader.getController();
-        controller.setPasswordManagerPaneController(this);
-        controller.setStage(stage);
-        controller.initializePolicies();
 
         stage.setResizable(false);
         stage.setTitle("Password Policies");
@@ -117,9 +125,6 @@ public class PasswordManagerPaneController implements Initializable {
 
         Scene scene = new Scene(parent);
         Stage stage = new Stage();
-
-        final PasswordGeneratorPaneController controller = fxmlLoader.getController();
-
         stage.setResizable(false);
         stage.setTitle("Password Generator");
         setWindowLogo(stage, this, "/com/jquinss/passwordmanager/images/password_generator.png");
