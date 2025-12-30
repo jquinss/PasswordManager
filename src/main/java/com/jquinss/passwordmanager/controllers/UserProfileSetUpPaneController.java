@@ -80,10 +80,10 @@ public class UserProfileSetUpPaneController implements Initializable {
     }
 
     @FXML
-    public void selectPrivateKey(ActionEvent event) {
+    public void selectPrivateKey(ActionEvent actionEvent) {
         selectFile("Select the private key",
                 privateKeyTextField,
-                getStageFromActionEvent(event));
+                getStageFromActionEvent(actionEvent));
     }
 
     private void selectFile(String dialogTitle, TextField textField, Stage stage) {
@@ -95,12 +95,12 @@ public class UserProfileSetUpPaneController implements Initializable {
     }
 
     @FXML
-    public void cancelMenu(ActionEvent event) {
-        getStageFromActionEvent(event).close();
+    public void cancelMenu(ActionEvent actionEvent) {
+        getStageFromActionEvent(actionEvent).close();
     }
 
-    private Stage getStageFromActionEvent(ActionEvent event) {
-        Node source = (Node) event.getSource();
+    private Stage getStageFromActionEvent(ActionEvent actionEvent) {
+        Node source = (Node) actionEvent.getSource();
         return (Stage) source.getScene().getWindow();
     }
 
