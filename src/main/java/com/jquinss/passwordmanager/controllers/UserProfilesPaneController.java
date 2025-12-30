@@ -2,7 +2,6 @@ package com.jquinss.passwordmanager.controllers;
 
 import com.jquinss.passwordmanager.dao.VaultRepository;
 import com.jquinss.passwordmanager.data.*;
-import com.jquinss.passwordmanager.managers.DatabaseManager;
 import com.jquinss.passwordmanager.util.misc.DialogBuilder;
 import com.jquinss.passwordmanager.util.misc.MessageDisplayUtil;
 import javafx.beans.property.SimpleStringProperty;
@@ -93,7 +92,7 @@ public class UserProfilesPaneController implements Initializable {
         Optional<ButtonType> result = confirmationDialog.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
             try {
-                Optional<UserProfile> optional = DatabaseManager.getInstance().getUserProfileByName(selectedProfile.getName());
+                Optional<UserProfile> optional = vaultRepository.getUserProfileByName(selectedProfile.getName());
                 optional.ifPresent(userProfile -> {
                     try {
                         deleteUserProfile(userProfile);
@@ -117,12 +116,12 @@ public class UserProfilesPaneController implements Initializable {
     }
 
     private void deleteUserProfile(UserProfile userProfile) throws SQLException {
-        Optional<RootFolder> optional = DatabaseManager.getInstance().getRootFolderByUserProfileId(userProfile.getId());
+        Optional<RootFolder> optional = vaultRepository.getRootFolderByUserProfileId(userProfile.getId());
         optional.ifPresent(rootFolder -> {
             try {
-                List<Folder> folders = DatabaseManager.getInstance().getAllFoldersByParentFolderId(rootFolder.getId());
-                DatabaseManager.getInstance().deleteFolders(folders);
-                DatabaseManager.getInstance().deleteRootFolder(rootFolder);
+                List<Folder> folders = vaultRepository.getAllFoldersByParentFolderId(rootFolder.getId());
+                vaultRepository.deleteFolders(folders);
+                vaultRepository.deleteRootFolder(rootFolder);
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
@@ -131,24 +130,24 @@ public class UserProfilesPaneController implements Initializable {
         deletePasswordEnforcementPolicies(userProfile.getId());
         deletePasswordGeneratorPolicies(userProfile.getId());
         deletePasswordEntities(userProfile.getId());
-        DatabaseManager.getInstance().deleteUserProfile(userProfile);
+        vaultRepository.deleteUserProfile(userProfile);
     }
 
     private void deletePasswordEntities(int userProfileId) throws SQLException {
-        List<PasswordEntity> passwordEntities = DatabaseManager.getInstance().getAllPasswordEntitiesByUserProfileId(userProfileId);
-        DatabaseManager.getInstance().deletePasswordEntities(passwordEntities);
+        List<PasswordEntity> passwordEntities = vaultRepository.getAllPasswordEntitiesByUserProfileId(userProfileId);
+        vaultRepository.deletePasswordEntities(passwordEntities);
     }
 
     private void deletePasswordEnforcementPolicies(int userProfileId) throws SQLException {
         List<PasswordEnforcementPolicy> passwordEnforcementPolicies =
-                DatabaseManager.getInstance().getAllPasswordEnforcementPoliciesByUserProfileId(userProfileId);
-        DatabaseManager.getInstance().deletePasswordEnforcementPolicies(passwordEnforcementPolicies);
+                vaultRepository.getAllPasswordEnforcementPoliciesByUserProfileId(userProfileId);
+        vaultRepository.deletePasswordEnforcementPolicies(passwordEnforcementPolicies);
     }
 
     private void deletePasswordGeneratorPolicies(int userProfileId) throws SQLException {
         List<PasswordGeneratorPolicy> passwordGeneratorPolicies =
-                DatabaseManager.getInstance().getAllPasswordGeneratorPoliciesByUserProfileId(userProfileId);
-        DatabaseManager.getInstance().deletePasswordGeneratorPolicies(passwordGeneratorPolicies);
+                vaultRepository.getAllPasswordGeneratorPoliciesByUserProfileId(userProfileId);
+        vaultRepository.deletePasswordGeneratorPolicies(passwordGeneratorPolicies);
     }
 
     @Override
