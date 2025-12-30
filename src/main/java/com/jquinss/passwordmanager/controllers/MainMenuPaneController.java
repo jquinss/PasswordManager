@@ -3,7 +3,6 @@ package com.jquinss.passwordmanager.controllers;
 import com.jquinss.passwordmanager.dao.VaultRepository;
 import com.jquinss.passwordmanager.data.UserProfile;
 import com.jquinss.passwordmanager.exceptions.LoadKeyPairException;
-import com.jquinss.passwordmanager.managers.DatabaseManager;
 import com.jquinss.passwordmanager.managers.SettingsManager;
 import com.jquinss.passwordmanager.security.Authenticator;
 import com.jquinss.passwordmanager.util.misc.CryptoUtils;
