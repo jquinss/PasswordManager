@@ -2,16 +2,18 @@ package com.jquinss.passwordmanager.controllers;
 
 import com.jquinss.passwordmanager.control.PasswordEnforcementPolicyEditorDialog;
 import com.jquinss.passwordmanager.control.PasswordGeneratorPolicyEditorDialog;
+import com.jquinss.passwordmanager.dao.VaultRepository;
 import com.jquinss.passwordmanager.data.PasswordEntity;
 import com.jquinss.passwordmanager.data.PasswordGeneratorPolicy;
 import com.jquinss.passwordmanager.data.PasswordEnforcementPolicy;
 import com.jquinss.passwordmanager.enums.PasswordPolicyEditorMode;
-import com.jquinss.passwordmanager.managers.DatabaseManager;
 import com.jquinss.passwordmanager.util.misc.DialogBuilder;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -34,21 +36,26 @@ public class PasswordPoliciesPaneController {
     private TableColumn<PasswordGeneratorPolicy, String> passwordGeneratorPolicyNameTableColumn;
     @FXML
     private TableColumn<PasswordGeneratorPolicy, String> passwordGeneratorIsDefaultPolicyTableColumn;
-    private Stage stage;
-
     private final ObservableList<PasswordEnforcementPolicy> passwordEnforcementPolicyObsList = FXCollections.observableArrayList();
     private final ObservableList<PasswordGeneratorPolicy> passwordGeneratorPolicyObsList = FXCollections.observableArrayList();
     private PasswordEnforcementPolicy defaultPasswordEnforcementPolicy;
     private PasswordGeneratorPolicy defaultPasswordGeneratorPolicy;
-    private PasswordManagerPaneController passwordManagerPaneController;
+    private final PasswordManagerPaneController passwordManagerPaneController;
+    private final VaultRepository vaultRepository;
+
+    public PasswordPoliciesPaneController(PasswordManagerPaneController passwordManagerPaneController,
+                                          VaultRepository vaultRepository) {
+        this.passwordManagerPaneController = passwordManagerPaneController;
+        this.vaultRepository = vaultRepository;
+    }
 
     @FXML
-    private void addPasswordEnforcementPolicy() {
-        PasswordEnforcementPolicyEditorDialog dialog = new PasswordEnforcementPolicyEditorDialog(stage, PasswordPolicyEditorMode.CREATE);
+    private void addPasswordEnforcementPolicy(ActionEvent actionEvent) {
+        PasswordEnforcementPolicyEditorDialog dialog = new PasswordEnforcementPolicyEditorDialog(getStageFromActionEvent(actionEvent), PasswordPolicyEditorMode.CREATE);
         dialog.showAndWait().ifPresent(passwordEnforcementPolicy -> {
             try {
                 passwordEnforcementPolicy.setUserProfileId(passwordManagerPaneController.getUserProfileSession().getCurrentUserProfileId());
-                DatabaseManager.getInstance().addPasswordEnforcementPolicy(passwordEnforcementPolicy);
+                vaultRepository.addPasswordEnforcementPolicy(passwordEnforcementPolicy);
                 passwordEnforcementPolicyObsList.add(passwordEnforcementPolicy);
 
                 if (passwordEnforcementPolicy.isDefaultPolicy()) {
@@ -79,7 +86,7 @@ public class PasswordPoliciesPaneController {
             }
             else {
                 try {
-                    DatabaseManager.getInstance().deletePasswordEnforcementPolicy(pwdEnforcementPolicy);
+                    vaultRepository.deletePasswordEnforcementPolicy(pwdEnforcementPolicy);
                     passwordEnforcementPolicyObsList.remove(pwdEnforcementPolicy);
 
                     if (pwdEnforcementPolicy.isDefaultPolicy()) {
@@ -97,16 +104,16 @@ public class PasswordPoliciesPaneController {
     }
 
     @FXML
-    private void editPasswordEnforcementPolicy() {
+    private void editPasswordEnforcementPolicy(ActionEvent actionEvent) {
         PasswordEnforcementPolicy origPasswordEnforcementPolicy = passwordEnforcementPoliciesTableView.getSelectionModel().getSelectedItem();
 
         if (origPasswordEnforcementPolicy != null) {
-            PasswordEnforcementPolicyEditorDialog dialog = new PasswordEnforcementPolicyEditorDialog(stage,
+            PasswordEnforcementPolicyEditorDialog dialog = new PasswordEnforcementPolicyEditorDialog(getStageFromActionEvent(actionEvent),
                     PasswordPolicyEditorMode.EDIT, origPasswordEnforcementPolicy);
 
             dialog.showAndWait().ifPresent(newPasswordEnforcementPolicy -> {
                 try {
-                    DatabaseManager.getInstance().updatePasswordEnforcementPolicy(newPasswordEnforcementPolicy);
+                    vaultRepository.updatePasswordEnforcementPolicy(newPasswordEnforcementPolicy);
 
                     if (newPasswordEnforcementPolicy.isDefaultPolicy()) {
                         swapDefaultPasswordEnforcementPolicy(newPasswordEnforcementPolicy);
@@ -126,12 +133,12 @@ public class PasswordPoliciesPaneController {
     }
 
     @FXML
-    private void addPasswordGeneratorPolicy() {
-        PasswordGeneratorPolicyEditorDialog dialog = new PasswordGeneratorPolicyEditorDialog(stage, PasswordPolicyEditorMode.CREATE);
+    private void addPasswordGeneratorPolicy(ActionEvent actionEvent) {
+        PasswordGeneratorPolicyEditorDialog dialog = new PasswordGeneratorPolicyEditorDialog(getStageFromActionEvent(actionEvent), PasswordPolicyEditorMode.CREATE);
         dialog.showAndWait().ifPresent(passwordGeneratorPolicy -> {
             try {
                 passwordGeneratorPolicy.setUserProfileId(passwordManagerPaneController.getUserProfileSession().getCurrentUserProfileId());
-                DatabaseManager.getInstance().addPasswordGeneratorPolicy(passwordGeneratorPolicy);
+                vaultRepository.addPasswordGeneratorPolicy(passwordGeneratorPolicy);
                 passwordGeneratorPolicyObsList.add(passwordGeneratorPolicy);
 
                 if (passwordGeneratorPolicy.isDefaultPolicy()) {
@@ -162,7 +169,7 @@ public class PasswordPoliciesPaneController {
             }
             else {
                 try {
-                    DatabaseManager.getInstance().deletePasswordGeneratorPolicy(pwdGeneratorPolicy);
+                    vaultRepository.deletePasswordGeneratorPolicy(pwdGeneratorPolicy);
                     passwordGeneratorPolicyObsList.remove(pwdGeneratorPolicy);
 
                     if (pwdGeneratorPolicy.isDefaultPolicy()) {
@@ -180,16 +187,16 @@ public class PasswordPoliciesPaneController {
     }
 
     @FXML
-    private void editPasswordGeneratorPolicy() {
+    private void editPasswordGeneratorPolicy(ActionEvent actionEvent) {
         PasswordGeneratorPolicy origPasswordGeneratorPolicy = passwordGeneratorPoliciesTableView.getSelectionModel().getSelectedItem();
 
         if (origPasswordGeneratorPolicy != null) {
-            PasswordGeneratorPolicyEditorDialog dialog = new PasswordGeneratorPolicyEditorDialog(stage,
+            PasswordGeneratorPolicyEditorDialog dialog = new PasswordGeneratorPolicyEditorDialog(getStageFromActionEvent(actionEvent),
                     PasswordPolicyEditorMode.EDIT, origPasswordGeneratorPolicy);
 
             dialog.showAndWait().ifPresent(newPasswordGeneratorPolicy -> {
                 try {
-                    DatabaseManager.getInstance().updatePasswordGeneratorPolicy(newPasswordGeneratorPolicy);
+                    vaultRepository.updatePasswordGeneratorPolicy(newPasswordGeneratorPolicy);
 
                     if (newPasswordGeneratorPolicy.isDefaultPolicy()) {
                         swapDefaultPasswordGeneratorPolicy(newPasswordGeneratorPolicy);
@@ -208,9 +215,14 @@ public class PasswordPoliciesPaneController {
         }
     }
 
+    private Stage getStageFromActionEvent(ActionEvent actionEvent) {
+        Node source = (Node) actionEvent.getSource();
+        return (Stage) source.getScene().getWindow();
+    }
+
     private boolean isPasswordEnforcementPolicyInUse(int policyId) {
         try {
-            List<PasswordEntity> passwordEntities = DatabaseManager.getInstance().getAllPasswordEntitiesByPasswordEnforcementPolicyId(policyId);
+            List<PasswordEntity> passwordEntities = vaultRepository.getAllPasswordEntitiesByPasswordEnforcementPolicyId(policyId);
             return !passwordEntities.isEmpty();
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -220,7 +232,7 @@ public class PasswordPoliciesPaneController {
     private void swapDefaultPasswordEnforcementPolicy(PasswordEnforcementPolicy newPasswordEnforcementPolicy) throws SQLException {
         if (defaultPasswordEnforcementPolicy != null) {
             defaultPasswordEnforcementPolicy.setDefaultPolicy(false);
-            DatabaseManager.getInstance().updatePasswordEnforcementPolicy(defaultPasswordEnforcementPolicy);
+            vaultRepository.updatePasswordEnforcementPolicy(defaultPasswordEnforcementPolicy);
         }
         defaultPasswordEnforcementPolicy = newPasswordEnforcementPolicy;
         passwordEnforcementPoliciesTableView.refresh();
@@ -229,7 +241,7 @@ public class PasswordPoliciesPaneController {
     private void swapDefaultPasswordGeneratorPolicy(PasswordGeneratorPolicy newPasswordGeneratorPolicy) throws SQLException {
         if (defaultPasswordGeneratorPolicy != null) {
             defaultPasswordGeneratorPolicy.setDefaultPolicy(false);
-            DatabaseManager.getInstance().updatePasswordGeneratorPolicy(defaultPasswordGeneratorPolicy);
+            vaultRepository.updatePasswordGeneratorPolicy(defaultPasswordGeneratorPolicy);
         }
         defaultPasswordGeneratorPolicy = newPasswordGeneratorPolicy;
         passwordGeneratorPoliciesTableView.refresh();
@@ -253,6 +265,7 @@ public class PasswordPoliciesPaneController {
     private void initialize() {
         initializePasswordEnforcementPoliciesTableView();
         initializePasswordGeneratorPoliciesTableView();
+        initializePolicies();
     }
 
     void initializePolicies() {
@@ -288,7 +301,7 @@ public class PasswordPoliciesPaneController {
 
     private void loadPasswordEnforcementPolicies() {
         try {
-            List<PasswordEnforcementPolicy> passwordEnforcementPolicies = DatabaseManager.getInstance().getAllPasswordEnforcementPoliciesByUserProfileId(passwordManagerPaneController.getUserProfileSession().getCurrentUserProfileId());
+            List<PasswordEnforcementPolicy> passwordEnforcementPolicies = vaultRepository.getAllPasswordEnforcementPoliciesByUserProfileId(passwordManagerPaneController.getUserProfileSession().getCurrentUserProfileId());
             for (PasswordEnforcementPolicy pwdEnforcementPolicy : passwordEnforcementPolicies) {
                 passwordEnforcementPolicyObsList.add(pwdEnforcementPolicy);
                 if (pwdEnforcementPolicy.isDefaultPolicy()) {
@@ -303,7 +316,7 @@ public class PasswordPoliciesPaneController {
 
     private void loadPasswordGeneratorPolicies() {
         try {
-            List<PasswordGeneratorPolicy> passwordGeneratorPolicies = DatabaseManager.getInstance().getAllPasswordGeneratorPoliciesByUserProfileId(passwordManagerPaneController.getUserProfileSession().getCurrentUserProfileId());
+            List<PasswordGeneratorPolicy> passwordGeneratorPolicies = vaultRepository.getAllPasswordGeneratorPoliciesByUserProfileId(passwordManagerPaneController.getUserProfileSession().getCurrentUserProfileId());
             for (PasswordGeneratorPolicy pwdGeneratorPolicy : passwordGeneratorPolicies) {
                 passwordGeneratorPolicyObsList.add(pwdGeneratorPolicy);
                 if (pwdGeneratorPolicy.isDefaultPolicy()) {
@@ -314,13 +327,5 @@ public class PasswordPoliciesPaneController {
         catch (SQLException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    void setStage(Stage stage) {
-        this.stage = stage;
-    }
-
-    void setPasswordManagerPaneController(PasswordManagerPaneController passwordManagerPaneController) {
-        this.passwordManagerPaneController = passwordManagerPaneController;
     }
 }
