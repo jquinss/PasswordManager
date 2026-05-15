@@ -17,14 +17,14 @@ public class OSChecker {
 	
 	private static OS os = null;
 	private static String DATA_DIRECTORY = null;
-	
+
 	public static OS getOSVersion() {
 		if (os == null) {
 			String operSys = System.getProperty("os.name").toLowerCase();
-			
+
 			if (operSys.contains("wind"))
 				os = OS.WINDOWS;
-			else if (operSys.contains("nix") || operSys.contains("nux") 
+			else if (operSys.contains("nix") || operSys.contains("nux")
 					|| operSys.contains("aix"))
 				os = OS.LINUX;
 			else if (operSys.contains("mac"))
@@ -32,33 +32,21 @@ public class OSChecker {
 			else if (operSys.contains("sunos"))
 				os = OS.SOLARIS;
 		}
-		
+
 		return os;
 	}
-	
+
 	public static String getOSDataDirectory() {
-		
+
 		if (DATA_DIRECTORY == null) {
-			switch(getOSVersion()) {
-			case WINDOWS:
-				DATA_DIRECTORY = System.getenv("AppData");
-				break;
-			case MAC:
-				DATA_DIRECTORY = System.getProperty("user.home") + File.separator + 
-							"Library" + File.separator + "Application Support";
-				break;
-			case LINUX:
-				DATA_DIRECTORY = System.getProperty("user.home");
-				break;
-			case SOLARIS:
-				DATA_DIRECTORY = System.getProperty("user.home");
-				break;
-			default:
-				DATA_DIRECTORY = System.getenv("AppData");
-		
+			switch (getOSVersion()) {
+				case MAC -> DATA_DIRECTORY = System.getProperty("user.home") + File.separator +
+						"Library" + File.separator + "Application Support";
+				case LINUX, SOLARIS -> DATA_DIRECTORY = System.getProperty("user.home");
+				default -> DATA_DIRECTORY = System.getenv("AppData");
 			}
 		}
-		
+
 		return DATA_DIRECTORY;
 	}
 }
