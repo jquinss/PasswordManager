@@ -10,9 +10,8 @@ import java.util.Arrays;
 public class Authenticator {
     public boolean authenticate(UserProfile userProfile, String password) throws SQLException {
         byte[] salt = userProfile.getPasswordSalt();
-        int hashLength = SettingsManager.getInstance().getPasswordHashLengthInBytes();
 
-        byte[] computedPwdHash = CryptoUtils.getHashFromString(password, hashLength, salt);
+        byte[] computedPwdHash = CryptoUtils.getHashFromString(password, 32, salt);
         byte[] pwdHash = userProfile.getPasswordHash();
 
         return Arrays.equals(computedPwdHash, pwdHash);
