@@ -70,7 +70,7 @@ public class PasswordManagerController {
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/jquinss/passwordmanager/fxml/PasswordManagerPane.fxml"));
 
-        CryptoUtils.AsymmetricCrypto asymmetricCrypto = new CryptoUtils.AsymmetricCrypto(SettingsManager.getInstance().getKeyPairAlgorithm(), keyPair);
+        CryptoUtils.AsymmetricCrypto asymmetricCrypto = new CryptoUtils.AsymmetricCrypto("RSA", keyPair);
 
         PasswordManagerPaneController passwordManagerPaneController = new PasswordManagerPaneController(this, vaultRepository,
                                                                                                 userProfile, asymmetricCrypto);
