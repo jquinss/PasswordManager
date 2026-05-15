@@ -140,8 +140,7 @@ public class UserProfileSetUpPaneController implements Initializable {
 
     private KeyPair getKeyPair() throws LoadKeyPairException, NoSuchAlgorithmException {
         if (generateKeyPairCheckBox.isSelected()) {
-            return CryptoUtils.generateKeyPair(SettingsManager.getInstance().getKeyPairAlgorithm(),
-                    SettingsManager.getInstance().getKeyPairLengthInBits());
+            return CryptoUtils.generateKeyPair("RSA", 2048);
         }
         else {
             return CryptoUtils.loadKeyPairFromPEMFile(publicKeyTextField.getText(), privateKeyTextField.getText());
@@ -167,17 +166,15 @@ public class UserProfileSetUpPaneController implements Initializable {
 
     private UserProfile createUserProfile(String name, String password, KeyPair keyPair) throws NoSuchAlgorithmException, InvalidKeySpecException,
             InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, SQLException {
-        byte[] salt = CryptoUtils.generateSaltBytes(SettingsManager.getInstance().getSaltLengthInBytes());
-        byte[] passwordHash = CryptoUtils.getHashFromString(password,
-                SettingsManager.getInstance().getPasswordHashLengthInBytes(), salt);
+        byte[] salt = CryptoUtils.generateSaltBytes(64);
+        byte[] passwordHash = CryptoUtils.getHashFromString(password, 32, salt);
         byte[] publicKey = keyPair.getPublic().getEncoded();
         byte[] privateKey = keyPair.getPrivate().getEncoded();
 
-        IvParameterSpec ivParameterSpec = CryptoUtils.getIvParameterSpec(SettingsManager.getInstance().getIvParameterSpecLengthInBytes());
+        IvParameterSpec ivParameterSpec = CryptoUtils.getIvParameterSpec(16);
         byte[] iv = ivParameterSpec.getIV();
         SecretKey key = CryptoUtils.getSecretKeyFromPassword(password, salt);
-        byte[] encryptedPrivateKey = CryptoUtils.encrypt(privateKey, SettingsManager.getInstance().getSymmetricEncryptionAlgorithm(),
-                key, ivParameterSpec);
+        byte[] encryptedPrivateKey = CryptoUtils.encrypt(privateKey, "AES/CBC/PKCS5Padding", key, ivParameterSpec);
 
         UserProfile userProfile = new UserProfile(name, passwordHash);
         if (defaultProfileCheckBox.isSelected()) {
@@ -255,7 +252,7 @@ public class UserProfileSetUpPaneController implements Initializable {
                 .withMethod(c -> {
                     String pwd = c.get("passwordField");
                     PasswordStrength pwdStrength = passwordStrengthChecker.checkPasswordStrength(pwd);
-                    PasswordStrength minPwdStrength = SettingsManager.getInstance().getMinPasswordStrength();
+                    PasswordStrength minPwdStrength = PasswordStrength.EXCELLENT;
                     if (pwdStrength.getValue() < minPwdStrength.getValue()) {
                         PasswordStrengthCriteria pwdStrengthCriteria =
                                 passwordStrengthChecker.getCriteria(minPwdStrength);
