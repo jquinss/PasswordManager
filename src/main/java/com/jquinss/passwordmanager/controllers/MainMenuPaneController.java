@@ -210,9 +210,9 @@ public class MainMenuPaneController implements Initializable {
             byte[] salt = userProfile.getPasswordSalt();
             IvParameterSpec ivParameterSpec = new IvParameterSpec(userProfile.getPrivateKeyIV());
             SecretKey key = CryptoUtils.getSecretKeyFromPassword(password, salt);
-            byte[] privateKey = CryptoUtils.decrypt(encryptedPrivateKey, SettingsManager.getInstance().getSymmetricEncryptionAlgorithm(),
+            byte[] privateKey = CryptoUtils.decrypt(encryptedPrivateKey, "AES/CBC/PKCS5Padding",
                     key, ivParameterSpec);
-            return CryptoUtils.loadKeyPair(publicKey, privateKey, SettingsManager.getInstance().getKeyPairAlgorithm());
+            return CryptoUtils.loadKeyPair(publicKey, privateKey, "RSA");
         }
         catch (Exception e) {
             throw new LoadKeyPairException();
