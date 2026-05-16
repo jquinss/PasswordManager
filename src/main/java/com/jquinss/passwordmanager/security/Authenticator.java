@@ -1,7 +1,6 @@
 package com.jquinss.passwordmanager.security;
 
 import com.jquinss.passwordmanager.data.UserProfile;
-import com.jquinss.passwordmanager.managers.SettingsManager;
 import com.jquinss.passwordmanager.util.misc.CryptoUtils;
 
 import java.sql.SQLException;
