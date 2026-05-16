@@ -1,12 +1,11 @@
 package com.jquinss.passwordmanager.controllers;
 
 import com.jquinss.passwordmanager.app.AppContext;
+import com.jquinss.passwordmanager.config.AppConfig;
 import com.jquinss.passwordmanager.dao.BackupsRepository;
 import com.jquinss.passwordmanager.dao.VaultRepository;
 import com.jquinss.passwordmanager.data.UserProfile;
-import com.jquinss.passwordmanager.managers.SettingsManager;
 import com.jquinss.passwordmanager.util.misc.CryptoUtils;
-import com.jquinss.passwordmanager.util.misc.OSChecker;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -107,7 +106,7 @@ public class PasswordManagerController {
 
     private void initializeRepositories() {
         try {
-            Files.createDirectories(Path.of(OSChecker.getOSDataDirectory(), "PasswordManager", "data"));
+            Files.createDirectories(Path.of(AppConfig.get("data.path")));
             vaultRepository.initialize();
             backupsRepository.initialize();
         } catch (SQLException | IOException e) {
