@@ -1,5 +1,6 @@
 package com.jquinss.passwordmanager.app;
 
+import com.jquinss.passwordmanager.config.AppConfig;
 import com.jquinss.passwordmanager.controllers.PasswordManagerController;
 import com.jquinss.passwordmanager.dao.BackupsRepository;
 import com.jquinss.passwordmanager.dao.VaultRepository;
@@ -17,11 +18,9 @@ public class Main extends Application{
     public void start(Stage primaryStage) {
         try {
             DataSource vaultDataSource = DataSourceFactory.getDataSource(DataSourceType.SQLITE,
-                    "jdbc:sqlite:" + Path.of(OSChecker.getOSDataDirectory(), "PasswordManager",
-                    "data", "vault.db").toString());
+                    "jdbc:sqlite:" + AppConfig.get("vault_db.path"));
             DataSource backupsDataSource = DataSourceFactory.getDataSource(DataSourceType.SQLITE,
-                    "jdbc:sqlite:" + Path.of(OSChecker.getOSDataDirectory(), "PasswordManager",
-                    "data", "backups.db").toString());
+                            "jdbc:sqlite:" + AppConfig.get("backups_db.path"));
 
             VaultRepository vaultRepository = new VaultRepository(vaultDataSource);
             BackupsRepository backupsRepository = new BackupsRepository(backupsDataSource);
