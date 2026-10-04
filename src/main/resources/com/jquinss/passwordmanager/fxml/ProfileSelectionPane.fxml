@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+      prefHeight="320.0" prefWidth="460.0" spacing="15.0" stylesheets="@../styles/styles.css" xmlns="http://javafx.com/javafx/8.0.171"
+      xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.jquinss.passwordmanager.controllers.ProfileSelectionPaneController">
+    <padding>
+        <Insets bottom="20.0" left="30.0" right="30.0" />
+    </padding>
+    <ImageView fitHeight="180.0" fitWidth="180.0" pickOnBounds="true" preserveRatio="true">
+      <image>
+         <Image url="@../images/profile_big.png" />
+      </image></ImageView>
+    <GridPane hgap="10.0" vgap="5.0">
+        <columnConstraints>
+            <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+        <Label styleClass="dialog-label" text="Choose a profile:" />
+        <ComboBox fx:id="profilesComboBox" prefHeight="25.0" prefWidth="192.0" GridPane.columnIndex="1" />
+        <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="20.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+            <Button fx:id="loadProfileButton" mnemonicParsing="false" onAction="#loadProfile" prefWidth="150" prefHeight="40" styleClass="btn" text="Load" />
+            <Button mnemonicParsing="false" onAction="#cancel" styleClass="btn" prefWidth="150" prefHeight="40" text="Cancel" />
+        </HBox>
+        <Button mnemonicParsing="false" onAction="#openProfileManager" prefWidth="150" prefHeight="40" styleClass="btn" text="Manage profiles..." GridPane.halignment="LEFT" GridPane.rowIndex="2" />
+      <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="1">
+         <children>
+            <Label fx:id="message" text="Placeholder" visible="false" />
+         </children>
+      </HBox>
+    </GridPane>
+</VBox>

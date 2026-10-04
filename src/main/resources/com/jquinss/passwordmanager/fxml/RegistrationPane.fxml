@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox spacing="10" alignment="CENTER" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1"
+      prefHeight="600.0" prefWidth="800.0" stylesheets="@../styles/styles.css" fx:controller="com.jquinss.passwordmanager.controllers.RegistrationPaneController">
+
+<VBox spacing="10" maxWidth="400">
+    <Label text="Create a vault" styleClass="main-menu-content-title"/>
+    <Label text="Password:" styleClass="form-label">
+        <VBox.margin>
+            <Insets top="10"/>
+        </VBox.margin>
+    </Label>
+    <PasswordField fx:id="passwordField" promptText="Enter password"
+                   id="login-form-textfield" />
+    <Label text="Confirm password:" styleClass="form-label">
+        <VBox.margin>
+            <Insets top="10"/>
+        </VBox.margin>
+    </Label>
+    <PasswordField fx:id="confirmPasswordField" promptText="Re-enter password"
+                   id="login-form-textfield" />
+    <Button text="Create" prefWidth="400" prefHeight="40" fx:id="registerButton" styleClass="btn" id="main-menu-btn" onAction="#handleRegistration">
+        <VBox.margin>
+            <Insets top="20"/>
+        </VBox.margin>
+    </Button>
+    <HBox alignment="BOTTOM_RIGHT">
+        <Label fx:id="message" text="Placeholder" visible="false" />
+    </HBox>
+</VBox>
+</VBox>
