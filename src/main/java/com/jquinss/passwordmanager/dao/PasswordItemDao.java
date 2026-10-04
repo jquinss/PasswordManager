@@ -1,25 +1,25 @@
 package com.jquinss.passwordmanager.dao;
 
-import com.jquinss.passwordmanager.data.PasswordEntity;
+import com.jquinss.passwordmanager.data.PasswordItem;
 
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
-public interface PasswordEntityDao {
-    Optional<PasswordEntity> getById(int id) throws SQLException;
+public interface PasswordItemDao {
+    Optional<PasswordItem> getById(int id) throws SQLException;
 
-    List<PasswordEntity> getAllByUserProfileId(int userProfileId) throws SQLException;
+    List<PasswordItem> getAllByUserProfileId(int userProfileId) throws SQLException;
 
-    List<PasswordEntity> getAllByFolderId(int folderId) throws SQLException;
+    List<PasswordItem> getAllByFolderId(int folderId) throws SQLException;
 
-    List<PasswordEntity> getAllByPasswordEnforcementPolicyId(int passwordEnforcementPolicyId) throws SQLException;
+    List<PasswordItem> getAllByPasswordEnforcementPolicyId(int passwordEnforcementPolicyId) throws SQLException;
 
-    void add(PasswordEntity pwdEntity) throws SQLException;
+    void add(PasswordItem pwdItem) throws SQLException;
 
-    void update(PasswordEntity pwdEntity) throws SQLException;
+    void update(PasswordItem pwdItem) throws SQLException;
 
-    void delete(PasswordEntity pwdEntity) throws SQLException;
+    void delete(PasswordItem pwdItem) throws SQLException;
 
-    void delete(List<PasswordEntity> pwdEntities) throws SQLException;
+    void delete(List<PasswordItem> pwdItems) throws SQLException;
 }
