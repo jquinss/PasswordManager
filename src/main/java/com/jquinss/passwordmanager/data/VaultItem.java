@@ -1,19 +1,18 @@
 package com.jquinss.passwordmanager.data;
 
 import java.io.Serializable;
-import java.util.Optional;
 
-public abstract class DataEntity implements Cloneable, Serializable {
+public abstract class VaultItem implements Cloneable, Serializable {
     private int id;
     private String name;
     private String description;
 
-    public DataEntity(int id, String name) {
+    public VaultItem(int id, String name) {
         this(name);
         this.id = id;
     }
 
-    public DataEntity(String name) {
+    public VaultItem(String name) {
         this.name = name;
     }
 
@@ -44,11 +43,11 @@ public abstract class DataEntity implements Cloneable, Serializable {
     @Override
     public Object clone() {
         try {
-            DataEntity dataEntity = (DataEntity) super.clone();
-            dataEntity.setId(this.getId());
-            dataEntity.setName(this.getName());
-            dataEntity.setDescription(this.getDescription());
-            return dataEntity;
+            VaultItem vaultItem = (VaultItem) super.clone();
+            vaultItem.setId(this.getId());
+            vaultItem.setName(this.getName());
+            vaultItem.setDescription(this.getDescription());
+            return vaultItem;
         } catch (CloneNotSupportedException e) {
             throw new RuntimeException(e);
         }
