@@ -4,15 +4,15 @@ import com.jquinss.passwordmanager.data.VaultItem;
 
 import java.util.Optional;
 
-public enum DataEntityEditorMode {
+public enum VaultItemEditorMode {
     CREATE, EDIT, HIDE, VIEW;
 
     private VaultItem vaultItem;
 
-    public void setDataEntity(VaultItem vaultItem) {
+    public void setVaultItem(VaultItem vaultItem) {
         this.vaultItem = vaultItem;
     }
-    public Optional<VaultItem> getDataEntity() {
+    public Optional<VaultItem> getVaultItem() {
         return Optional.ofNullable(vaultItem);
     }
 }
