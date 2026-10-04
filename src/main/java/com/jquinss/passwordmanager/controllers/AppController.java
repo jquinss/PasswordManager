@@ -23,29 +23,23 @@ import java.sql.SQLException;
 import java.util.Objects;
 
 public class PasswordManagerController {
-
     private final Stage stage;
-    private final VaultRepository vaultRepository;
-    private final BackupsRepository backupsRepository;
 
-    public PasswordManagerController(Stage stage, AppContext appContext) {
+    public PasswordManagerController(Stage stage) {
         this.stage = stage;
-        vaultRepository = appContext.vaultRepository();
-        backupsRepository = appContext.backupsRepository();
-        initializeRepositories();
     }
 
     public void loadMainMenuPane() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/jquinss/passwordmanager/fxml/MainMenuPane.fxml"));
         fxmlLoader.setControllerFactory(controllerClass -> {
             if (controllerClass == MainMenuPaneController.class) {
-                return new MainMenuPaneController(this, vaultRepository);
+                return new MainMenuPaneController(this);
             }
             if (controllerClass == UserProfilesPaneController.class) {
-                return new UserProfilesPaneController(vaultRepository);
+                return new UserProfilesPaneController();
             }
             if (controllerClass == BackupsPaneController.class) {
-                return new BackupsPaneController(backupsRepository);
+                return new BackupsPaneController();
             }
 
             try {
@@ -102,16 +96,6 @@ public class PasswordManagerController {
 
     void exitApplication() {
         stage.close();
-    }
-
-    private void initializeRepositories() {
-        try {
-            Files.createDirectories(Path.of(AppConfig.get("data.path")));
-            vaultRepository.initialize();
-            backupsRepository.initialize();
-        } catch (SQLException | IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     private void setWindowLogo(Stage stage, Object context, String imageFile) {

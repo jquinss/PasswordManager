@@ -1,6 +1,7 @@
 package com.jquinss.passwordmanager.controllers;
 
-import com.jquinss.passwordmanager.dao.VaultRepository;
+import com.jquinss.passwordmanager.app.AppContext;
+import com.jquinss.passwordmanager.vault.repository.VaultRepository;
 import com.jquinss.passwordmanager.data.*;
 import com.jquinss.passwordmanager.enums.DataEntityEditorMode;
 import com.jquinss.passwordmanager.util.misc.DialogBuilder;
@@ -29,6 +30,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Objects;
+import java.util.Properties;
 import java.util.ResourceBundle;
 
 public class PasswordEntityEditorPaneController implements Initializable {
@@ -73,6 +75,7 @@ public class PasswordEntityEditorPaneController implements Initializable {
     private DataEntityEditorMode editorMode;
     private final PasswordManagerPaneController passwordManagerPaneController;
     private final VaultRepository vaultRepository;
+    private final Properties sessionVariables;
     private final Validator validator = new Validator();
     private final ObservableList<PasswordEnforcementPolicy> passwordEnforcementPolicyObsList = FXCollections.observableArrayList();
     private final ObservableList<PasswordGeneratorPolicy> passwordGeneratorPolicyObsList = FXCollections.observableArrayList();
@@ -80,9 +83,10 @@ public class PasswordEntityEditorPaneController implements Initializable {
     private PasswordGenerator passwordGenerator;
 
     public PasswordEntityEditorPaneController(PasswordManagerPaneController passwordManagerPaneController,
-                                              VaultRepository vaultRepository) {
+                                              AppContext appContext) {
         this.passwordManagerPaneController = passwordManagerPaneController;
-        this.vaultRepository = vaultRepository;
+        this.vaultRepository = appContext.vaultRepository();
+        this.sessionVariables = appContext.sessionVariables();
     }
 
     @FXML
@@ -230,7 +234,7 @@ public class PasswordEntityEditorPaneController implements Initializable {
 
     private void loadPasswordEnforcementPolicies() {
         try {
-            passwordEnforcementPolicyObsList.setAll(vaultRepository.getAllPasswordEnforcementPoliciesByUserProfileId(passwordManagerPaneController.getUserProfileSession().getCurrentUserProfileId()));
+            passwordEnforcementPolicyObsList.setAll(vaultRepository.getAllPasswordEnforcementPoliciesByUserProfileId(Integer.parseInt(sessionVariables.getProperty("profileId"))));
         }
         catch (SQLException e) {
             throw new RuntimeException(e);
@@ -281,7 +285,7 @@ public class PasswordEntityEditorPaneController implements Initializable {
 
     private void loadPasswordGeneratorPolicies() {
         try {
-            passwordGeneratorPolicyObsList.setAll(vaultRepository.getAllPasswordGeneratorPoliciesByUserProfileId(passwordManagerPaneController.getUserProfileSession().getCurrentUserProfileId()));
+            passwordGeneratorPolicyObsList.setAll(vaultRepository.getAllPasswordGeneratorPoliciesByUserProfileId(Integer.parseInt(sessionVariables.getProperty("profileId"))));
         }
         catch (SQLException e) {
             throw new RuntimeException(e);
