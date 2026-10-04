@@ -1,10 +1,7 @@
 package com.jquinss.passwordmanager.app;
 
-import com.jquinss.passwordmanager.dao.BackupsRepository;
-import com.jquinss.passwordmanager.dao.VaultRepository;
+import com.jquinss.passwordmanager.vault.repository.VaultRepository;
 
-public record AppContext(
-        VaultRepository vaultRepository,
-        BackupsRepository backupsRepository
-) {
-}
+import java.util.Properties;
+
+public record AppContext(VaultRepository vaultRepository, Properties sessionVariables) {}
