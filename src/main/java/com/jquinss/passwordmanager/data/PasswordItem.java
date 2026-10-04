@@ -1,10 +1,8 @@
 package com.jquinss.passwordmanager.data;
 
 import java.time.LocalDate;
-import java.util.Objects;
-import java.util.Optional;
 
-public class PasswordEntity extends DataEntity implements Cloneable {
+public class PasswordItem extends VaultItem implements Cloneable {
     private int userProfileId;
     private int folderId;
     private boolean passwordEnforcementPolicyEnabled = false;
@@ -16,13 +14,13 @@ public class PasswordEntity extends DataEntity implements Cloneable {
     private boolean passwordExpires = false;
     private LocalDate expirationDate = LocalDate.now().plusMonths(6);
 
-    public PasswordEntity(int id, int folderId, String name, String password) {
+    public PasswordItem(int id, int folderId, String name, String password) {
         this(folderId, name, password);
         setId(id);
         this.password = password;
     }
 
-    public PasswordEntity(int folderId, String name, String password) {
+    public PasswordItem(int folderId, String name, String password) {
         super(name);
         this.folderId = folderId;
         this.password = password;
@@ -110,18 +108,18 @@ public class PasswordEntity extends DataEntity implements Cloneable {
 
     @Override
     public Object clone() {
-        PasswordEntity pwdEntity = (PasswordEntity) super.clone();
-        pwdEntity.setUserProfileId(this.userProfileId);
-        pwdEntity.setFolderId(this.folderId);
-        pwdEntity.setPasswordEnforcementPolicyEnabled(this.passwordEnforcementPolicyEnabled);
-        pwdEntity.setPasswordEnforcementPolicyId(this.passwordEnforcementPolicyId);
-        pwdEntity.setUsername(this.username);
-        pwdEntity.setEmailAddress(this.emailAddress);
-        pwdEntity.setPassword(this.password);
-        pwdEntity.setUrl(this.url);
-        pwdEntity.setPasswordExpires(this.passwordExpires);
-        pwdEntity.setExpirationDate(this.expirationDate);
+        PasswordItem pwdItem = (PasswordItem) super.clone();
+        pwdItem.setUserProfileId(this.userProfileId);
+        pwdItem.setFolderId(this.folderId);
+        pwdItem.setPasswordEnforcementPolicyEnabled(this.passwordEnforcementPolicyEnabled);
+        pwdItem.setPasswordEnforcementPolicyId(this.passwordEnforcementPolicyId);
+        pwdItem.setUsername(this.username);
+        pwdItem.setEmailAddress(this.emailAddress);
+        pwdItem.setPassword(this.password);
+        pwdItem.setUrl(this.url);
+        pwdItem.setPasswordExpires(this.passwordExpires);
+        pwdItem.setExpirationDate(this.expirationDate);
 
-        return pwdEntity;
+        return pwdItem;
     }
 }
