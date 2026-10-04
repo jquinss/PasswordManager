@@ -1,6 +1,6 @@
 package com.jquinss.passwordmanager.data;
 
-public class Folder extends DataEntity implements Cloneable {
+public class Folder extends VaultItem implements Cloneable {
     private int parentFolderId;
 
     public Folder(int id, String name) {
