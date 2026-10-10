@@ -89,6 +89,20 @@ public class DialogBuilder {
         return alert;
     }
 
+    public static Dialog<ButtonType> buildConfirmationDialog(String title, String headerText, String contentText) {
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle(title);
+        dialog.setHeaderText(headerText);
+        dialog.setContentText(contentText);
+
+        ButtonType confirmButton = new ButtonType("Confirm", ButtonBar.ButtonData.OK_DONE);
+        ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+        dialog.getDialogPane().getButtonTypes().addAll(confirmButton, cancelButton);
+
+        return dialog;
+    }
+
     private static void required(Check.Context context) {
         String text = context.get("text");
         if (text == null || text.isEmpty()) {
