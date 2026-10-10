@@ -1,9 +1,9 @@
 package com.jquinss.passwordmanager.controllers;
 
+import com.jquinss.passwordmanager.app.AppContext;
 import com.jquinss.passwordmanager.control.PasswordEnforcementPolicyEditorDialog;
 import com.jquinss.passwordmanager.control.PasswordGeneratorPolicyEditorDialog;
-import com.jquinss.passwordmanager.dao.VaultRepository;
-import com.jquinss.passwordmanager.data.PasswordEntity;
+import com.jquinss.passwordmanager.vault.repository.VaultRepository;
 import com.jquinss.passwordmanager.data.PasswordGeneratorPolicy;
 import com.jquinss.passwordmanager.data.PasswordEnforcementPolicy;
 import com.jquinss.passwordmanager.enums.PasswordPolicyEditorMode;
@@ -18,10 +18,13 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Objects;
+import java.util.Properties;
 
 public class PasswordPoliciesPaneController {
     @FXML
@@ -38,15 +41,15 @@ public class PasswordPoliciesPaneController {
     private TableColumn<PasswordGeneratorPolicy, String> passwordGeneratorIsDefaultPolicyTableColumn;
     private final ObservableList<PasswordEnforcementPolicy> passwordEnforcementPolicyObsList = FXCollections.observableArrayList();
     private final ObservableList<PasswordGeneratorPolicy> passwordGeneratorPolicyObsList = FXCollections.observableArrayList();
+    private final VaultRepository vaultRepository;
+    private final Properties sessionVariables;
+    private final Logger logger = LoggerFactory.getLogger(PasswordPoliciesPaneController.class);
     private PasswordEnforcementPolicy defaultPasswordEnforcementPolicy;
     private PasswordGeneratorPolicy defaultPasswordGeneratorPolicy;
-    private final PasswordManagerPaneController passwordManagerPaneController;
-    private final VaultRepository vaultRepository;
 
-    public PasswordPoliciesPaneController(PasswordManagerPaneController passwordManagerPaneController,
-                                          VaultRepository vaultRepository) {
-        this.passwordManagerPaneController = passwordManagerPaneController;
-        this.vaultRepository = vaultRepository;
+    public PasswordPoliciesPaneController(AppContext appContext) {
+        this.vaultRepository = appContext.vaultRepository();
+        this.sessionVariables = appContext.sessionVariables();
     }
 
     @FXML
@@ -54,7 +57,8 @@ public class PasswordPoliciesPaneController {
         PasswordEnforcementPolicyEditorDialog dialog = new PasswordEnforcementPolicyEditorDialog(getStageFromActionEvent(actionEvent), PasswordPolicyEditorMode.CREATE);
         dialog.showAndWait().ifPresent(passwordEnforcementPolicy -> {
             try {
-                passwordEnforcementPolicy.setUserProfileId(passwordManagerPaneController.getUserProfileSession().getCurrentUserProfileId());
+                logger.info("Creating Password Enforcement policy");
+                passwordEnforcementPolicy.setUserProfileId(Integer.parseInt(sessionVariables.getProperty("profileId")));
                 vaultRepository.addPasswordEnforcementPolicy(passwordEnforcementPolicy);
                 passwordEnforcementPolicyObsList.add(passwordEnforcementPolicy);
 
@@ -63,9 +67,11 @@ public class PasswordPoliciesPaneController {
                 }
 
                 passwordEnforcementPoliciesTableView.getSelectionModel().select(passwordEnforcementPolicy);
+                logger.info("Password Enforcement policy has been created");
             }
             catch (SQLException e) {
-                Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Error creating policy",
+                logger.error("Failed to create policy", e);
+                Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Failed to create policy",
                         "A database error has occurred during the operation", Alert.AlertType.ERROR);
                 alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/styles.css")).toString());
                 alertDialog.showAndWait();
@@ -78,27 +84,30 @@ public class PasswordPoliciesPaneController {
         PasswordEnforcementPolicy pwdEnforcementPolicy = passwordEnforcementPoliciesTableView.getSelectionModel().getSelectedItem();
 
         if (pwdEnforcementPolicy != null) {
-            if (isPasswordEnforcementPolicyInUse(pwdEnforcementPolicy.getId())) {
-                Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Cannot remove policy",
-                        "The policy is in use", Alert.AlertType.ERROR);
-                alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/styles.css")).toString());
-                alertDialog.showAndWait();
-            }
-            else {
-                try {
+            try {
+                if (isPasswordEnforcementPolicyInUse(pwdEnforcementPolicy.getId())) {
+                    logger.warn("Password Enforcement policy cannot be removed as it is being used");
+                    Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Cannot remove policy",
+                            "The policy is in use", Alert.AlertType.WARNING);
+                    alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/styles.css")).toString());
+                    alertDialog.showAndWait();
+                }
+                else {
+                    logger.info("Removing Password Enforcement policy");
                     vaultRepository.deletePasswordEnforcementPolicy(pwdEnforcementPolicy);
                     passwordEnforcementPolicyObsList.remove(pwdEnforcementPolicy);
-
+                    logger.info("Password Enforcement policy has been removed");
                     if (pwdEnforcementPolicy.isDefaultPolicy()) {
                         defaultPasswordEnforcementPolicy = null;
                     }
                 }
-                catch (SQLException e) {
-                    Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Error removing policy",
-                            "A database error has occurred during the operation", Alert.AlertType.ERROR);
-                    alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/styles.css")).toString());
-                    alertDialog.showAndWait();
-                }
+            }
+            catch (SQLException e) {
+                logger.error("Failed to remove Password Enforcement policy", e);
+                Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Failed to remove policy",
+                        "A database error has occurred during the operation", Alert.AlertType.ERROR);
+                alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/styles.css")).toString());
+                alertDialog.showAndWait();
             }
         }
     }
@@ -113,6 +122,7 @@ public class PasswordPoliciesPaneController {
 
             dialog.showAndWait().ifPresent(newPasswordEnforcementPolicy -> {
                 try {
+                    logger.info("Updating Password Enforcement policy");
                     vaultRepository.updatePasswordEnforcementPolicy(newPasswordEnforcementPolicy);
 
                     if (newPasswordEnforcementPolicy.isDefaultPolicy()) {
@@ -121,9 +131,11 @@ public class PasswordPoliciesPaneController {
 
                     replacePasswordEnforcementPolicy(origPasswordEnforcementPolicy, newPasswordEnforcementPolicy);
                     passwordEnforcementPoliciesTableView.getSelectionModel().select(newPasswordEnforcementPolicy);
+                    logger.info("Password Enforcement policy has been updated");
                 }
                 catch (SQLException e) {
-                    Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Error editing policy",
+                    logger.error("Failed to update policy", e);
+                    Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Failed to update policy",
                             "A database error has occurred during the operation", Alert.AlertType.ERROR);
                     alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/styles.css")).toString());
                     alertDialog.showAndWait();
@@ -137,7 +149,8 @@ public class PasswordPoliciesPaneController {
         PasswordGeneratorPolicyEditorDialog dialog = new PasswordGeneratorPolicyEditorDialog(getStageFromActionEvent(actionEvent), PasswordPolicyEditorMode.CREATE);
         dialog.showAndWait().ifPresent(passwordGeneratorPolicy -> {
             try {
-                passwordGeneratorPolicy.setUserProfileId(passwordManagerPaneController.getUserProfileSession().getCurrentUserProfileId());
+                logger.info("Creating Password Generator policy");
+                passwordGeneratorPolicy.setUserProfileId(Integer.parseInt(sessionVariables.getProperty("profileId")));
                 vaultRepository.addPasswordGeneratorPolicy(passwordGeneratorPolicy);
                 passwordGeneratorPolicyObsList.add(passwordGeneratorPolicy);
 
@@ -146,9 +159,11 @@ public class PasswordPoliciesPaneController {
                 }
 
                 passwordGeneratorPoliciesTableView.getSelectionModel().select(passwordGeneratorPolicy);
+                logger.info("Password Generator policy has been created");
             }
             catch (SQLException e) {
-                Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Error creating policy",
+                logger.error("Failed to create policy", e);
+                Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Failed to create policy",
                         "A database error has occurred during the operation", Alert.AlertType.ERROR);
                 alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/syles4.css")).toString());
                 alertDialog.showAndWait();
@@ -162,22 +177,22 @@ public class PasswordPoliciesPaneController {
 
         if (pwdGeneratorPolicy != null) {
             if (pwdGeneratorPolicy.isDefaultPolicy()) {
-                Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Error removing policy",
-                        "Cannot remove the default policy", Alert.AlertType.ERROR);
+                logger.warn("The default Password Generator policy cannot be removed");
+                Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Cannot remove policy",
+                        "The default Password Generator policy cannot be removed", Alert.AlertType.WARNING);
                 alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/styles.css")).toString());
                 alertDialog.showAndWait();
             }
             else {
                 try {
+                    logger.info("Removing Password Generator policy");
                     vaultRepository.deletePasswordGeneratorPolicy(pwdGeneratorPolicy);
                     passwordGeneratorPolicyObsList.remove(pwdGeneratorPolicy);
-
-                    if (pwdGeneratorPolicy.isDefaultPolicy()) {
-                        defaultPasswordEnforcementPolicy = null;
-                    }
+                    logger.info("Password Generator policy has been removed");
                 }
                 catch (SQLException e) {
-                    Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Error removing policy",
+                    logger.error("Failed to remove policy", e);
+                    Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Failed to remove policy",
                             "A database error has occurred during the operation", Alert.AlertType.ERROR);
                     alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/styles.css")).toString());
                     alertDialog.showAndWait();
@@ -196,6 +211,7 @@ public class PasswordPoliciesPaneController {
 
             dialog.showAndWait().ifPresent(newPasswordGeneratorPolicy -> {
                 try {
+                    logger.info("Updating Password Generator policy");
                     vaultRepository.updatePasswordGeneratorPolicy(newPasswordGeneratorPolicy);
 
                     if (newPasswordGeneratorPolicy.isDefaultPolicy()) {
@@ -204,9 +220,11 @@ public class PasswordPoliciesPaneController {
 
                     replacePasswordGeneratorPolicy(origPasswordGeneratorPolicy, newPasswordGeneratorPolicy);
                     passwordGeneratorPoliciesTableView.getSelectionModel().select(newPasswordGeneratorPolicy);
+                    logger.info("Password Generator policy has been updated");
                 }
                 catch (SQLException e) {
-                    Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Error editing policy",
+                    logger.error("Failed to update policy", e);
+                    Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Failed to update policy",
                             "A database error has occurred during the operation", Alert.AlertType.ERROR);
                     alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/styles.css")).toString());
                     alertDialog.showAndWait();
@@ -220,13 +238,8 @@ public class PasswordPoliciesPaneController {
         return (Stage) source.getScene().getWindow();
     }
 
-    private boolean isPasswordEnforcementPolicyInUse(int policyId) {
-        try {
-            List<PasswordEntity> passwordEntities = vaultRepository.getAllPasswordEntitiesByPasswordEnforcementPolicyId(policyId);
-            return !passwordEntities.isEmpty();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+    private boolean isPasswordEnforcementPolicyInUse(int policyId) throws SQLException {
+        return !vaultRepository.getAllPasswordItemsByPasswordEnforcementPolicyId(policyId).isEmpty();
     }
 
     private void swapDefaultPasswordEnforcementPolicy(PasswordEnforcementPolicy newPasswordEnforcementPolicy) throws SQLException {
@@ -274,9 +287,7 @@ public class PasswordPoliciesPaneController {
     }
 
     private void initializePasswordEnforcementPoliciesTableView() {
-        passwordEnforcementPolicyNameTableColumn.setCellValueFactory(cellData -> {
-            return new SimpleStringProperty(cellData.getValue().getName());
-        });
+        passwordEnforcementPolicyNameTableColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getName()));
 
         passwordEnforcementIsDefaultPolicyTableColumn.setCellValueFactory(cellData -> {
             boolean state = cellData.getValue().isDefaultPolicy();
@@ -301,31 +312,36 @@ public class PasswordPoliciesPaneController {
 
     private void loadPasswordEnforcementPolicies() {
         try {
-            List<PasswordEnforcementPolicy> passwordEnforcementPolicies = vaultRepository.getAllPasswordEnforcementPoliciesByUserProfileId(passwordManagerPaneController.getUserProfileSession().getCurrentUserProfileId());
+            logger.info("Loading Password Enforcement policies");
+            List<PasswordEnforcementPolicy> passwordEnforcementPolicies = vaultRepository.getAllPasswordEnforcementPoliciesByUserProfileId(Integer.parseInt(sessionVariables.getProperty("profileId")));
             for (PasswordEnforcementPolicy pwdEnforcementPolicy : passwordEnforcementPolicies) {
                 passwordEnforcementPolicyObsList.add(pwdEnforcementPolicy);
                 if (pwdEnforcementPolicy.isDefaultPolicy()) {
                     defaultPasswordEnforcementPolicy = pwdEnforcementPolicy;
                 }
             }
+            logger.info("Password Enforcement policies have been loaded");
         }
         catch (SQLException e) {
-            throw new RuntimeException(e);
+            logger.error("Failed to load Password Enforcement policies", e);
         }
     }
 
     private void loadPasswordGeneratorPolicies() {
         try {
-            List<PasswordGeneratorPolicy> passwordGeneratorPolicies = vaultRepository.getAllPasswordGeneratorPoliciesByUserProfileId(passwordManagerPaneController.getUserProfileSession().getCurrentUserProfileId());
+            logger.info("Loading Password Generator policies");
+            List<PasswordGeneratorPolicy> passwordGeneratorPolicies =
+                    vaultRepository.getAllPasswordGeneratorPoliciesByUserProfileId(Integer.parseInt(sessionVariables.getProperty("profileId")));
             for (PasswordGeneratorPolicy pwdGeneratorPolicy : passwordGeneratorPolicies) {
                 passwordGeneratorPolicyObsList.add(pwdGeneratorPolicy);
                 if (pwdGeneratorPolicy.isDefaultPolicy()) {
                     defaultPasswordGeneratorPolicy = pwdGeneratorPolicy;
                 }
             }
+            logger.info("Password Generator policies have been loaded");
         }
         catch (SQLException e) {
-            throw new RuntimeException(e);
+            logger.error("Failed to load Password Generator policies", e);
         }
     }
 }
