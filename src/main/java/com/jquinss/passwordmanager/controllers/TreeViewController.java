@@ -1,10 +1,10 @@
 package com.jquinss.passwordmanager.controllers;
 
-import com.jquinss.passwordmanager.control.DataEntityTreeItem;
-import com.jquinss.passwordmanager.dao.VaultRepository;
+import com.jquinss.passwordmanager.app.AppContext;
+import com.jquinss.passwordmanager.control.VaultTreeItem;
+import com.jquinss.passwordmanager.vault.repository.VaultRepository;
 import com.jquinss.passwordmanager.data.*;
 import com.jquinss.passwordmanager.enums.TreeViewMode;
-import com.jquinss.passwordmanager.util.misc.CryptoUtils;
 import com.jquinss.passwordmanager.util.misc.DialogBuilder;
 import com.jquinss.passwordmanager.util.misc.FixedLengthFilter;
 import javafx.event.ActionEvent;
@@ -12,32 +12,36 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Properties;
 
 public class TreeViewController {
-    private final TreeView<DataEntity> treeView;
-    private final CryptoUtils.AsymmetricCrypto asymmetricCrypto;
+    private final TreeView<VaultItem> treeView;
     private final ContextMenuBuilder contextMenuBuilder = new ContextMenuBuilder();
     private final PasswordManagerPaneController passwordManagerPaneController;
     private final VaultRepository vaultRepository;
+    private final Properties sessionVariables;
+    private final Logger logger = LoggerFactory.getLogger(TreeViewController.class);
     private DataFormat dataFormat = DataFormat.lookupMimeType("fileItemDataFormat");
     private TreeViewMode treeViewMode;
 
 
-    public TreeViewController(PasswordManagerPaneController passwordManagerPaneController, VaultRepository vaultRepository,
-                              TreeView<DataEntity> treeView, CryptoUtils.AsymmetricCrypto asymmetricCrypto) {
+    public TreeViewController(PasswordManagerPaneController passwordManagerPaneController, AppContext appContext,
+                              TreeView<VaultItem> treeView) {
         this.passwordManagerPaneController = passwordManagerPaneController;
-        this.vaultRepository = vaultRepository;
+        this.vaultRepository = appContext.vaultRepository();
+        this.sessionVariables = appContext.sessionVariables();
         this.treeView = treeView;
-        this.asymmetricCrypto = asymmetricCrypto;
+
         if (dataFormat == null) {
             dataFormat = new DataFormat("fileItemDataFormat");
         }
@@ -57,22 +61,25 @@ public class TreeViewController {
                     "Create a new folder:", "Folder name:", folderNameTextField, "Description:",
                 folderDescriptionTextField, true);
 
-        dialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/styles.css")).toString());
+        setPaneStyles(dialog.getDialogPane(), "/com/jquinss/passwordmanager/styles/styles.css");
         setWindowLogo((Stage) dialog.getDialogPane().getScene().getWindow(), this, "/com/jquinss/passwordmanager/images/create_folder.png");
         Optional<BiValue<String, String>> optional = dialog.showAndWait();
         optional.ifPresent(biValue -> {
             try {
+                logger.info("Creating folder");
                 createFolderTreeItem(treeView.getRoot(), biValue.first(), biValue.second());
+                logger.info("Folder has been created");
             } catch (SQLException e) {
-                Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Error creating folder",
+                logger.error("Failed to create folder", e);
+                Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Failed to create folder",
                             "A database error has occurred during the operation", Alert.AlertType.ERROR);
-                alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/styles.css")).toString());
+                setPaneStyles(alertDialog.getDialogPane(), "/com/jquinss/passwordmanager/styles/styles.css");
                 alertDialog.showAndWait();
             }
         });
     }
 
-    private void createFolderTreeItem(TreeItem<DataEntity> parentTreeItem, String name, String description) throws SQLException {
+    private void createFolderTreeItem(TreeItem<VaultItem> parentTreeItem, String name, String description) throws SQLException {
         Folder parentFolder = (Folder) parentTreeItem.getValue();
         Folder folder = createFolder(parentFolder.getId(), name, description);
         parentTreeItem.getChildren().add(buildTreeItem(folder));
@@ -87,7 +94,7 @@ public class TreeViewController {
     }
 
     void deleteFolder() {
-        TreeItem<DataEntity> treeItem = treeView.getSelectionModel().getSelectedItem();
+        TreeItem<VaultItem> treeItem = treeView.getSelectionModel().getSelectedItem();
         if ((treeItem != null) && (treeItem.getValue() instanceof Folder) &&
                 !(treeItem.getValue() instanceof RootFolder)){
             if (treeItem.getChildren().isEmpty()) {
@@ -95,13 +102,12 @@ public class TreeViewController {
             }
             else {
                 Alert alertDialog = DialogBuilder.buildAlertDialog("Confirmation", "The folder is not empty", "Are you sure you want to delete all the files?", Alert.AlertType.CONFIRMATION);
-                alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/styles.css")).toString());
+                setPaneStyles(alertDialog.getDialogPane(), "/com/jquinss/passwordmanager/styles/styles.css");
                 setWindowLogo((Stage) alertDialog.getDialogPane().getScene().getWindow(), this, "/com/jquinss/passwordmanager/images/delete_folder.png");
-
-
+                
                 alertDialog.showAndWait().ifPresent(response -> {
                     if (response == ButtonType.OK) {
-                        deleteAllPasswordEntitiesInFolder(treeItem);
+                        deleteAllPasswordItemsInFolder(treeItem);
                         deleteFolder(treeItem);
                     }
                 });;
@@ -109,35 +115,41 @@ public class TreeViewController {
         }
     }
 
-    private void deleteFolder(TreeItem<DataEntity> folderTreeItem) {
+    private void deleteFolder(TreeItem<VaultItem> folderTreeItem) {
         try {
+            logger.info("Deleting folder");
             Folder folder = (Folder) folderTreeItem.getValue();
             vaultRepository.deleteFolder(folder);
             folderTreeItem.getParent().getChildren().remove(folderTreeItem);
+            logger.info("Folder has been deleted");
         }
         catch (SQLException e) {
+            logger.error("Failed to delete folder", e);
             Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Error deleting folder",
                     "A database error has occurred during the operation", Alert.AlertType.ERROR);
-            alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/styles.css")).toString());
+            setPaneStyles(alertDialog.getDialogPane(), "/com/jquinss/passwordmanager/styles/styles.css");
             alertDialog.showAndWait();
         }
     }
 
-    private void deleteAllPasswordEntitiesInFolder(TreeItem<DataEntity> folderTreeItem) {
-        List<PasswordEntity> passwordEntities = folderTreeItem.getChildren().stream().map(item -> (PasswordEntity) item.getValue()).toList();
+    private void deleteAllPasswordItemsInFolder(TreeItem<VaultItem> folderTreeItem) {
+        List<PasswordItem> passwordItems = folderTreeItem.getChildren().stream().map(item -> (PasswordItem) item.getValue()).toList();
         try {
-            vaultRepository.deletePasswordEntities(passwordEntities);
+            logger.info("Deleting password items in folder");
+            vaultRepository.deletePasswordItems(passwordItems);
+            logger.info("Password items have been deleted");
         }
         catch (SQLException e) {
-            Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Error deleting password entities",
+            logger.error("Failed to delete password items");
+            Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Failed to delete password items",
                     "A database error has occurred during the operation", Alert.AlertType.ERROR);
-            alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/styles.css")).toString());
+            setPaneStyles(alertDialog.getDialogPane(), "/com/jquinss/passwordmanager/styles/styles.css");
             alertDialog.showAndWait();
         }
     }
 
     private void editFolder() {
-        TreeItem<DataEntity> folderTreeItem = treeView.getSelectionModel().getSelectedItem();
+        TreeItem<VaultItem> folderTreeItem = treeView.getSelectionModel().getSelectedItem();
         if ((folderTreeItem != null) && (folderTreeItem.getValue() instanceof Folder folder)) {
 
             TextField folderNameTextField = new TextField(folder.getName());
@@ -159,12 +171,15 @@ public class TreeViewController {
             Optional<BiValue<String, String>> optional = dialog.showAndWait();
             optional.ifPresent(biValue -> {
                 try {
+                    logger.info("Editing folder");
                     editFolderTreeItem(folderTreeItem, biValue.first(), biValue.second());
+                    logger.info("Folder has been edited");
                 }
                 catch (SQLException e) {
-                    Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Error editing folder",
+                    logger.error("Failed to edit folder");
+                    Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Failed to edit folder",
                             "A database error has occurred during the operation", Alert.AlertType.ERROR);
-                    alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/styles.css")).toString());
+                    setPaneStyles(alertDialog.getDialogPane(), "/com/jquinss/passwordmanager/styles/styles.css");
                     alertDialog.showAndWait();
                 }
             });
@@ -172,7 +187,7 @@ public class TreeViewController {
 
     }
 
-    private void editFolderTreeItem(TreeItem<DataEntity> treeItem, String name, String description) throws SQLException {
+    private void editFolderTreeItem(TreeItem<VaultItem> treeItem, String name, String description) throws SQLException {
         Folder folder = (Folder) treeItem.getValue();
         Folder folderCopy = folder.clone();
         folderCopy.setName(name);
@@ -180,118 +195,125 @@ public class TreeViewController {
         vaultRepository.updateFolder(folderCopy);
         treeItem.setValue(folderCopy);
         // refresh quick view
-        viewDataEntityInQuickViewPane(folderCopy);
+        viewDataItemInQuickViewPane(folderCopy);
     }
 
-    void createPasswordEntity() {
-        TreeItem<DataEntity> selectedTreeItem = treeView.getSelectionModel().getSelectedItem();
+    void createPasswordItem() {
+        TreeItem<VaultItem> selectedTreeItem = treeView.getSelectionModel().getSelectedItem();
         if ((selectedTreeItem != null ) && (selectedTreeItem.getValue() instanceof Folder)) {
             setEditMode(TreeViewMode.CREATE, selectedTreeItem);
-            passwordManagerPaneController.createPasswordEntityInEditor((Folder) selectedTreeItem.getValue());
+            passwordManagerPaneController.createPasswordItemInEditor((Folder) selectedTreeItem.getValue());
         }
     }
 
-    void deletePasswordEntity() {
-        TreeItem<DataEntity> selectedTreeItem = treeView.getSelectionModel().getSelectedItem();
-        if ((selectedTreeItem != null ) && (selectedTreeItem.getValue() instanceof PasswordEntity)) {
+    void deletePasswordItem() {
+        TreeItem<VaultItem> selectedTreeItem = treeView.getSelectionModel().getSelectedItem();
+        if ((selectedTreeItem != null ) && (selectedTreeItem.getValue() instanceof PasswordItem)) {
             try {
-                vaultRepository.deletePasswordEntity((PasswordEntity) selectedTreeItem.getValue());
+                logger.info("Deleting password item");
+                vaultRepository.deletePasswordItem((PasswordItem) selectedTreeItem.getValue());
                 selectedTreeItem.getParent().getChildren().remove(selectedTreeItem);
+                logger.info("Password item has been deleted");
             } catch (SQLException e) {
-                Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Error deleting password entity",
+                logger.error("Failed to delete password item");
+                Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Failed to delete password item",
                         "A database error has occurred during the operation", Alert.AlertType.ERROR);
-                alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/styles.css")).toString());
+                setPaneStyles(alertDialog.getDialogPane(), "/com/jquinss/passwordmanager/styles/styles.css");
                 alertDialog.showAndWait();
             }
         }
     }
 
-    void editPasswordEntity() {
-        TreeItem<DataEntity> selectedTreeItem = treeView.getSelectionModel().getSelectedItem();
-        if ((selectedTreeItem != null) && selectedTreeItem.getValue() instanceof PasswordEntity) {
+    void editPasswordItem() {
+        TreeItem<VaultItem> selectedTreeItem = treeView.getSelectionModel().getSelectedItem();
+        if ((selectedTreeItem != null) && selectedTreeItem.getValue() instanceof PasswordItem) {
             setEditMode(TreeViewMode.EDIT, selectedTreeItem);
-            // creates a copy of the PasswordEntity instance in case any exception occurs inserting the the db
-            PasswordEntity pwdEntityCopy = (PasswordEntity) ((PasswordEntity) selectedTreeItem.getValue()).clone();
-            passwordManagerPaneController.editPasswordEntityInEditor(pwdEntityCopy);
+            // creates a copy of the PasswordItem instance in case any exception occurs inserting the the db
+            PasswordItem pwdItemCopy = (PasswordItem) ((PasswordItem) selectedTreeItem.getValue()).clone();
+            passwordManagerPaneController.editPasswordItemInEditor(pwdItemCopy);
         }
     }
 
-    void viewPasswordEntity() {
-        TreeItem<DataEntity> selectedTreeItem = treeView.getSelectionModel().getSelectedItem();
-        if ((selectedTreeItem != null) && selectedTreeItem.getValue() instanceof PasswordEntity) {
+    void viewPasswordItem() {
+        TreeItem<VaultItem> selectedTreeItem = treeView.getSelectionModel().getSelectedItem();
+        if ((selectedTreeItem != null) && selectedTreeItem.getValue() instanceof PasswordItem) {
             setViewMode();
-            passwordManagerPaneController.viewPasswordEntityInEditor((PasswordEntity) selectedTreeItem.getValue());
+            passwordManagerPaneController.viewPasswordItemInEditor((PasswordItem) selectedTreeItem.getValue());
         }
     }
 
-    private void viewDataEntityInQuickViewPane(DataEntity dataEntity) {
-        passwordManagerPaneController.viewDataEntityInQuickViewPane(dataEntity);
+    private void viewDataItemInQuickViewPane(VaultItem vaultItem) {
+        passwordManagerPaneController.viewDataItemInQuickViewPane(vaultItem);
     }
 
-    private void hideDataEntityInQuickViewPane() {
+    private void hideDataItemInQuickViewPane() {
         passwordManagerPaneController.hideQuickViewPane();
     }
 
-    void duplicatePasswordEntity() {
-        TreeItem<DataEntity> selectedTreeItem = treeView.getSelectionModel().getSelectedItem();
+    void duplicatePasswordItem() {
+        TreeItem<VaultItem> selectedTreeItem = treeView.getSelectionModel().getSelectedItem();
 
-        if ((selectedTreeItem != null) && selectedTreeItem.getValue() instanceof PasswordEntity) {
-            PasswordEntity pwdEntity = (PasswordEntity) selectedTreeItem.getValue();
+        if ((selectedTreeItem != null) && selectedTreeItem.getValue() instanceof PasswordItem pwdItem) {
 
             try {
-                PasswordEntity pwdEntityCopy = (PasswordEntity) pwdEntity.clone();
-                pwdEntityCopy.setName("Copy of " + pwdEntity.getName());
-                savePasswordEntityToDatabase(pwdEntityCopy);
-                savePasswordEntityToTreeView(pwdEntityCopy, selectedTreeItem.getParent());
+                logger.info("Duplicating password item");
+                PasswordItem pwdItemCopy = (PasswordItem) pwdItem.clone();
+                pwdItemCopy.setName("Copy of " + pwdItem.getName());
+                savePasswordItemToDatabase(pwdItemCopy);
+                savePasswordItemToTreeView(pwdItemCopy, selectedTreeItem.getParent());
+                logger.info("Password item has been duplicated");
             }
             catch (SQLException e) {
-                Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Error creating new password entity",
+                logger.error("Failed to duplicate password item");
+                Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Failed to duplicate password item",
                         "A database error has occurred during the operation", Alert.AlertType.ERROR);
-                alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/styles.css")).toString());
+                setPaneStyles(alertDialog.getDialogPane(), "/com/jquinss/passwordmanager/styles/styles.css");
                 alertDialog.showAndWait();
             }
         }
     }
 
     private void copyToClipboard(ActionEvent event) {
-        TreeItem<DataEntity> selectedTreeItem = treeView.getSelectionModel().getSelectedItem();
+        TreeItem<VaultItem> selectedTreeItem = treeView.getSelectionModel().getSelectedItem();
 
-        if ((selectedTreeItem != null) && (selectedTreeItem.getValue() instanceof PasswordEntity)) {
+        if ((selectedTreeItem != null) && (selectedTreeItem.getValue() instanceof PasswordItem pwdItem)) {
             String menuItemId = ((MenuItem) event.getSource()).getId();
-            PasswordEntity pwdEntity = (PasswordEntity) selectedTreeItem.getValue();
             Clipboard clipboard = Clipboard.getSystemClipboard();
             ClipboardContent content = new ClipboardContent();
 
             switch (menuItemId) {
-                case "copyPasswordToClipboardItem" -> content.putString(pwdEntity.getPassword());
-                case "copyUsernameToClipboardItem" -> content.putString(pwdEntity.getUsername());
-                case "copyEmailAddressToClipboardItem" -> content.putString(pwdEntity.getEmailAddress());
-                case "copyURLToClipboardItem" -> content.putString(pwdEntity.getUrl());
+                case "copyPasswordToClipboardItem" -> content.putString(pwdItem.getPassword());
+                case "copyUsernameToClipboardItem" -> content.putString(pwdItem.getUsername());
+                case "copyEmailAddressToClipboardItem" -> content.putString(pwdItem.getEmailAddress());
+                case "copyURLToClipboardItem" -> content.putString(pwdItem.getUrl());
             }
 
             clipboard.setContent(content);
         }
     }
 
-    void savePasswordEntity(PasswordEntity passwordEntity) {
+    void savePasswordItem(PasswordItem passwordItem) {
         treeViewMode.getTreeItem().ifPresent(treeItem -> {
             switch (treeViewMode) {
-                case CREATE -> addPasswordEntity(passwordEntity, treeItem);
-                case EDIT -> modifyPasswordEntity(passwordEntity);
+                case CREATE -> addPasswordItem(passwordItem, treeItem);
+                case EDIT -> modifyPasswordItem(passwordItem);
             }
         });
 
     }
 
-    private void addPasswordEntity(PasswordEntity passwordEntity, TreeItem<DataEntity> folderTreeItem) {
+    private void addPasswordItem(PasswordItem passwordItem, TreeItem<VaultItem> folderTreeItem) {
         try {
-            savePasswordEntityToDatabase(passwordEntity);
-            savePasswordEntityToTreeView(passwordEntity, folderTreeItem);
+            logger.info("Creating password item");
+            savePasswordItemToDatabase(passwordItem);
+            savePasswordItemToTreeView(passwordItem, folderTreeItem);
+            logger.info("Password item has been created");
         }
         catch (SQLException e) {
-            Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Error creating password entity",
+            logger.error("Failed to create password item");
+            Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Failed to create password item",
                     "A database error has occurred during the operation", Alert.AlertType.ERROR);
-            alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/styles.css")).toString());
+            setPaneStyles(alertDialog.getDialogPane(), "/com/jquinss/passwordmanager/styles/styles.css");
             alertDialog.showAndWait();
         }
         finally {
@@ -299,31 +321,30 @@ public class TreeViewController {
         }
     }
 
-    private void savePasswordEntityToDatabase(PasswordEntity passwordEntity) throws SQLException {
-        encryptFields(passwordEntity); // encrypt fields to save to the database
-        vaultRepository.addPasswordEntity(passwordEntity);
-        decryptFields(passwordEntity);
+    private void savePasswordItemToDatabase(PasswordItem passwordItem) throws SQLException {
+        vaultRepository.addPasswordItem(passwordItem);
     }
 
-    private void savePasswordEntityToTreeView(PasswordEntity passwordEntity, TreeItem<DataEntity> folderTreeItem) {
-        TreeItem<DataEntity> treeItem = buildTreeItem(passwordEntity);
+    private void savePasswordItemToTreeView(PasswordItem passwordItem, TreeItem<VaultItem> folderTreeItem) {
+        TreeItem<VaultItem> treeItem = buildTreeItem(passwordItem);
         folderTreeItem.getChildren().add(treeItem);
     }
 
-    private void modifyPasswordEntity(PasswordEntity passwordEntityCopy) {
+    private void modifyPasswordItem(PasswordItem passwordItemCopy) {
         treeViewMode.getTreeItem().ifPresent(treeItem -> {
             try {
-                encryptFields(passwordEntityCopy); // encrypt fields to save to the database
-                vaultRepository.updatePasswordEntity(passwordEntityCopy);
-                decryptFields(passwordEntityCopy);
-                treeItem.setValue(passwordEntityCopy);
+                logger.info("Modifying password item");
+                vaultRepository.updatePasswordItem(passwordItemCopy);
+                treeItem.setValue(passwordItemCopy);
                 // refresh quick view pane
-                viewDataEntityInQuickViewPane(passwordEntityCopy);
+                viewDataItemInQuickViewPane(passwordItemCopy);
+                logger.info("Password item has been modified");
             }
             catch (SQLException e) {
-                Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Error modifying password entity",
+                logger.error("Failed to modify password item");
+                Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Failed to modify password item",
                         "A database error has occurred during the operation", Alert.AlertType.ERROR);
-                alertDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/styles.css")).toString());
+                setPaneStyles(alertDialog.getDialogPane(), "/com/jquinss/passwordmanager/styles/styles.css");
                 alertDialog.showAndWait();
             }
             finally {
@@ -332,126 +353,96 @@ public class TreeViewController {
         });
     }
 
-    private void movePasswordEntity(TreeItem<DataEntity> passwordEntityTreeItem, TreeItem<DataEntity> destFolderTreeItem) throws SQLException {
-        PasswordEntity passwordEntity = (PasswordEntity) passwordEntityTreeItem.getValue();
-        PasswordEntity passwordEntityCopy = (PasswordEntity) passwordEntity.clone();
-        passwordEntityCopy.setFolderId(destFolderTreeItem.getValue().getId());
-        encryptFields(passwordEntityCopy);
-        vaultRepository.updatePasswordEntity(passwordEntityCopy);
-        decryptFields(passwordEntityCopy);
-        passwordEntityTreeItem.setValue(passwordEntityCopy);
-        passwordEntityTreeItem.getParent().getChildren().remove(passwordEntityTreeItem);
-        destFolderTreeItem.getChildren().add(passwordEntityTreeItem);
+    private void movePasswordItem(TreeItem<VaultItem> passwordItemTreeItem, TreeItem<VaultItem> destFolderTreeItem) throws SQLException {
+        PasswordItem passwordItem = (PasswordItem) passwordItemTreeItem.getValue();
+        PasswordItem passwordItemCopy = (PasswordItem) passwordItem.clone();
+        passwordItemCopy.setFolderId(destFolderTreeItem.getValue().getId());
+        vaultRepository.updatePasswordItem(passwordItemCopy);
+        passwordItemTreeItem.setValue(passwordItemCopy);
+        passwordItemTreeItem.getParent().getChildren().remove(passwordItemTreeItem);
+        destFolderTreeItem.getChildren().add(passwordItemTreeItem);
     }
 
     void initializeTreeView() {
+        logger.info("Initializing TreeView");
         setTreeViewCellFactory();
         setSelectedTreeItemListener();
-        initializeRootTreeItem();
-        loadTreeItems();
+        try {
+            initializeRootTreeItem();
+            loadTreeItems();
+        }
+        catch (SQLException e) {
+            logger.error("Failed to load vault items from database", e);
+            Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Failed to load vault",
+                    "The application could not access the vault database.\nThe application will now exit",
+                    Alert.AlertType.ERROR);
+            setPaneStyles(alertDialog.getDialogPane(), "/com/jquinss/passwordmanager/styles/styles.css");
+            alertDialog.showAndWait();
+        }
+
         setViewMode();
     }
 
-    private void initializeRootTreeItem() {
-        try {
-            Optional<RootFolder> optional = vaultRepository.getRootFolderByUserProfileId(passwordManagerPaneController.
-                                                                                        getUserProfileSession().
-                                                                                        getCurrentUserProfileId());
-            if (optional.isPresent()) {
-                treeView.setRoot(buildTreeItem(optional.get()));
-            }
-            else {
-                createRootTreeItem();
-            }
+    private void initializeRootTreeItem() throws SQLException {
+        Optional<RootFolder> optional = vaultRepository.getRootFolderByUserProfileId(Integer.parseInt(sessionVariables.getProperty("profileId")));
+        if (optional.isPresent()) {
+            treeView.setRoot(buildTreeItem(optional.get()));
         }
-        catch (SQLException e) {
-            throw new RuntimeException(e);
+        else {
+            createRootTreeItem();
         }
     }
 
-    private void loadTreeItems() {
-        try {
-            TreeItem<DataEntity> rootTreeItem = treeView.getRoot();
-            List<Folder> folders = vaultRepository.getAllFoldersByParentFolderId(rootTreeItem.getValue().getId());
-            for (Folder folder : folders) {
-                TreeItem<DataEntity> treeItem = buildTreeItem(folder);
-                rootTreeItem.getChildren().add(treeItem);
-                loadPasswordEntities(treeItem);
-            }
+    private void loadTreeItems() throws SQLException {
+        logger.info("Loading vault items");
+        TreeItem<VaultItem> rootTreeItem = treeView.getRoot();
+        List<Folder> folders = vaultRepository.getAllFoldersByParentFolderId(rootTreeItem.getValue().getId());
+        for (Folder folder : folders) {
+            TreeItem<VaultItem> treeItem = buildTreeItem(folder);
+            rootTreeItem.getChildren().add(treeItem);
+            loadPasswordItems(treeItem);
         }
-        catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        logger.info("Vault items have been loaded");
     }
 
-    private void loadPasswordEntities(TreeItem<DataEntity> folderTreeItem) throws SQLException {
-        List<PasswordEntity> pwdEntities = vaultRepository.getAllPasswordEntitiesByFolderId(folderTreeItem.getValue().getId());
-        for (PasswordEntity pwdEntity : pwdEntities) {
-            decryptFields(pwdEntity);
-            folderTreeItem.getChildren().add(buildTreeItem(pwdEntity));
-        }
-    }
-
-    private void encryptFields(PasswordEntity pwdEntity) {
-        pwdEntity.setUsername(encryptText(pwdEntity.getUsername()));
-        pwdEntity.setEmailAddress(encryptText(pwdEntity.getEmailAddress()));
-        pwdEntity.setPassword(encryptText(pwdEntity.getPassword()));
-    }
-
-    private void decryptFields(PasswordEntity pwdEntity) {
-        pwdEntity.setUsername(decryptText(pwdEntity.getUsername()));
-        pwdEntity.setEmailAddress(decryptText((pwdEntity.getEmailAddress())));
-        pwdEntity.setPassword(decryptText(pwdEntity.getPassword()));
-    }
-
-    private String encryptText(String text)  {
-        try {
-            return (text != null) ? asymmetricCrypto.encrypt(text) : null;
-        } catch (IllegalBlockSizeException | BadPaddingException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private String decryptText(String text) {
-        try {
-            return (text != null) ? asymmetricCrypto.decrypt(text) : null;
-        } catch (IllegalBlockSizeException | BadPaddingException e) {
-            throw new RuntimeException(e);
+    private void loadPasswordItems(TreeItem<VaultItem> folderTreeItem) throws SQLException {
+        List<PasswordItem> pwdItems = vaultRepository.getAllPasswordItemsByFolderId(folderTreeItem.getValue().getId());
+        for (PasswordItem pwdItem : pwdItems) {
+            folderTreeItem.getChildren().add(buildTreeItem(pwdItem));
         }
     }
 
     private void createRootTreeItem() throws SQLException {
-        Optional<RootFolder> optional = vaultRepository.getRootFolderByUserProfileId(passwordManagerPaneController.
-                                                                                    getUserProfileSession().
-                                                                                    getCurrentUserProfileId());
-        optional.ifPresent(rootFolder -> treeView.setRoot(buildTreeItem(rootFolder)));
+        RootFolder rootFolder = new RootFolder("Root", Integer.parseInt(sessionVariables.getProperty("profileId")));
+        vaultRepository.addRootFolder(rootFolder);
+        treeView.setRoot(buildTreeItem(rootFolder));
     }
 
-    private TreeItem<DataEntity> buildTreeItem(DataEntity dataEntity) {
-        DataEntityTreeItem treeItem = new DataEntityTreeItem(dataEntity);
+    private TreeItem<VaultItem> buildTreeItem(VaultItem vaultItem) {
+        VaultTreeItem treeItem = new VaultTreeItem(vaultItem);
         setContextMenu(treeItem);
-        if (dataEntity instanceof Folder) {
+        if (vaultItem instanceof Folder) {
             treeItem.setExpanded(true);
         }
         return treeItem;
     }
 
-    private void setContextMenu(DataEntityTreeItem treeItem) {
+    private void setContextMenu(VaultTreeItem treeItem) {
         ContextMenu contextMenu = contextMenuBuilder.buildContextMenu(treeItem.getValue());
         treeItem.setContextMenu(contextMenu);
     }
 
     // inner class that builds the context menus based on the type of element
     class ContextMenuBuilder {
-        ContextMenu buildContextMenu(DataEntity dataEntity) {
+        ContextMenu buildContextMenu(VaultItem vaultItem) {
             ContextMenu contextMenu = null;
 
-            if (dataEntity instanceof RootFolder) {
+            if (vaultItem instanceof RootFolder) {
                 contextMenu = new RootFolderContextMenu();
-            } else if (dataEntity instanceof Folder) {
+            } else if (vaultItem instanceof Folder) {
                 contextMenu = new FolderContextMenu();
-            } else if (dataEntity instanceof PasswordEntity) {
-                contextMenu = new PasswordEntityContextMenu();
+            } else if (vaultItem instanceof PasswordItem) {
+                contextMenu = new PasswordItemContextMenu();
             }
 
             return contextMenu;
@@ -460,7 +451,7 @@ public class TreeViewController {
 
     private class RootFolderContextMenu extends ContextMenu {
         final MenuItem addFolder = new MenuItem("Add Folder");
-        final MenuItem removeFolders = new MenuItem("Delete All Folders");
+        //final MenuItem removeFolders = new MenuItem("Delete All Folders");
 
         RootFolderContextMenu() {
             addFolder.setOnAction(e -> createFolder());
@@ -470,34 +461,34 @@ public class TreeViewController {
     }
 
     private class FolderContextMenu extends ContextMenu {
-        final MenuItem createPasswordEntityMenuItem = new MenuItem("Create New Password...");
+        final MenuItem createPasswordItemMenuItem = new MenuItem("Create New Password...");
         final MenuItem editFolderMenuItem = new MenuItem("Edit");
         final MenuItem deleteFolderMenuItem = new MenuItem("Delete");
 
         FolderContextMenu() {
-            createPasswordEntityMenuItem.setOnAction(e -> createPasswordEntity());
-            createPasswordEntityMenuItem.setAccelerator(KeyCombination.keyCombination("Shortcut+Shift+N"));
+            createPasswordItemMenuItem.setOnAction(e -> createPasswordItem());
+            createPasswordItemMenuItem.setAccelerator(KeyCombination.keyCombination("Shortcut+Shift+N"));
             editFolderMenuItem.setOnAction(e -> editFolder());
             editFolderMenuItem.setAccelerator(KeyCombination.keyCombination("Shortcut+Shift+I"));
             deleteFolderMenuItem.setOnAction(e -> deleteFolder());
             deleteFolderMenuItem.setAccelerator(KeyCombination.keyCombination("Shortcut+Shift+D"));
 
-            getItems().addAll(createPasswordEntityMenuItem,editFolderMenuItem, deleteFolderMenuItem);
+            getItems().addAll(createPasswordItemMenuItem,editFolderMenuItem, deleteFolderMenuItem);
         }
     }
 
-    private class PasswordEntityContextMenu extends ContextMenu {
+    private class PasswordItemContextMenu extends ContextMenu {
         final Menu copyToClipboardMenu = new Menu("Copy to Clipboard");
         final MenuItem copyPasswordToClipboardItem = new MenuItem("Password");
         final MenuItem copyUsernameToClipboardItem = new MenuItem("Username");
         final MenuItem copyEmailAddressToClipboardItem = new MenuItem("Email address");
         final MenuItem copyURLToClipboardItem = new MenuItem("URL");
-        final MenuItem duplicatePasswordEntityItem = new MenuItem("Duplicate");
-        final MenuItem viewPasswordEntityItem = new MenuItem("View");
-        final MenuItem editPasswordEntityItem = new MenuItem("Edit");
-        final MenuItem deletePasswordEntityItem = new MenuItem("Delete");
+        final MenuItem duplicatePasswordItemItem = new MenuItem("Duplicate");
+        final MenuItem viewPasswordItemItem = new MenuItem("View");
+        final MenuItem editPasswordItemItem = new MenuItem("Edit");
+        final MenuItem deletePasswordItemItem = new MenuItem("Delete");
 
-        PasswordEntityContextMenu() {
+        PasswordItemContextMenu() {
             copyPasswordToClipboardItem.setId("copyPasswordToClipboardItem");
             copyPasswordToClipboardItem .setOnAction(TreeViewController.this::copyToClipboard);
             copyPasswordToClipboardItem.setAccelerator(KeyCombination.keyCombination("Shortcut+P"));
@@ -510,52 +501,52 @@ public class TreeViewController {
             copyEmailAddressToClipboardItem.setId("copyEmailAddressToClipboardItem");
             copyEmailAddressToClipboardItem.setOnAction(TreeViewController.this::copyToClipboard);
             copyEmailAddressToClipboardItem.setAccelerator(KeyCombination.keyCombination("Shortcut+E"));
-            duplicatePasswordEntityItem.setOnAction(e -> duplicatePasswordEntity());
-            duplicatePasswordEntityItem.setAccelerator(KeyCombination.keyCombination("Shortcut+L"));
-            viewPasswordEntityItem.setOnAction(e -> viewPasswordEntity());
-            viewPasswordEntityItem.setAccelerator(KeyCombination.keyCombination("Shortcut+V"));
-            editPasswordEntityItem.setOnAction(e -> editPasswordEntity());
-            editPasswordEntityItem.setAccelerator(KeyCombination.keyCombination("Shortcut+I"));
-            deletePasswordEntityItem.setOnAction(e -> deletePasswordEntity());
-            deletePasswordEntityItem.setAccelerator(KeyCombination.keyCombination("Shortcut+D"));
+            duplicatePasswordItemItem.setOnAction(e -> duplicatePasswordItem());
+            duplicatePasswordItemItem.setAccelerator(KeyCombination.keyCombination("Shortcut+L"));
+            viewPasswordItemItem.setOnAction(e -> viewPasswordItem());
+            viewPasswordItemItem.setAccelerator(KeyCombination.keyCombination("Shortcut+V"));
+            editPasswordItemItem.setOnAction(e -> editPasswordItem());
+            editPasswordItemItem.setAccelerator(KeyCombination.keyCombination("Shortcut+I"));
+            deletePasswordItemItem.setOnAction(e -> deletePasswordItem());
+            deletePasswordItemItem.setAccelerator(KeyCombination.keyCombination("Shortcut+D"));
 
             copyToClipboardMenu.getItems().addAll(copyPasswordToClipboardItem, copyUsernameToClipboardItem ,
                     copyURLToClipboardItem, copyEmailAddressToClipboardItem);
 
-            getItems().addAll(copyToClipboardMenu, viewPasswordEntityItem, duplicatePasswordEntityItem,
-                    editPasswordEntityItem, deletePasswordEntityItem);
+            getItems().addAll(copyToClipboardMenu, viewPasswordItemItem, duplicatePasswordItemItem,
+                    editPasswordItemItem, deletePasswordItemItem);
         }
     }
 
     private void setTreeViewCellFactory() {
         // we set the cell factory for each different element. The context menu and graphic will be different
         // depending on the type of element.
-        treeView.setCellFactory(new Callback<TreeView<DataEntity>, TreeCell<DataEntity>>() {
-            private TreeItem<DataEntity> passwordEntityTreeItem;
-            private TreeItem<DataEntity> destFolderTreeItem;
-            private TreeItem<DataEntity> resultPasswordEntityTreeItem;
+        treeView.setCellFactory(new Callback<TreeView<VaultItem>, TreeCell<VaultItem>>() {
+            private TreeItem<VaultItem> passwordItemTreeItem;
+            private TreeItem<VaultItem> destFolderTreeItem;
+            private TreeItem<VaultItem> resultPasswordItemTreeItem;
 
             @Override
-            public TreeCell<DataEntity> call(TreeView<DataEntity> p) {
-                TreeCell<DataEntity> cell = new TreeCell<DataEntity>() {
+            public TreeCell<VaultItem> call(TreeView<VaultItem> p) {
+                TreeCell<VaultItem> cell = new TreeCell<VaultItem>() {
                     @Override
-                    protected void updateItem(DataEntity dataEntity, boolean empty) {
-                        super.updateItem(dataEntity, empty);
+                    protected void updateItem(VaultItem dataItem, boolean empty) {
+                        super.updateItem(dataItem, empty);
 
                         if (empty) {
                             setText(null);
                             setGraphic(null);
                         }
                         else {
-                            setText(dataEntity.getName());
-                            setContextMenu(((DataEntityTreeItem) getTreeItem()).getContextMenu());
-                            setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream(((DataEntityTreeItem) getTreeItem()).getImgURL())))));
+                            setText(dataItem.getName());
+                            setContextMenu(((VaultTreeItem) getTreeItem()).getContextMenu());
+                            setGraphic(new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream(((VaultTreeItem) getTreeItem()).getImgURL())))));
                         }
                     }
                 };
 
                 cell.setOnDragDetected(e -> {
-                    if (cell.getItem() instanceof PasswordEntity) {
+                    if (cell.getItem() instanceof PasswordItem) {
                         Dragboard dragBoard = cell.startDragAndDrop(TransferMode.MOVE);
                         ClipboardContent content = new ClipboardContent();
                         content.put(dataFormat, cell.getItem());
@@ -569,28 +560,34 @@ public class TreeViewController {
                 cell.setOnDragOver(e ->{
                     Dragboard dragboard = e.getDragboard();
                     destFolderTreeItem = cell.getTreeItem();
-                    passwordEntityTreeItem = p.getSelectionModel().getSelectedItem();
+                    passwordItemTreeItem = p.getSelectionModel().getSelectedItem();
 
                     if ((dragboard.hasContent(dataFormat)) &&
                             (destFolderTreeItem.getValue() instanceof Folder) &&
-                            (destFolderTreeItem != passwordEntityTreeItem.getParent())) {
+                            (destFolderTreeItem != passwordItemTreeItem.getParent())) {
                         e.acceptTransferModes(TransferMode.MOVE);
                     }
                 });
 
                 cell.setOnDragDropped(e -> {
                     try {
-                        movePasswordEntity(passwordEntityTreeItem, destFolderTreeItem);
-                        resultPasswordEntityTreeItem = passwordEntityTreeItem;
+                        logger.info("Moving password item");
+                        movePasswordItem(passwordItemTreeItem, destFolderTreeItem);
+                        resultPasswordItemTreeItem = passwordItemTreeItem;
                         e.setDropCompleted(true);
+                        logger.info("Password item has been moved");
                     } catch (SQLException e1) {
-                        System.out.println("An error has occurred which moving the password entity");
+                        logger.error("Failed to move password item");
+                        Alert alertDialog = DialogBuilder.buildAlertDialog("Error", "Failed to move password item",
+                                "A database error has occurred during the operation", Alert.AlertType.ERROR);
+                        setPaneStyles(alertDialog.getDialogPane(), "/com/jquinss/passwordmanager/styles/styles.css");
+                        alertDialog.showAndWait();
                     }
                 });
 
                 cell.setOnDragDone(e -> {
-                    if (resultPasswordEntityTreeItem != null) {
-                        p.getSelectionModel().select(resultPasswordEntityTreeItem);
+                    if (resultPasswordItemTreeItem != null) {
+                        p.getSelectionModel().select(resultPasswordItemTreeItem);
                     }
                 });
 
@@ -602,15 +599,15 @@ public class TreeViewController {
     private void setSelectedTreeItemListener() {
         treeView.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
             if (newValue != null) {
-                DataEntity dataEntity = newValue.getValue();
-                passwordManagerPaneController.viewDataEntityInQuickViewPane(dataEntity);
+                VaultItem vaultItem = newValue.getValue();
+                passwordManagerPaneController.viewDataItemInQuickViewPane(vaultItem);
 
-                if (dataEntity instanceof  RootFolder) {
+                if (vaultItem instanceof  RootFolder) {
                     passwordManagerPaneController.enableRootRelatedToolbarButtons();
-                } else if (dataEntity instanceof Folder) {
+                } else if (vaultItem instanceof Folder) {
                     passwordManagerPaneController.enableFolderRelatedToolbarButtons();
-                } else {
-                    passwordManagerPaneController.enablePasswordEntityRelatedToolbarButtons();
+                } else if (vaultItem instanceof PasswordItem) {
+                    passwordManagerPaneController.enablePasswordItemRelatedToolbarButtons();
                 }
             }
             else {
@@ -626,7 +623,7 @@ public class TreeViewController {
         treeView.setDisable(false);
     }
 
-    private void setEditMode(TreeViewMode treeViewMode, TreeItem<DataEntity> treeItem) {
+    private void setEditMode(TreeViewMode treeViewMode, TreeItem<VaultItem> treeItem) {
         this.treeViewMode = treeViewMode;
         treeViewMode.setTreeItem(treeItem);
         treeView.setDisable(true);
@@ -634,5 +631,9 @@ public class TreeViewController {
 
     private void setWindowLogo(Stage stage, Object context, String imageFile) {
         stage.getIcons().add(new Image(Objects.requireNonNull(context.getClass().getResource(imageFile)).toString()));
+    }
+
+    private void setPaneStyles(Pane pane, String cssFile) {
+        pane.getStylesheets().add(Objects.requireNonNull(getClass().getResource(cssFile)).toString());
     }
 }
