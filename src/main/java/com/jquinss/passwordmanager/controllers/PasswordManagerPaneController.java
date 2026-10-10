@@ -1,9 +1,7 @@
 package com.jquinss.passwordmanager.controllers;
 
-import com.jquinss.passwordmanager.dao.VaultRepository;
+import com.jquinss.passwordmanager.app.AppContext;
 import com.jquinss.passwordmanager.data.*;
-import com.jquinss.passwordmanager.security.UserProfileSession;
-import com.jquinss.passwordmanager.util.misc.CryptoUtils;
 import com.jquinss.passwordmanager.util.misc.DialogBuilder;
 import javafx.animation.FadeTransition;
 import javafx.fxml.FXML;
@@ -18,6 +16,8 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URL;
@@ -32,19 +32,19 @@ public class PasswordManagerPaneController implements Initializable {
     @FXML
     private MenuBar menuBar;
     @FXML
-    private Button createPasswordEntityToolbarButton;
+    private Button createPasswordItemToolbarButton;
     @FXML
-    private Button deletePasswordEntityToolbarButton;
+    private Button deletePasswordItemToolbarButton;
     @FXML
     private Button createFolderToolbarButton;
     @FXML
     private Button deleteFolderToolbarButton;
     @FXML
-    private Button duplicatePasswordEntityToolbarButton;
+    private Button duplicatePasswordItemToolbarButton;
     @FXML
-    private Button viewPasswordEntityToolbarButton;
+    private Button viewPasswordItemToolbarButton;
     @FXML
-    private Button editPasswordEntityToolbarButton;
+    private Button editPasswordItemToolbarButton;
     @FXML
     private Button openPasswordPoliciesPaneToolbarButton;
     @FXML
@@ -52,50 +52,45 @@ public class PasswordManagerPaneController implements Initializable {
     @FXML
     private VBox quickViewPane;
     @FXML
-    private VBox entityNameVBox;
+    private Label itemName;
     @FXML
-    private Label entityName;
+    private VBox itemDescriptionVBox;
     @FXML
-    private VBox entityDescriptionVBox;
+    private TextArea itemDescription;
     @FXML
-    private TextArea entityDescription;
+    private TreeView<VaultItem> treeView;
     @FXML
-    private TreeView<DataEntity> treeView;
-    @FXML
-    private PasswordEntityEditorPaneController passwordEntityEditorPaneController;
-    private final UserProfileSession userProfileSession = new UserProfileSession();
-    private final CryptoUtils.AsymmetricCrypto asymmetricCrypto;
-    private final PasswordManagerController passwordManagerController;
-    private final VaultRepository vaultRepository;
+    private PasswordItemEditorPaneController passwordItemEditorPaneController;
+    private final AppController appController;
+    private final AppContext appContext;
+    private final Logger logger = LoggerFactory.getLogger(PasswordManagerPaneController.class);
     private TreeViewController treeViewController;
 
 
-    public PasswordManagerPaneController(PasswordManagerController passwordManagerController, VaultRepository vaultRepository,
-                                         UserProfile userProfile, CryptoUtils.AsymmetricCrypto asymmetricCrypto) {
-        this.passwordManagerController = passwordManagerController;
-        this.vaultRepository = vaultRepository;
-        userProfileSession.initiate(userProfile);
-        this.asymmetricCrypto = asymmetricCrypto;
+    public PasswordManagerPaneController(AppController appController, AppContext appContext) {
+        this.appController = appController;
+        this.appContext = appContext;
     }
 
     @FXML
     public void exitApplication() {
-        passwordManagerController.exitApplication();
+        appController.exitApplication();
     }
 
     @FXML
     private void logOut() throws IOException {
-        terminateUserSession();
-        passwordManagerController.loadMainMenuPane();
+        logger.info("Logging out");
+        appController.loadMainMenu();
     }
 
     @FXML
     private void openPasswordPoliciesPane() throws IOException {
+        logger.info("Opening Password Policies");
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/jquinss/passwordmanager/fxml/PasswordPoliciesPane.fxml"));
 
         fxmlLoader.setControllerFactory(controllerClass -> {
             if (controllerClass == PasswordPoliciesPaneController.class) {
-                return new PasswordPoliciesPaneController(this, vaultRepository);
+                return new PasswordPoliciesPaneController(appContext);
             }
 
             try {
@@ -120,6 +115,7 @@ public class PasswordManagerPaneController implements Initializable {
 
     @FXML
     private void openPasswordGeneratorPane() throws IOException {
+        logger.info("Opening Password Generator");
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/jquinss/passwordmanager/fxml/PasswordGeneratorPane.fxml"));
         Parent parent = fxmlLoader.load();
 
@@ -135,6 +131,7 @@ public class PasswordManagerPaneController implements Initializable {
 
     @FXML
     private void showAboutDialog() {
+        logger.info("Opening About Dialog");
         Alert aboutDialog = DialogBuilder.buildAlertDialog("About", "", "Password Manager v1.0\n\nCreated by Joaquin Sampedro", Alert.AlertType.INFORMATION);
         aboutDialog.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/jquinss/passwordmanager/styles/styles.css")).toString());
         setWindowLogo((Stage) aboutDialog.getDialogPane().getScene().getWindow(), this, "/com/jquinss/passwordmanager/images/logo.png");
@@ -142,38 +139,45 @@ public class PasswordManagerPaneController implements Initializable {
     }
 
     @FXML
-    private void createPasswordEntity() {
-        treeViewController.createPasswordEntity();
+    private void createPasswordItem() {
+        logger.info("Creating Password Item");
+        treeViewController.createPasswordItem();
     }
 
     @FXML
-    private void deletePasswordEntity() {
-        treeViewController.deletePasswordEntity();
+    private void deletePasswordItem() {
+        logger.info("Deleting Password Item");
+        treeViewController.deletePasswordItem();
     }
 
     @FXML
     private void createFolder() {
+        logger.info("Creating Folder");
         treeViewController.createFolder();
     }
 
     @FXML
     private void deleteFolder() {
+        logger.info("Deleting Folder");
         treeViewController.deleteFolder();
     }
 
     @FXML
-    private void duplicatePasswordEntity() {
-        treeViewController.duplicatePasswordEntity();
+    private void duplicatePasswordItem() {
+        logger.info("Duplicating Password Item");
+        treeViewController.duplicatePasswordItem();
     }
 
     @FXML
-    private void viewPasswordEntity() {
-        treeViewController.viewPasswordEntity();
+    private void viewPasswordItem() {
+        logger.info("Viewing Password Item");
+        treeViewController.viewPasswordItem();
     }
 
     @FXML
-    private void editPasswordEntity() {
-        treeViewController.editPasswordEntity();
+    private void editPasswordItem() {
+        logger.info("Editing Password Item");
+        treeViewController.editPasswordItem();
     }
 
     private void disableRootRelatedToolbarButtons(boolean disable) {
@@ -181,15 +185,15 @@ public class PasswordManagerPaneController implements Initializable {
     }
 
     private void disableFolderRelatedToolBarButtons(boolean disable) {
-        createPasswordEntityToolbarButton.setDisable(disable);
+        createPasswordItemToolbarButton.setDisable(disable);
         deleteFolderToolbarButton.setDisable(disable);
     }
 
     private void disableTemplateRelatedToolbarButtons(boolean disable) {
-        deletePasswordEntityToolbarButton.setDisable(disable);
-        duplicatePasswordEntityToolbarButton.setDisable(disable);
-        viewPasswordEntityToolbarButton.setDisable(disable);
-        editPasswordEntityToolbarButton.setDisable(disable);
+        deletePasswordItemToolbarButton.setDisable(disable);
+        duplicatePasswordItemToolbarButton.setDisable(disable);
+        viewPasswordItemToolbarButton.setDisable(disable);
+        editPasswordItemToolbarButton.setDisable(disable);
     }
 
     void disableAllToolbarButtons() {
@@ -210,31 +214,27 @@ public class PasswordManagerPaneController implements Initializable {
         disableTemplateRelatedToolbarButtons(true);
     }
 
-    void enablePasswordEntityRelatedToolbarButtons() {
+    void enablePasswordItemRelatedToolbarButtons() {
         disableRootRelatedToolbarButtons(true);
         disableFolderRelatedToolBarButtons(true);
         disableTemplateRelatedToolbarButtons(false);
     }
 
-    private void terminateUserSession() {
-        userProfileSession.terminate();
+    private void initializeTreeViewController() {
+        treeViewController = new TreeViewController(this, appContext,
+                treeView);
     }
 
-    private void initializetreeViewController() {
-        treeViewController = new TreeViewController(this, vaultRepository,
-                treeView, asymmetricCrypto);
-    }
-
-    void viewDataEntityInQuickViewPane(DataEntity dataEntity) {
+    void viewDataItemInQuickViewPane(VaultItem vaultItem) {
         //quickViewPane.setVisible(true);
         showPane(quickViewPane);
-        entityName.setText(dataEntity.getName());
-        if (dataEntity.getDescription() != null) {
-            entityDescriptionVBox.setVisible(true);
-            entityDescription.setText(dataEntity.getDescription());
+        itemName.setText(vaultItem.getName());
+        if (vaultItem.getDescription() != null) {
+            itemDescriptionVBox.setVisible(true);
+            itemDescription.setText(vaultItem.getDescription());
         }
         else {
-            entityDescriptionVBox.setVisible(false);
+            itemDescriptionVBox.setVisible(false);
         }
     }
 
@@ -259,24 +259,24 @@ public class PasswordManagerPaneController implements Initializable {
         fadeOut.play();
     }
 
-    void createPasswordEntityInEditor(Folder folder) {
-        passwordEntityEditorPaneController.openPasswordEntityEditorInCreateMode(folder);
-        statusLabel.setText("Creating password entity");
+    void createPasswordItemInEditor(Folder folder) {
+        passwordItemEditorPaneController.openPasswordItemEditorInCreateMode(folder);
+        statusLabel.setText("Creating password item");
         disableMenuBarAndToolBar(true);
     }
 
-    void editPasswordEntityInEditor(PasswordEntity passwordEntity) {
-        passwordEntityEditorPaneController.openPasswordEntityEditorInEditMode(passwordEntity);
-        statusLabel.setText("Editing password entity");
+    void editPasswordItemInEditor(PasswordItem passwordItem) {
+        passwordItemEditorPaneController.openPasswordItemEditorInEditMode(passwordItem);
+        statusLabel.setText("Editing password item");
         disableMenuBarAndToolBar(true);
     }
 
-    void viewPasswordEntityInEditor(PasswordEntity passwordEntity) {
-        passwordEntityEditorPaneController.openPasswordEntityEditorInViewMode(passwordEntity);
+    void viewPasswordItemInEditor(PasswordItem passwordItem) {
+        passwordItemEditorPaneController.openPasswordItemEditorInViewMode(passwordItem);
     }
 
-    void savePasswordEntity(PasswordEntity passwordEntity) {
-        treeViewController.savePasswordEntity(passwordEntity);
+    void savePasswordItem(PasswordItem passwordItem) {
+        treeViewController.savePasswordItem(passwordItem);
         disableMenuBarAndToolBar(false);
         statusLabel.setText("");
     }
@@ -292,16 +292,12 @@ public class PasswordManagerPaneController implements Initializable {
         toolBar.setDisable(disable);
     }
 
-    UserProfileSession getUserProfileSession() {
-        return userProfileSession;
-    }
-
     private void setWindowLogo(Stage stage, Object context, String imageFile) {
         stage.getIcons().add(new Image(Objects.requireNonNull(context.getClass().getResource(imageFile)).toString()));
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        initializetreeViewController();
+        initializeTreeViewController();
     }
 }
