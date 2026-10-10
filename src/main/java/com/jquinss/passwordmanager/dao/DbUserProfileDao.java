@@ -68,7 +68,7 @@ public class DbUserProfileDao implements UserProfileDao {
              PreparedStatement ps = buildGetAllUserProfilesPreparedStatement(conn);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                userProfiles.add(createSimpleUserProfile(rs));
+                userProfiles.add(createUserProfile(rs));
             }
         }
 
@@ -81,7 +81,7 @@ public class DbUserProfileDao implements UserProfileDao {
              PreparedStatement ps = buildGetDefaultUserProfilePreparedStatement(conn);
              ResultSet rs = ps.executeQuery()) {
             if (rs.next()) {
-                return Optional.of(createSimpleUserProfile(rs));
+                return Optional.of(createUserProfile(rs));
             }
         }
 
@@ -90,27 +90,11 @@ public class DbUserProfileDao implements UserProfileDao {
 
     private UserProfile createUserProfile(ResultSet resultSet) throws SQLException {
         UserProfile userProfile = new UserProfile(resultSet.getInt("user_profile_id"),
-                resultSet.getString("user_profile_name"),
-                resultSet.getBytes("password"));
-        userProfile.setDefaultProfile(resultSet.getBoolean("default_profile"));
-        userProfile.setPasswordSalt(resultSet.getBytes("password_salt"));
-        userProfile.setPublicKey(resultSet.getBytes("public_key"));
-        userProfile.setPrivateKey(resultSet.getBytes("private_key"));
-        userProfile.setPrivateKeyIV(resultSet.getBytes("private_key_iv"));
-
-        return userProfile;
-    }
-
-    // method used to the situations where we do not need all the user profile attributes. In this case
-    // we only load the username and the default attributes
-    private UserProfile createSimpleUserProfile(ResultSet resultSet) throws SQLException {
-        UserProfile userProfile = new UserProfile(resultSet.getInt("user_profile_id"),
                 resultSet.getString("user_profile_name"));
         userProfile.setDefaultProfile(resultSet.getBoolean("default_profile"));
 
         return userProfile;
     }
-
 
     private PreparedStatement buildGetUserProfileByNamePreparedStatement(Connection conn, String name) throws SQLException {
         String statement = "SELECT * FROM user_profile WHERE user_profile_name = ?";
@@ -120,16 +104,10 @@ public class DbUserProfileDao implements UserProfileDao {
     }
 
     private PreparedStatement buildAddUserProfilePreparedStatement(Connection conn, UserProfile userProfile) throws SQLException {
-        String statement = "INSERT INTO user_profile (user_profile_name, default_profile, password, password_salt, public_key, private_key, " +
-                "private_key_iv) VALUES (?,?,?,?,?,?,?)";
+        String statement = "INSERT INTO user_profile (user_profile_name, default_profile) VALUES (?,?)";
         PreparedStatement ps = conn.prepareStatement(statement);
         ps.setString(1, userProfile.getName());
         ps.setBoolean(2, userProfile.isDefaultProfile());
-        ps.setBytes(3, userProfile.getPasswordHash());
-        ps.setBytes(4, userProfile.getPasswordSalt());
-        ps.setBytes(5, userProfile.getPublicKey());
-        ps.setBytes(6, userProfile.getPrivateKey());
-        ps.setBytes(7, userProfile.getPrivateKeyIV());
         return ps;
     }
 
