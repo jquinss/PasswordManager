@@ -46,22 +46,6 @@
     -fx-padding: 40;
 }
 
-
-/* ===== Login button ===== */
-
-#login-btn {
-    -fx-background-color: #1a314e;
-    -fx-text-fill: white;
-    -fx-font-size: 16px;
-    -fx-background-radius: 5;
-    -fx-padding: 15 0 15 0
-}
-
-#login-btn:hover {
-    -fx-background-color: #30486b;
-}
-
-
 /* ===== Side bar ===== */
 
 #side-bar {
@@ -191,20 +175,23 @@
 /* ===== Button ===== */
 
 .btn {
-    -fx-text-fill: white;
     -fx-font-size: 14px;
+    -fx-text-fill: white;
     -fx-background-radius: 5;
     -fx-background-color: #1a314e;
-    -fx-border-color: #0f1e2e;
 }
 
 .btn:hover {
     -fx-background-color: #30486b;
 }
 
-.dialog-btn {
-    -fx-pref-width: 100;
+/* ===== Buttons of the Main Menu (Login and Registration) ===== */
+
+#main-menu-btn {
+    -fx-font-size: 16px;
+    -fx-padding: 15 0 15 0
 }
+
 
 /* ===== Checkbox ===== */
 
@@ -270,12 +257,12 @@
     -fx-background-color: #1a314e;
 }
 
-#create-pwd-entity-toolbar-button {
-    -fx-graphic: url("../images/create_password_entity.png");
+#create-pwd-item-toolbar-button {
+    -fx-graphic: url("../images/create_password_item.png");
 }
 
-#delete-pwd-entity-toolbar-button {
-    -fx-graphic: url("../images/delete_password_entity.png");
+#delete-pwd-item-toolbar-button {
+    -fx-graphic: url("../images/delete_password_item.png");
 }
 
 #create-folder-toolbar-button {
@@ -286,16 +273,16 @@
     -fx-graphic: url("../images/delete_folder.png");
 }
 
-#duplicate-password-entity-toolbar-button {
-    -fx-graphic: url("../images/duplicate_password_entity.png");
+#duplicate-password-item-toolbar-button {
+    -fx-graphic: url("../images/duplicate_password_item.png");
 }
 
-#view-password-entity-toolbar-button {
-    -fx-graphic: url("../images/view_password_entity.png");
+#view-password-item-toolbar-button {
+    -fx-graphic: url("../images/view_password_item.png");
 }
 
-#edit-password-entity-toolbar-button {
-    -fx-graphic: url("../images/edit_password_entity.png");
+#edit-password-item-toolbar-button {
+    -fx-graphic: url("../images/edit_password_item.png");
 }
 
 #password-policies-toolbar-button {
