@@ -3,7 +3,7 @@ package com.jquinss.passwordmanager.controllers;
 import com.jquinss.passwordmanager.app.AppContext;
 import com.jquinss.passwordmanager.vault.repository.VaultRepository;
 import com.jquinss.passwordmanager.data.*;
-import com.jquinss.passwordmanager.enums.DataEntityEditorMode;
+import com.jquinss.passwordmanager.enums.VaultItemEditorMode;
 import com.jquinss.passwordmanager.util.misc.DialogBuilder;
 import com.jquinss.passwordmanager.util.misc.FixedLengthFilter;
 import com.jquinss.passwordmanager.util.password.*;
@@ -33,7 +33,9 @@ import java.util.Objects;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
-public class PasswordEntityEditorPaneController implements Initializable {
+public class PasswordItemEditorPaneController implements Initializable {
+    @FXML
+    private ScrollPane passwordItemEditorMainPane;
     @FXML
     private ImageView passwordExpirationImageView;
     @FXML
@@ -46,8 +48,6 @@ public class PasswordEntityEditorPaneController implements Initializable {
     private HBox dialogButtons;
     @FXML
     private ComboBox<PasswordGeneratorPolicy> passwordGeneratorPolicyComboBox;
-    @FXML
-    private ScrollPane passwordEntityEditorMainPane;
     @FXML
     private TextField nameTextField;
     @FXML
@@ -72,7 +72,7 @@ public class PasswordEntityEditorPaneController implements Initializable {
     private DatePicker passwordExpirationDatePicker;
     @FXML
     private CheckBox showPasswordCheckBox;
-    private DataEntityEditorMode editorMode;
+    private VaultItemEditorMode editorMode;
     private final PasswordManagerPaneController passwordManagerPaneController;
     private final VaultRepository vaultRepository;
     private final Properties sessionVariables;
@@ -82,8 +82,8 @@ public class PasswordEntityEditorPaneController implements Initializable {
     private final PasswordStrengthChecker passwordStrengthChecker = new PasswordStrengthChecker();
     private PasswordGenerator passwordGenerator;
 
-    public PasswordEntityEditorPaneController(PasswordManagerPaneController passwordManagerPaneController,
-                                              AppContext appContext) {
+    public PasswordItemEditorPaneController(PasswordManagerPaneController passwordManagerPaneController,
+                                            AppContext appContext) {
         this.passwordManagerPaneController = passwordManagerPaneController;
         this.vaultRepository = appContext.vaultRepository();
         this.sessionVariables = appContext.sessionVariables();
@@ -92,8 +92,8 @@ public class PasswordEntityEditorPaneController implements Initializable {
     @FXML
     private void save() {
         switch (editorMode) {
-            case CREATE -> createPasswordEntity();
-            case EDIT -> editPasswordEntity();
+            case CREATE -> createPasswordItem();
+            case EDIT -> editPasswordItem();
         }
 
         closePasswordEditor();
@@ -153,47 +153,47 @@ public class PasswordEntityEditorPaneController implements Initializable {
         clipboard.setContent(content);
     }
 
-    private void createPasswordEntity() {
-        editorMode.getDataEntity().ifPresent(entity -> {
-            PasswordEntity pwdEntity = new PasswordEntity(entity.getId(), nameTextField.getText(), passwordField.getText());
-            pwdEntity.setDescription(descriptionTextField.getText());
-            pwdEntity.setUsername(usernameTextField.getText());
-            pwdEntity.setUrl(urlTextField.getText());
-            pwdEntity.setEmailAddress(emailAddressTextField.getText());
-            pwdEntity.setPasswordEnforcementPolicyEnabled(enforcePolicyCheckBox.isSelected());
+    private void createPasswordItem() {
+        editorMode.getVaultItem().ifPresent(item -> {
+            PasswordItem pwdItem = new PasswordItem(item.getId(), nameTextField.getText(), passwordField.getText());
+            pwdItem.setDescription(descriptionTextField.getText());
+            pwdItem.setUsername(usernameTextField.getText());
+            pwdItem.setUrl(urlTextField.getText());
+            pwdItem.setEmailAddress(emailAddressTextField.getText());
+            pwdItem.setPasswordEnforcementPolicyEnabled(enforcePolicyCheckBox.isSelected());
             if (enforcePolicyCheckBox.isSelected()) {
-                pwdEntity.setPasswordEnforcementPolicyId(passwordEnforcementPolicyComboBox.getValue().getId());
+                pwdItem.setPasswordEnforcementPolicyId(passwordEnforcementPolicyComboBox.getValue().getId());
             }
 
-            pwdEntity.setPasswordExpires(passwordExpiresCheckBox.isSelected());
+            pwdItem.setPasswordExpires(passwordExpiresCheckBox.isSelected());
             if (passwordExpiresCheckBox.isSelected()) {
-                pwdEntity.setExpirationDate(passwordExpirationDatePicker.getValue());
+                pwdItem.setExpirationDate(passwordExpirationDatePicker.getValue());
             }
 
-            passwordManagerPaneController.savePasswordEntity(pwdEntity);
+            passwordManagerPaneController.savePasswordItem(pwdItem);
         });
     }
 
-    private void editPasswordEntity() {
-        editorMode.getDataEntity().ifPresent(entity -> {
-            PasswordEntity pwdEntity = (PasswordEntity) entity;
-            pwdEntity.setName(nameTextField.getText());
-            pwdEntity.setPassword(passwordField.getText());
-            pwdEntity.setDescription(descriptionTextField.getText());
-            pwdEntity.setUsername(usernameTextField.getText());
-            pwdEntity.setUrl(urlTextField.getText());
-            pwdEntity.setEmailAddress(emailAddressTextField.getText());
-            pwdEntity.setPasswordEnforcementPolicyEnabled(enforcePolicyCheckBox.isSelected());
+    private void editPasswordItem() {
+        editorMode.getVaultItem().ifPresent(item -> {
+            PasswordItem pwdItem = (PasswordItem) item;
+            pwdItem.setName(nameTextField.getText());
+            pwdItem.setPassword(passwordField.getText());
+            pwdItem.setDescription(descriptionTextField.getText());
+            pwdItem.setUsername(usernameTextField.getText());
+            pwdItem.setUrl(urlTextField.getText());
+            pwdItem.setEmailAddress(emailAddressTextField.getText());
+            pwdItem.setPasswordEnforcementPolicyEnabled(enforcePolicyCheckBox.isSelected());
             if (enforcePolicyCheckBox.isSelected()) {
-                pwdEntity.setPasswordEnforcementPolicyId(passwordEnforcementPolicyComboBox.getValue().getId());
+                pwdItem.setPasswordEnforcementPolicyId(passwordEnforcementPolicyComboBox.getValue().getId());
             }
 
-            pwdEntity.setPasswordExpires(passwordExpiresCheckBox.isSelected());
+            pwdItem.setPasswordExpires(passwordExpiresCheckBox.isSelected());
             if (passwordExpiresCheckBox.isSelected()) {
-                pwdEntity.setExpirationDate(passwordExpirationDatePicker.getValue());
+                pwdItem.setExpirationDate(passwordExpirationDatePicker.getValue());
             }
 
-            passwordManagerPaneController.savePasswordEntity(pwdEntity);
+            passwordManagerPaneController.savePasswordItem(pwdItem);
         });
     }
 
@@ -409,8 +409,8 @@ public class PasswordEntityEditorPaneController implements Initializable {
         clearPasswordField.setTextFormatter(new TextFormatter<String>(new FixedLengthFilter(50)));
     }
 
-    public void openPasswordEntityEditorInCreateMode(Folder folder) {
-        setEditMode(DataEntityEditorMode.CREATE, folder);
+    public void openPasswordItemEditorInCreateMode(Folder folder) {
+        setEditMode(VaultItemEditorMode.CREATE, folder);
         resetFields();
         initializePolicies();
         passwordExpirationImageView.setVisible(false);
@@ -418,54 +418,54 @@ public class PasswordEntityEditorPaneController implements Initializable {
         initializeValidator();
     }
 
-    public void openPasswordEntityEditorInEditMode(PasswordEntity pwdEntity) {
-        setEditMode(DataEntityEditorMode.EDIT, pwdEntity);
+    public void openPasswordItemEditorInEditMode(PasswordItem pwdItem) {
+        setEditMode(VaultItemEditorMode.EDIT, pwdItem);
         resetFields();
         initializePolicies();
-        loadPasswordEntity(pwdEntity);
+        loadPasswordItem(pwdItem);
         initializePasswordGenerator();
-        passwordExpirationImageView.setVisible(isPasswordEntityExpired(pwdEntity));
+        passwordExpirationImageView.setVisible(isPasswordItemExpired(pwdItem));
         validator.clear();
         initializeValidator();
     }
 
-    public void openPasswordEntityEditorInViewMode(PasswordEntity pwdEntity) {
-        setViewMode(pwdEntity);
+    public void openPasswordItemEditorInViewMode(PasswordItem pwdItem) {
+        setViewMode(pwdItem);
         resetFields();
         initializePolicies();
-        loadPasswordEntity(pwdEntity);
-        passwordExpirationImageView.setVisible(isPasswordEntityExpired(pwdEntity));
+        loadPasswordItem(pwdItem);
+        passwordExpirationImageView.setVisible(isPasswordItemExpired(pwdItem));
         validator.clear();
     }
 
-    private void setViewMode(PasswordEntity pwdEntity) {
-        editorMode = DataEntityEditorMode.VIEW;
-        editorMode.setDataEntity(pwdEntity);
+    private void setViewMode(PasswordItem pwdItem) {
+        editorMode = VaultItemEditorMode.VIEW;
+        editorMode.setVaultItem(pwdItem);
         setTextFieldsEditable(false);
         disableControls(true);
         dialogButtons.setVisible(false);
-        //passwordEntityEditorMainPane.setVisible(true);
-        showNode(passwordEntityEditorMainPane);
+        //passwordItemEditorMainPane.setVisible(true);
+        showNode(passwordItemEditorMainPane);
         hidePasswordEditorPaneButton.setVisible(true);
     }
 
-    private void setEditMode(DataEntityEditorMode editorMode, DataEntity dataEntity) {
+    private void setEditMode(VaultItemEditorMode editorMode, VaultItem vaultItem) {
         this.editorMode = editorMode;
-        this.editorMode.setDataEntity(dataEntity);
+        this.editorMode.setVaultItem(vaultItem);
         setTextFieldsEditable(true);
         disableControls(false);
         dialogButtons.setVisible(true);
-        // passwordEntityEditorMainPane.setVisible(true);
-        showNode(passwordEntityEditorMainPane);
+        // passwordItemEditorMainPane.setVisible(true);
+        showNode(passwordItemEditorMainPane);
         hidePasswordEditorPaneButton.setVisible(false);
     }
 
     @FXML
     private void setHideMode(boolean addFadeOutEffect) {
-        editorMode = DataEntityEditorMode.HIDE;
-        editorMode.setDataEntity(null);
+        editorMode = VaultItemEditorMode.HIDE;
+        editorMode.setVaultItem(null);
         validator.clear();
-        hideNode(passwordEntityEditorMainPane, addFadeOutEffect);
+        hideNode(passwordItemEditorMainPane, addFadeOutEffect);
     }
 
     private void showNode(Node node) {
@@ -512,25 +512,25 @@ public class PasswordEntityEditorPaneController implements Initializable {
         generatePasswordButton.setDisable(disable);
     }
 
-    private void loadPasswordEntity(PasswordEntity pwdEntity) {
-        nameTextField.setText(pwdEntity.getName());
-        descriptionTextField.setText(pwdEntity.getDescription());
-        urlTextField.setText(pwdEntity.getUrl());
-        usernameTextField.setText(pwdEntity.getUsername());
-        emailAddressTextField.setText(pwdEntity.getEmailAddress());
-        passwordField.setText(pwdEntity.getPassword());
-        enforcePolicyCheckBox.setSelected(pwdEntity.isPasswordEnforcementPolicyEnabled());
-        if (pwdEntity.isPasswordEnforcementPolicyEnabled()) {
-            setPasswordEnforcementPolicy(pwdEntity);
+    private void loadPasswordItem(PasswordItem pwdItem) {
+        nameTextField.setText(pwdItem.getName());
+        descriptionTextField.setText(pwdItem.getDescription());
+        urlTextField.setText(pwdItem.getUrl());
+        usernameTextField.setText(pwdItem.getUsername());
+        emailAddressTextField.setText(pwdItem.getEmailAddress());
+        passwordField.setText(pwdItem.getPassword());
+        enforcePolicyCheckBox.setSelected(pwdItem.isPasswordEnforcementPolicyEnabled());
+        if (pwdItem.isPasswordEnforcementPolicyEnabled()) {
+            setPasswordEnforcementPolicy(pwdItem);
         }
 
-        passwordExpiresCheckBox.setSelected(pwdEntity.isPasswordExpires());
-        passwordExpirationDatePicker.setValue(pwdEntity.getExpirationDate());
+        passwordExpiresCheckBox.setSelected(pwdItem.isPasswordExpires());
+        passwordExpirationDatePicker.setValue(pwdItem.getExpirationDate());
     }
 
-    private void setPasswordEnforcementPolicy(PasswordEntity pwdEntity) {
+    private void setPasswordEnforcementPolicy(PasswordItem pwdItem) {
         for (PasswordEnforcementPolicy pwdPolicy : passwordEnforcementPolicyObsList) {
-            if (pwdPolicy.getId() == pwdEntity.getPasswordEnforcementPolicyId()) {
+            if (pwdPolicy.getId() == pwdItem.getPasswordEnforcementPolicyId()) {
                 passwordEnforcementPolicyComboBox.getSelectionModel().select(pwdPolicy);
             }
         }
@@ -552,8 +552,8 @@ public class PasswordEntityEditorPaneController implements Initializable {
         passwordExpirationDatePicker.setValue(null);
     }
 
-    private boolean isPasswordEntityExpired(PasswordEntity passwordEntity) {
-        return passwordEntity.isPasswordExpires() && !passwordEntity.getExpirationDate().isAfter(LocalDate.now());
+    private boolean isPasswordItemExpired(PasswordItem passwordItem) {
+        return passwordItem.isPasswordExpires() && !passwordItem.getExpirationDate().isAfter(LocalDate.now());
     }
 
     @Override
