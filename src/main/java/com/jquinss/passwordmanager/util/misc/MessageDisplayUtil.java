@@ -8,13 +8,17 @@ public class MessageDisplayUtil {
     private MessageDisplayUtil(){}
 
     public static void showTemporaryMessage(Label label, String text, String cssStyleClass, int delay) {
-        label.getStyleClass().remove(label.getStyleClass().toString());
-        label.getStyleClass().add(cssStyleClass);
-        label.setText(text);
-        label.setVisible(true);
+        showMessage(label, text, cssStyleClass);
 
         PauseTransition pause = new PauseTransition(Duration.seconds(delay));
         pause.setOnFinished(e -> label.setVisible(false));
         pause.play();
+    }
+
+    public static void showMessage(Label label, String text, String cssStyleClass) {
+        label.getStyleClass().remove(label.getStyleClass().toString());
+        label.getStyleClass().add(cssStyleClass);
+        label.setText(text);
+        label.setVisible(true);
     }
 }
