@@ -21,17 +21,9 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class BackupsPaneController implements Initializable {
-
     @FXML
     private ListView<String> backupsListView;
-
-    private final BackupsRepository backupsRepository;
-
     private ObservableList<String> backups;
-
-    public BackupsPaneController(BackupsRepository backupsRepository) {
-        this.backupsRepository = backupsRepository;
-    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
