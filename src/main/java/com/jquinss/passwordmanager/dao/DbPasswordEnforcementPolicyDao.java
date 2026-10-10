@@ -32,17 +32,17 @@ public class DbPasswordEnforcementPolicyDao implements PasswordEnforcementPolicy
 
     @Override
     public List<PasswordEnforcementPolicy> getAllByUserProfileId(int userProfileId) throws SQLException {
-        List<PasswordEnforcementPolicy> pwdEntities = new ArrayList<>();
+        List<PasswordEnforcementPolicy> pwdItems = new ArrayList<>();
         try (Connection conn = dataSource.getConnection();
              PreparedStatement ps = buildGetAllPasswordEnforcementPoliciesByUserProfileIdPreparedStatement(conn, userProfileId);
              ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
-                pwdEntities.add(createPasswordEnforcementPolicy(rs));
+                pwdItems.add(createPasswordEnforcementPolicy(rs));
             }
         }
 
-        return pwdEntities;
+        return pwdItems;
     }
 
     @Override
