@@ -1,14 +1,9 @@
 package com.jquinss.passwordmanager.controllers;
 
-import com.jquinss.passwordmanager.dao.VaultRepository;
-import com.jquinss.passwordmanager.data.UserProfile;
-import com.jquinss.passwordmanager.exceptions.LoadKeyPairException;
-import com.jquinss.passwordmanager.security.Authenticator;
-import com.jquinss.passwordmanager.util.misc.CryptoUtils;
+import com.jquinss.passwordmanager.authentication.*;
 import com.jquinss.passwordmanager.util.misc.FixedLengthFilter;
 import com.jquinss.passwordmanager.util.misc.MessageDisplayUtil;
 import javafx.animation.FadeTransition;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -17,62 +12,47 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.crypto.SecretKey;
-import javax.crypto.spec.IvParameterSpec;
+import java.io.IOException;
 import java.net.URL;
-import java.security.KeyPair;
-import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class MainMenuPaneController implements Initializable {
-
-    // Tab buttons
     @FXML
     private Button loginTabButton;
     @FXML
     private Button profilesTabButton;
     @FXML
     private Button backupsTabButton;
-    
-    // Content panes
     @FXML
     private VBox loginPane;
     @FXML
-    private BorderPane profilesPane;
+    private VBox registrationPane;
     @FXML
     private BorderPane backupsPane;
-    @FXML
-    private ComboBox<UserProfile> loginProfileComboBox;
     @FXML
     private PasswordField loginPasswordField;
     @FXML
     private Label message;
+    private static final Logger logger = LoggerFactory.getLogger(MainMenuPaneController.class);
+    private final AppController appController;
+    private final AuthenticationService authenticator = new AuthenticationService();
 
-    private ObservableList<UserProfile> userProfiles;
-
-    private final PasswordManagerController passwordManagerController;
-    private final VaultRepository vaultRepository;
-
-    private final Authenticator authenticator = new Authenticator();
-
-    public MainMenuPaneController(PasswordManagerController passwordManagerController, VaultRepository vaultRepository) {
-        this.passwordManagerController = passwordManagerController;
-        this.vaultRepository = vaultRepository;
+    public MainMenuPaneController(AppController appController) {
+        this.appController = appController;
     }
-    
     @FXML
+
     private void showLoginTab() {
         setActiveTab(loginPane, loginTabButton);
-        loadUserProfiles();
     }
     
     @FXML
-    private void showProfilesTab() {
-        setActiveTab(profilesPane, profilesTabButton);
+    private void showRegistrationTab() {
+        setActiveTab(registrationPane, profilesTabButton);
     }
     
     @FXML
@@ -83,13 +63,13 @@ public class MainMenuPaneController implements Initializable {
     private void setActiveTab(Pane contentToShow, Button activeButton) {
         // Hide all content panes
         hidePane(loginPane);
-        hidePane(profilesPane);
+        hidePane(registrationPane);
         hidePane(backupsPane);
         
         // Show selected content
         showPane(contentToShow);
 
-        // Update button styles
+        // Update buttonstyles
         String inactiveStyleClass = "side_bar_btn_inactive";
         String activeStyleClass = "side_bar_btn_active";
 
@@ -124,39 +104,18 @@ public class MainMenuPaneController implements Initializable {
     }
 
     @FXML
-    private void handleLogin() {
-        UserProfile userProfile = loginProfileComboBox.getSelectionModel().getSelectedItem();
-        String password = loginPasswordField.getText();
-
-        try {
-            Optional<UserProfile> optional = vaultRepository.getUserProfileByName(userProfile.getName());
-            if (optional.isPresent()) {
-                UserProfile profile = optional.get();
-                boolean validCredentials = authenticator.authenticate(profile, password);
-
-                if (validCredentials) {
-                    hideMessage();
-                    KeyPair keyPair = loadKeyPair(profile, password);
-                    passwordManagerController.loadPasswordManagerPane(profile, keyPair);
-                }
-                else {
-                    showErrorMessage("Error: Invalid user profile name or password");
-                    clearFields();
-                }
-            }
-            else {
-                showErrorMessage("Error: Invalid user profile name or password");
-                clearFields();
-            }
+    private void handleLogin() throws IOException {
+        logger.info("Authenticating user");
+        AuthenticationResult authenticationResult = authenticator.authenticate(loginPasswordField.getText());
+        if (authenticationResult instanceof AuthenticationSuccess authenticationSuccess) {
+            logger.info("Authentication successful");
+            appController.loadProfileSelectionDialog(authenticationSuccess.vaultRepository());
         }
-        catch (SQLException e) {
-            showErrorMessage("Error: Cannot connect to the database");
-        }
-        catch (LoadKeyPairException e) {
-            showErrorMessage("Error: Error loading key-pair from database");
-        }
-        catch (Exception e) {
-            throw new RuntimeException(e);
+        else {
+            AuthenticationStatus authenticationStatus = ((AuthenticationFailure) authenticationResult).authenticationStatus();
+            logger.warn("Authentication failed: " + authenticationStatus.getMessage());
+            showTemporaryErrorMessage("Authentication failed: " + authenticationStatus.getMessage());
+            clearFields();
         }
     }
 
@@ -164,58 +123,16 @@ public class MainMenuPaneController implements Initializable {
         MessageDisplayUtil.showTemporaryMessage(this.message, text, styleClass, 3);
     }
 
-    private void showErrorMessage(String text) {
+    private void showTemporaryErrorMessage(String text) {
         showTemporaryMessage(text, "error-message");
     }
 
-    private void showSuccessMessage(String text) {
+    private void showTemporarySuccessMessage(String text) {
         showTemporaryMessage(text, "success-message");
-    }
-
-    private void hideMessage() {
-        message.setText("");
-        message.setVisible(false);
     }
 
     private void clearFields() {
         loginPasswordField.clear();
-    }
-
-    protected void loadUserProfiles() {
-        try {
-            List<UserProfile> profiles = vaultRepository.getAllUserProfiles();
-            userProfiles.setAll(profiles);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
-        loginProfileComboBox.setItems(userProfiles);
-        setDefaultProfile();
-    }
-
-    private void setDefaultProfile() {
-        for (UserProfile userProfile : userProfiles) {
-            if (userProfile.isDefaultProfile()) {
-                loginProfileComboBox.getSelectionModel().select(userProfile);
-            }
-        }
-    }
-
-    private KeyPair loadKeyPair(UserProfile userProfile, String password) throws LoadKeyPairException {
-        try {
-            byte[] publicKey = userProfile.getPublicKey();
-            byte[] encryptedPrivateKey = userProfile.getPrivateKey();
-
-            byte[] salt = userProfile.getPasswordSalt();
-            IvParameterSpec ivParameterSpec = new IvParameterSpec(userProfile.getPrivateKeyIV());
-            SecretKey key = CryptoUtils.getSecretKeyFromPassword(password, salt);
-            byte[] privateKey = CryptoUtils.decrypt(encryptedPrivateKey, "AES/CBC/PKCS5Padding",
-                    key, ivParameterSpec);
-            return CryptoUtils.loadKeyPair(publicKey, privateKey, "RSA");
-        }
-        catch (Exception e) {
-            throw new LoadKeyPairException();
-        }
     }
 
     private void initializeTextFormatters() {
@@ -224,7 +141,6 @@ public class MainMenuPaneController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        userProfiles = FXCollections.observableArrayList();
         initializeTextFormatters();
         // Show login tab by default
         showLoginTab();
