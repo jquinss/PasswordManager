@@ -6,40 +6,26 @@ import java.util.List;
 public class UserProfile {
     private int id;
     private String name;
-    private byte[] passwordHash;
-    private byte[] passwordSalt;
-    private byte[] publicKey;
-    private byte[] privateKey;
-    private byte[] privateKeyIV;
     private boolean defaultProfile = false;
 
-    private List<PasswordEntity> passwordEntities = new ArrayList<>();
+    private List<PasswordItem> passwordItems = new ArrayList<>();
 
-    public UserProfile(int id, String name, byte[] passwordHash) {
-        this(name, passwordHash);
-        this.id = id;
-    }
-
-    public UserProfile(String name, byte[] password) {
-        this.name = name;
-        this.passwordHash = password;
+    public UserProfile(String name, boolean defaultProfile) {
+        this(name);
+        this.defaultProfile = defaultProfile;
     }
 
     public UserProfile(int id, String name) {
+        this(name);
         this.id = id;
+    }
+
+    public UserProfile(String name) {
         this.name = name;
     }
 
     public int getId() {
         return id;
-    }
-
-    public byte[] getPasswordHash() {
-        return passwordHash;
-    }
-
-    public void setPasswordHash(byte[] passwordHash) {
-        this.passwordHash = passwordHash;
     }
 
     public String getName() {
@@ -62,44 +48,12 @@ public class UserProfile {
         this.defaultProfile = defaultProfile;
     }
 
-    public byte[] getPasswordSalt() {
-        return passwordSalt;
+    public List<PasswordItem> getPasswordItems() {
+        return passwordItems;
     }
 
-    public void setPasswordSalt(byte[] passwordSalt) {
-        this.passwordSalt = passwordSalt;
-    }
-
-    public byte[] getPublicKey() {
-        return publicKey;
-    }
-
-    public void setPublicKey(byte[] publicKey) {
-        this.publicKey = publicKey;
-    }
-
-    public byte[] getPrivateKey() {
-        return privateKey;
-    }
-
-    public void setPrivateKey(byte[] privateKey) {
-        this.privateKey = privateKey;
-    }
-
-    public byte[] getPrivateKeyIV() {
-        return privateKeyIV;
-    }
-
-    public void setPrivateKeyIV(byte[] privateKeyIV) {
-        this.privateKeyIV = privateKeyIV;
-    }
-
-    public List<PasswordEntity> getPasswordEntities() {
-        return passwordEntities;
-    }
-
-    public void setPasswordEntities(List<PasswordEntity> passwordEntities) {
-        this.passwordEntities = passwordEntities;
+    public void setPasswordItems(List<PasswordItem> passwordItems) {
+        this.passwordItems = passwordItems;
     }
 
     @Override
