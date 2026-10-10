@@ -1,6 +1,8 @@
-package com.jquinss.passwordmanager.dao;
+package com.jquinss.passwordmanager.vault.repository;
 
+import com.jquinss.passwordmanager.dao.*;
 import com.jquinss.passwordmanager.data.*;
+import com.jquinss.passwordmanager.vault.metadata.VaultMetadataInfo;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -10,18 +12,21 @@ import java.util.List;
 import java.util.Optional;
 
 public class VaultRepository {
+    private static final String CREATE_VAULT_METADATA_TABLE_STATEMENT = """
+            CREATE TABLE IF NOT EXISTS vault_metadata (id INTEGER PRIMARY KEY DEFAULT 1 CHECK (id = 1),
+            vault_id TEXT NOT NULL, version INTEGER NOT NULL, created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL);
+            """;
     private static final String CREATE_USER_PROFILE_TABLE_STATEMENT = """
             CREATE TABLE IF NOT EXISTS user_profile (user_profile_id INTEGER PRIMARY KEY, user_profile_name TEXT UNIQUE NOT NULL,
-            default_profile INTEGER NOT NULL DEFAULT 0, password BLOB NOT NULL, password_salt BLOB NOT NULL, public_key BLOB NOT NULL, 
-            private_key BLOB NOT NULL, private_key_iv BLOB NOT NULL);""";
+            default_profile INTEGER NOT NULL DEFAULT 0);""";
     private static final String CREATE_ROOT_FOLDER_TABLE_STATEMENT = """
             CREATE TABLE IF NOT EXISTS root_folder (root_folder_id INTEGER PRIMARY KEY, root_folder_name TEXT NOT NULL, user_profile_id INTEGER NOT NULL, 
             FOREIGN KEY(user_profile_id) REFERENCES user_profile(user_profile_id))""";
     private static final String CREATE_FOLDER_TABLE_STATEMENT = """
             CREATE TABLE IF NOT EXISTS folder (folder_id INTEGER PRIMARY KEY, parent_folder_id INTEGER, 
             folder_name TEXT NOT NULL, description TEXT);""";
-    private static final String CREATE_PWD_ENTITY_TABLE_STATEMENT = """
-            CREATE TABLE IF NOT EXISTS password_entity (password_entity_id INTEGER PRIMARY KEY, name TEXT NOT NULL, user_name TEXT,
+    private static final String CREATE_PWD_ITEM_TABLE_STATEMENT = """
+            CREATE TABLE IF NOT EXISTS password_item (password_item_id INTEGER PRIMARY KEY, name TEXT NOT NULL, user_name TEXT,
             password TEXT NOT NULL, email_address TEXT, URL TEXT, description TEXT, expires INTEGER NOT NULL DEFAULT 0,
             expiration_date TEXT, user_profile_id INTEGER NOT NULL, folder_id INTEGER NOT NULL, password_enf_policy_enabled INTEGER NOT NULL DEFAULT 0,
             password_enf_policy_id INTEGER NOT NULL, FOREIGN KEY(user_profile_id) REFERENCES user_profile(user_profile_id),
@@ -39,19 +44,29 @@ public class VaultRepository {
             """;
 
     private final DataSource dataSource;
+    private final VaultMetadataInfoDao vaultMetadataInfoDao;
     private final UserProfileDao userProfileDao;
-    private final PasswordEntityDao passwordEntityDao;
+    private final PasswordItemDao passwordItemDao;
     private final FolderDao folderDao;
     private final PasswordEnforcementPolicyDao passwordEnforcementPolicyDao;
     private final PasswordGeneratorPolicyDao passwordGeneratorPolicyDao;
 
     public VaultRepository(DataSource dataSource) {
         this.dataSource = dataSource;
+        vaultMetadataInfoDao = new DbVaultMetadataInfoDao(dataSource);
         userProfileDao = new DbUserProfileDao(dataSource);
-        passwordEntityDao = new DbPasswordEntityDao(dataSource);
+        passwordItemDao = new DbPasswordItemDao(dataSource);
         folderDao = new DbFolderDao(dataSource);
         passwordEnforcementPolicyDao = new DbPasswordEnforcementPolicyDao(dataSource);
         passwordGeneratorPolicyDao = new DbPasswordGeneratorPolicyDao(dataSource);
+    }
+
+    public void addVaultMetadataInfo(VaultMetadataInfo vaultMetadataInfo) throws SQLException {
+        vaultMetadataInfoDao.upsert(vaultMetadataInfo);
+    }
+
+    public VaultMetadataInfo getVaultMetadataInfo() throws SQLException {
+        return vaultMetadataInfoDao.get();
     }
 
     public Optional<UserProfile> getUserProfileByName(String name) throws SQLException {
@@ -114,32 +129,32 @@ public class VaultRepository {
         folderDao.deleteRoot(folder);
     }
 
-    public void addPasswordEntity(PasswordEntity passwordEntity) throws SQLException {
-        passwordEntityDao.add(passwordEntity);
+    public void addPasswordItem(PasswordItem passwordItem) throws SQLException {
+        passwordItemDao.add(passwordItem);
     }
 
-    public void deletePasswordEntity(PasswordEntity passwordEntity) throws SQLException {
-        passwordEntityDao.delete(passwordEntity);
+    public void deletePasswordItem(PasswordItem passwordItem) throws SQLException {
+        passwordItemDao.delete(passwordItem);
     }
 
-    public void updatePasswordEntity(PasswordEntity passwordEntity) throws SQLException {
-        passwordEntityDao.update(passwordEntity);
+    public void updatePasswordItem(PasswordItem passwordItem) throws SQLException {
+        passwordItemDao.update(passwordItem);
     }
 
-    public List<PasswordEntity> getAllPasswordEntitiesByFolderId(int folderId) throws SQLException {
-        return passwordEntityDao.getAllByFolderId(folderId);
+    public List<PasswordItem> getAllPasswordItemsByFolderId(int folderId) throws SQLException {
+        return passwordItemDao.getAllByFolderId(folderId);
     }
 
-    public List<PasswordEntity> getAllPasswordEntitiesByPasswordEnforcementPolicyId(int policyId) throws SQLException {
-        return passwordEntityDao.getAllByPasswordEnforcementPolicyId(policyId);
+    public List<PasswordItem> getAllPasswordItemsByPasswordEnforcementPolicyId(int policyId) throws SQLException {
+        return passwordItemDao.getAllByPasswordEnforcementPolicyId(policyId);
     }
 
-    public List<PasswordEntity> getAllPasswordEntitiesByUserProfileId(int userProfileId) throws SQLException {
-        return passwordEntityDao.getAllByUserProfileId(userProfileId);
+    public List<PasswordItem> getAllPasswordItemsByUserProfileId(int userProfileId) throws SQLException {
+        return passwordItemDao.getAllByUserProfileId(userProfileId);
     }
 
-    public void deletePasswordEntities(List<PasswordEntity> pwdEntities) throws SQLException {
-        passwordEntityDao.delete(pwdEntities);
+    public void deletePasswordItems(List<PasswordItem> pwdItems) throws SQLException {
+        passwordItemDao.delete(pwdItems);
     }
 
     public void addPasswordEnforcementPolicy(PasswordEnforcementPolicy passwordEnforcementPolicy) throws SQLException {
@@ -187,10 +202,11 @@ public class VaultRepository {
             if (conn != null) {
                 conn.setAutoCommit(false);
                 Statement stmt = conn.createStatement();
+                stmt.execute(CREATE_VAULT_METADATA_TABLE_STATEMENT);
                 stmt.execute(CREATE_USER_PROFILE_TABLE_STATEMENT);
                 stmt.execute(CREATE_ROOT_FOLDER_TABLE_STATEMENT);
                 stmt.execute(CREATE_FOLDER_TABLE_STATEMENT);
-                stmt.execute(CREATE_PWD_ENTITY_TABLE_STATEMENT);
+                stmt.execute(CREATE_PWD_ITEM_TABLE_STATEMENT);
                 stmt.execute(CREATE_PWD_ENFORCEMENT_POLICY_TABLE_STATEMENT);
                 stmt.execute(CREATE_PWD_GENERATOR_POLICY_TABLE_STATEMENT);
                 conn.commit();
