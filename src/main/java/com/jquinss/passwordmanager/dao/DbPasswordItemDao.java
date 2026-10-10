@@ -1,6 +1,6 @@
 package com.jquinss.passwordmanager.dao;
 
-import com.jquinss.passwordmanager.data.PasswordEntity;
+import com.jquinss.passwordmanager.data.PasswordItem;
 
 import javax.sql.DataSource;
 import java.sql.*;
@@ -10,22 +10,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class DbPasswordEntityDao implements PasswordEntityDao {
+public class DbPasswordItemDao implements PasswordItemDao {
     public static final String DATE_TIME_FORMAT = "yyyy-MM-dd";
     public static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT);
     private final DataSource dataSource;
 
-    public DbPasswordEntityDao(DataSource dataSource) {
+    public DbPasswordItemDao(DataSource dataSource) {
         this.dataSource = dataSource;
     }
 
     @Override
-    public Optional<PasswordEntity> getById(int id) throws SQLException {
+    public Optional<PasswordItem> getById(int id) throws SQLException {
         try (Connection conn = dataSource.getConnection();
-             PreparedStatement ps = buildGetPasswordEntityByIdPreparedStatement(conn, id);
+             PreparedStatement ps = buildGetPasswordItemByIdPreparedStatement(conn, id);
              ResultSet rs = ps.executeQuery()) {
             if (rs.next()) {
-                return Optional.of(createPasswordEntity(rs));
+                return Optional.of(createPasswordItem(rs));
             }
         }
 
@@ -33,54 +33,54 @@ public class DbPasswordEntityDao implements PasswordEntityDao {
     }
 
     @Override
-    public List<PasswordEntity> getAllByUserProfileId(int userProfileId) throws SQLException {
-        List<PasswordEntity> pwdEntities = new ArrayList<>();
+    public List<PasswordItem> getAllByUserProfileId(int userProfileId) throws SQLException {
+        List<PasswordItem> pwdItems = new ArrayList<>();
         try (Connection conn = dataSource.getConnection();
-            PreparedStatement ps = buildGetAllPasswordEntitiesByUserProfileIdPreparedStatement(conn, userProfileId);
+            PreparedStatement ps = buildGetAllPasswordItemsByUserProfileIdPreparedStatement(conn, userProfileId);
             ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
-                pwdEntities.add(createPasswordEntity(rs));
+                pwdItems.add(createPasswordItem(rs));
             }
         }
 
-        return pwdEntities;
+        return pwdItems;
     }
 
     @Override
-    public List<PasswordEntity> getAllByPasswordEnforcementPolicyId(int passwordEnforcementPolicyId) throws SQLException {
-        List<PasswordEntity> pwdEntities = new ArrayList<>();
+    public List<PasswordItem> getAllByPasswordEnforcementPolicyId(int passwordEnforcementPolicyId) throws SQLException {
+        List<PasswordItem> pwdItems = new ArrayList<>();
         try (Connection conn = dataSource.getConnection();
-             PreparedStatement ps = buildGetAllPasswordEntitiesByEnforcementPolicyIdPreparedStatement(conn, passwordEnforcementPolicyId);
+             PreparedStatement ps = buildGetAllPasswordItemsByEnforcementPolicyIdPreparedStatement(conn, passwordEnforcementPolicyId);
              ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
-                pwdEntities.add(createPasswordEntity(rs));
+                pwdItems.add(createPasswordItem(rs));
             }
         }
 
-        return pwdEntities;
+        return pwdItems;
     }
 
     @Override
-    public List<PasswordEntity> getAllByFolderId(int folderId) throws SQLException {
-        List<PasswordEntity> pwdEntities = new ArrayList<>();
+    public List<PasswordItem> getAllByFolderId(int folderId) throws SQLException {
+        List<PasswordItem> pwdItems = new ArrayList<>();
         try (Connection conn = dataSource.getConnection();
-             PreparedStatement ps = buildGetAllPasswordEntitiesByFolderIdPreparedStatement(conn, folderId);
+             PreparedStatement ps = buildGetAllPasswordItemsByFolderIdPreparedStatement(conn, folderId);
              ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
-                pwdEntities.add(createPasswordEntity(rs));
+                pwdItems.add(createPasswordItem(rs));
             }
         }
 
-        return pwdEntities;
+        return pwdItems;
     }
 
     @Override
-    public void add(PasswordEntity pwdEntity) throws SQLException {
+    public void add(PasswordItem pwdItem) throws SQLException {
         try (Connection conn = dataSource.getConnection();
-             PreparedStatement ps = buildAddPasswordEntityPreparedStatement(conn, pwdEntity);) {
+             PreparedStatement ps = buildAddPasswordItemPreparedStatement(conn, pwdItem);) {
 
             conn.setAutoCommit(false);
             ps.executeUpdate();
@@ -89,7 +89,7 @@ public class DbPasswordEntityDao implements PasswordEntityDao {
 
             try (ResultSet resultSet = statement.executeQuery("SELECT last_insert_rowid()")) {
                 if (resultSet.next()) {
-                    pwdEntity.setId(resultSet.getInt(1));
+                    pwdItem.setId(resultSet.getInt(1));
                 }
                 conn.commit();
             }
@@ -97,126 +97,126 @@ public class DbPasswordEntityDao implements PasswordEntityDao {
     }
 
     @Override
-    public void update(PasswordEntity pwdEntity) throws SQLException {
+    public void update(PasswordItem pwdItem) throws SQLException {
         try (Connection conn = dataSource.getConnection();
-            PreparedStatement ps = buildUpdatePasswordEntityPreparedStatement(conn, pwdEntity)) {
+            PreparedStatement ps = buildUpdatePasswordItemPreparedStatement(conn, pwdItem)) {
             ps.executeUpdate();
         }
     }
 
     @Override
-    public void delete(PasswordEntity pwdEntity) throws SQLException {
+    public void delete(PasswordItem pwdItem) throws SQLException {
         try (Connection conn = dataSource.getConnection();
-            PreparedStatement ps = buildDeletePasswordEntityPreparedStatement(conn, pwdEntity.getId())) {
+            PreparedStatement ps = buildDeletePasswordItemPreparedStatement(conn, pwdItem.getId())) {
             ps.executeUpdate();
         }
     }
 
     @Override
-    public void delete(List<PasswordEntity> pwdEntities) throws SQLException {
+    public void delete(List<PasswordItem> pwdItems) throws SQLException {
         try (Connection conn = dataSource.getConnection();
-             PreparedStatement ps = buildDeletePasswordEntitiesPreparedStatement(conn, pwdEntities)) {
+             PreparedStatement ps = buildDeletePasswordItemsPreparedStatement(conn, pwdItems)) {
             conn.setAutoCommit(false);
             ps.executeBatch();
             conn.setAutoCommit(true);
         }
     }
 
-    private PreparedStatement buildAddPasswordEntityPreparedStatement(Connection conn, PasswordEntity pwdEntity) throws SQLException {
+    private PreparedStatement buildAddPasswordItemPreparedStatement(Connection conn, PasswordItem pwdItem) throws SQLException {
         String statement = """
-        INSERT INTO password_entity (name, user_name, password, email_address,
+        INSERT INTO password_Item (name, user_name, password, email_address,
         URL, description, expires, expiration_date, user_profile_id, folder_id, password_enf_policy_enabled, password_enf_policy_id) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)""";
 
-        return buildSetOperationPreparedStatement(conn, pwdEntity, statement);
+        return buildSetOperationPreparedStatement(conn, pwdItem, statement);
     }
 
-    private PreparedStatement buildUpdatePasswordEntityPreparedStatement(Connection conn, PasswordEntity pwdEntity) throws SQLException {
+    private PreparedStatement buildUpdatePasswordItemPreparedStatement(Connection conn, PasswordItem pwdItem) throws SQLException {
         String statement = """
-                 UPDATE password_entity SET name=?, user_name=?, password=?, email_address=?, URL=?, description=?, 
-                 expires=?, expiration_date=?, user_profile_id=?, folder_id=?, password_enf_policy_enabled=?, password_enf_policy_id=? WHERE password_entity_id=?""";
+                 UPDATE password_Item SET name=?, user_name=?, password=?, email_address=?, URL=?, description=?, 
+                 expires=?, expiration_date=?, user_profile_id=?, folder_id=?, password_enf_policy_enabled=?, password_enf_policy_id=? WHERE password_Item_id=?""";
 
-        PreparedStatement ps = buildSetOperationPreparedStatement(conn, pwdEntity, statement);
-        ps.setInt(13, pwdEntity.getId());
+        PreparedStatement ps = buildSetOperationPreparedStatement(conn, pwdItem, statement);
+        ps.setInt(13, pwdItem.getId());
 
         return ps;
     }
 
-    private PreparedStatement buildSetOperationPreparedStatement(Connection conn, PasswordEntity pwdEntity, String sqlStatement) throws SQLException {
+    private PreparedStatement buildSetOperationPreparedStatement(Connection conn, PasswordItem pwdItem, String sqlStatement) throws SQLException {
         PreparedStatement ps = conn.prepareStatement(sqlStatement);
 
-        ps.setString( 1, pwdEntity.getName());
-        ps.setString(2, pwdEntity.getUsername());
-        ps.setString(3, pwdEntity.getPassword());
-        ps.setString(4, pwdEntity.getEmailAddress());
-        ps.setString(5, pwdEntity.getUrl());
-        ps.setString(6, pwdEntity.getDescription());
-        ps.setBoolean(7, pwdEntity.isPasswordExpires());
-        ps.setString(8, pwdEntity.getExpirationDate().format(dateTimeFormatter));
-        ps.setInt(9, pwdEntity.getUserProfileId());
-        ps.setInt(10, pwdEntity.getFolderId());
-        ps.setBoolean(11, pwdEntity.isPasswordEnforcementPolicyEnabled());
-        ps.setInt(12, pwdEntity.getPasswordEnforcementPolicyId());
+        ps.setString( 1, pwdItem.getName());
+        ps.setString(2, pwdItem.getUsername());
+        ps.setString(3, pwdItem.getPassword());
+        ps.setString(4, pwdItem.getEmailAddress());
+        ps.setString(5, pwdItem.getUrl());
+        ps.setString(6, pwdItem.getDescription());
+        ps.setBoolean(7, pwdItem.isPasswordExpires());
+        ps.setString(8, pwdItem.getExpirationDate().format(dateTimeFormatter));
+        ps.setInt(9, pwdItem.getUserProfileId());
+        ps.setInt(10, pwdItem.getFolderId());
+        ps.setBoolean(11, pwdItem.isPasswordEnforcementPolicyEnabled());
+        ps.setInt(12, pwdItem.getPasswordEnforcementPolicyId());
 
         return ps;
     }
 
-    private PreparedStatement buildGetPasswordEntityByIdPreparedStatement(Connection conn, int id) throws SQLException {
+    private PreparedStatement buildGetPasswordItemByIdPreparedStatement(Connection conn, int id) throws SQLException {
         String statement = """
-                SELECT * FROM password_entity WHERE password_entity_id = ?""";
+                SELECT * FROM password_Item WHERE password_Item_id = ?""";
         PreparedStatement ps = conn.prepareStatement(statement);
         ps.setInt(1, id);
 
         return ps;
     }
 
-    private PreparedStatement buildGetAllPasswordEntitiesByUserProfileIdPreparedStatement(Connection conn, int id) throws SQLException {
-        PreparedStatement ps = conn.prepareStatement("SELECT * FROM password_entity WHERE user_profile_id = ?");
+    private PreparedStatement buildGetAllPasswordItemsByUserProfileIdPreparedStatement(Connection conn, int id) throws SQLException {
+        PreparedStatement ps = conn.prepareStatement("SELECT * FROM password_Item WHERE user_profile_id = ?");
         ps.setInt(1, id);
 
         return ps;
     }
 
-    private PreparedStatement buildGetAllPasswordEntitiesByFolderIdPreparedStatement(Connection conn, int id) throws SQLException {
-        PreparedStatement ps = conn.prepareStatement("SELECT * FROM password_entity WHERE folder_id = ?");
+    private PreparedStatement buildGetAllPasswordItemsByFolderIdPreparedStatement(Connection conn, int id) throws SQLException {
+        PreparedStatement ps = conn.prepareStatement("SELECT * FROM password_Item WHERE folder_id = ?");
         ps.setInt(1, id);
 
         return ps;
     }
 
-    private PreparedStatement buildGetAllPasswordEntitiesByEnforcementPolicyIdPreparedStatement(Connection conn, int id) throws SQLException {
-        PreparedStatement ps = conn.prepareStatement("SELECT * FROM password_entity WHERE password_enf_policy_id = ? AND password_enf_policy_enabled = 1");
+    private PreparedStatement buildGetAllPasswordItemsByEnforcementPolicyIdPreparedStatement(Connection conn, int id) throws SQLException {
+        PreparedStatement ps = conn.prepareStatement("SELECT * FROM password_Item WHERE password_enf_policy_id = ? AND password_enf_policy_enabled = 1");
         ps.setInt(1, id);
 
         return ps;
     }
 
-    private PasswordEntity createPasswordEntity(ResultSet rs) throws SQLException {
-        PasswordEntity pwdEntity = new PasswordEntity(rs.getInt(1), rs.getInt(11),
+    private PasswordItem createPasswordItem(ResultSet rs) throws SQLException {
+        PasswordItem pwdItem = new PasswordItem(rs.getInt(1), rs.getInt(11),
                 rs.getString(2), rs.getString(4));
-        pwdEntity.setUsername(rs.getString(3));
-        pwdEntity.setEmailAddress(rs.getString(5));
-        pwdEntity.setUrl(rs.getString(6));
-        pwdEntity.setDescription(rs.getString(7));
-        pwdEntity.setPasswordExpires(rs.getBoolean(8));
-        pwdEntity.setExpirationDate(LocalDate.parse(rs.getString(9), dateTimeFormatter));
-        pwdEntity.setUserProfileId(rs.getInt(10));
-        pwdEntity.setPasswordEnforcementPolicyEnabled(rs.getBoolean(12));
-        pwdEntity.setPasswordEnforcementPolicyId(rs.getInt(13));
+        pwdItem.setUsername(rs.getString(3));
+        pwdItem.setEmailAddress(rs.getString(5));
+        pwdItem.setUrl(rs.getString(6));
+        pwdItem.setDescription(rs.getString(7));
+        pwdItem.setPasswordExpires(rs.getBoolean(8));
+        pwdItem.setExpirationDate(LocalDate.parse(rs.getString(9), dateTimeFormatter));
+        pwdItem.setUserProfileId(rs.getInt(10));
+        pwdItem.setPasswordEnforcementPolicyEnabled(rs.getBoolean(12));
+        pwdItem.setPasswordEnforcementPolicyId(rs.getInt(13));
 
-        return pwdEntity;
+        return pwdItem;
     }
 
-    private PreparedStatement buildDeletePasswordEntityPreparedStatement(Connection conn, int id) throws SQLException {
-        PreparedStatement ps = conn.prepareStatement("DELETE FROM password_entity WHERE password_entity_id = ?");
+    private PreparedStatement buildDeletePasswordItemPreparedStatement(Connection conn, int id) throws SQLException {
+        PreparedStatement ps = conn.prepareStatement("DELETE FROM password_Item WHERE password_Item_id = ?");
         ps.setInt(1, id);
 
         return ps;
     }
 
-    private PreparedStatement buildDeletePasswordEntitiesPreparedStatement(Connection conn, List<PasswordEntity> pwdEntities) throws SQLException {
-        PreparedStatement ps = conn.prepareStatement("DELETE FROM password_entity WHERE password_entity_id = ?");
-        for (PasswordEntity pwdEntity : pwdEntities) {
-            ps.setInt(1, pwdEntity.getId());
+    private PreparedStatement buildDeletePasswordItemsPreparedStatement(Connection conn, List<PasswordItem> pwdItems) throws SQLException {
+        PreparedStatement ps = conn.prepareStatement("DELETE FROM password_Item WHERE password_Item_id = ?");
+        for (PasswordItem pwdItem : pwdItems) {
+            ps.setInt(1, pwdItem.getId());
             ps.addBatch();
         }
         return ps;
