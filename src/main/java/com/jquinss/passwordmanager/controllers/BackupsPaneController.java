@@ -1,6 +1,5 @@
 package com.jquinss.passwordmanager.controllers;
 
-import com.jquinss.passwordmanager.dao.BackupsRepository;
 import com.jquinss.passwordmanager.util.misc.DialogBuilder;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
