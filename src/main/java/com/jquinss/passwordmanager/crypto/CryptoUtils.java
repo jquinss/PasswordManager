@@ -4,9 +4,17 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.security.DigestInputStream;
 import java.security.InvalidKeyException;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.HexFormat;
+
 import com.jquinss.passwordmanager.vault.metadata.VaultMetadata;
 import com.jquinss.passwordmanager.vault.metadata.VaultMetadataSerializer;
 
@@ -34,5 +42,20 @@ public class CryptoUtils {
             throw new RuntimeException(e);
 
         }
+    }
+
+    public static String generateFileHash(Path filePath, String algorithm) throws NoSuchAlgorithmException, IOException {
+        MessageDigest digest = MessageDigest.getInstance(algorithm);
+        try (InputStream is = Files.newInputStream(filePath);
+             DigestInputStream dis = new DigestInputStream(is, digest);
+        ) {
+            byte[] buffer = new byte[8192];
+
+            while (dis.read(buffer) != -1) {
+                // DigestInputStream updates digest automatically
+            }
+        }
+
+        return HexFormat.of().formatHex(digest.digest());
     }
 }
