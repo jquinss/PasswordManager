@@ -53,6 +53,8 @@ public class DbBackupItemDao implements BackupItemDao {
                backupItems.add(createBackupItem(rs));
            }
         }
+
+        return backupItems;
     }
 
     private PreparedStatement buildAddPreparedStatement(Connection conn, BackupItem backupItem) throws SQLException {
