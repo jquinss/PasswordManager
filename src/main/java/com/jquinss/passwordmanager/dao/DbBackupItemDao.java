@@ -4,6 +4,7 @@ import com.jquinss.passwordmanager.backup.BackupItem;
 
 import javax.sql.DataSource;
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -72,7 +73,9 @@ public class DbBackupItemDao implements BackupItemDao {
         return ps;
     }
 
-    private BackupItem createBackupItem(ResultSet rs) {
-
+    private BackupItem createBackupItem(ResultSet rs) throws SQLException {
+        return new BackupItem(rs.getInt(1), rs.getString(2),
+                LocalDateTime.parse(rs.getString(3), dateTimeFormatter),
+                rs.getString(4));
     }
 }
