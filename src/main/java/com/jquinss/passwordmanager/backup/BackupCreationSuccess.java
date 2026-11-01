@@ -1,4 +1,4 @@
 package com.jquinss.passwordmanager.backup;
 
-public record BackupOperationSuccess() implements BackupOperationResult {
+public record BackupCreationSuccess(BackupItem backupItem) implements BackupOperationResult {
 }
