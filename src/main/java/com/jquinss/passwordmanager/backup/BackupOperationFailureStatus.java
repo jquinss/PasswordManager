@@ -1,6 +1,6 @@
 package com.jquinss.passwordmanager.backup;
 
-public enum BackupOperationStatus {
+public enum BackupOperationFailureStatus {
     VAULT_NOT_FOUND,
     VAULT_PARTIALLY_EXISTS,
     VAULT_ALREADY_EXISTS,
